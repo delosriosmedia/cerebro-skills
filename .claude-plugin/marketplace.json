@@ -1,0 +1,16 @@
+{
+  "name": "cerebro-angel",
+  "owner": {
+    "name": "Angel"
+  },
+  "metadata": {
+    "description": "Cerebro de skills de Angel: guardados de redes convertidos en skills para Claude."
+  },
+  "plugins": [
+    {
+      "name": "cerebro",
+      "source": "./plugins/cerebro",
+      "description": "Skills madre de diseño gráfico, UX/UI, prompts, automatización con IA, Claude y producción de video, alimentadas con los guardados aprobados por Angel."
+    }
+  ]
+}
