@@ -30,7 +30,7 @@ Esta skill reúne los criterios sobre automatización y agentes con inteligencia
 
 Aquí se listan los procedimientos completos de este dominio a medida que se aprueben.
 
-- (ninguna todavía)
+- [`sub-skills/auditar-seguridad-ia.md`](sub-skills/auditar-seguridad-ia.md): auditar la seguridad de una app, agente o flujo con IA en 10 puntos (OWASP Top 10 para LLMs, 2026).
 
 ## Reglas de mantenimiento
 
