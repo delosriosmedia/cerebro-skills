@@ -9,6 +9,11 @@
 - **Cuándo aplica:** paneles de administración, tableros de analítica y resúmenes de cuenta.
 - **Fuente:** https://www.instagram.com/reel/DgAT3fVBJ8B/ · 2026-11-25
 
+### C-003 · Lupa de vidrio sobre grupos de avatares
+- **Regla:** en un grupo de avatares o burbujas, al pasar el cursor aparece un círculo de vidrio esmerilado que sigue al puntero, agranda el elemento que toca y desenfoca su entorno. Convierte una tarjeta de resumen en algo que invita a explorar.
+- **Cuándo aplica:** tarjetas de resumen con personas o elementos agrupados en paneles y tableros.
+- **Fuente:** https://www.instagram.com/reel/DgAT3fVBJ8B/ · 2026-11-25
+
 ## Formato de cada criterio
 
 ```markdown
