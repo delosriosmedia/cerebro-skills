@@ -3,3 +3,4 @@
 | Fecha | Plataforma | Enlace | Qué aportó | Destino |
 | --- | --- | --- | --- | --- |
 | 2026-11-25 | Instagram | [video](https://www.instagram.com/p/DfhpCg0Jdba/) | Ocho prácticas para pasar de programar a ojo a dirigir a Claude Code en un proyecto de producción | sub-skills/proyecto-produccion-claude-code.md |
+| 2026-11-25 | YouTube | [video](https://www.youtube.com/watch?v=yvhC3ZiaWsI) | El agente copia lo que ve: error repetido = regla automática, y borrar parches y comentarios-excusa | criterios/flujos-claude.md (C-001, C-002) |
