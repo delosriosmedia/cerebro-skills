@@ -30,7 +30,7 @@ Esta skill reúne los criterios de producción de video para redes sociales guar
 
 Aquí se listan los procedimientos completos de este dominio a medida que se aprueben.
 
-- (ninguna todavía)
+- Videos con HyperFrames: seguir la skill `selector-hyperframes`, que muestra las extensiones instaladas y pregunta cuáles usar.
 
 ## Reglas de mantenimiento
 
