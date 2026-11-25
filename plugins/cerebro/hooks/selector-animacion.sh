@@ -5,7 +5,7 @@
 
 entrada="$(cat)"
 prompt="$(printf '%s' "$entrada" | sed -n 's/.*"prompt"[[:space:]]*:[[:space:]]*"\(.*\)".*/\1/p')"
-printf '%s' "${prompt:-$entrada}" | grep -qiE 'animaci(o|ó|\\u00f3)n|animation' || exit 0
+printf '%s' "${prompt:-$entrada}" | grep -qiE 'animaci(o|ó|\\u00f3)n|animation|documental|\bvox\b' || exit 0
 
 raiz="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
 galeria="$raiz/skills/selector-animacion/galeria.html"
@@ -22,7 +22,7 @@ else
   abierta="La galería ya se abrió antes en esta sesión; ábrela de nuevo si Angel la pide."
 fi
 
-contexto="Angel mencionó una animación. Si pide crear una animación o un video animado, antes de escribir código sigue la skill selector-animacion del plugin cerebro: pregunta con AskUserQuestion qué estilo usar, recomienda de uno a tres según su historia y ofrece Otro estilo. ${abierta} Ruta de la galería: ${galeria}"
+contexto="Angel mencionó una animación, un documental o el estilo Vox. Si pide crear una animación, un video animado o un reel documental, antes de escribir código sigue la skill selector-animacion del plugin cerebro: pregunta con AskUserQuestion qué estilo usar, recomienda de uno a tres según su historia y ofrece Otro estilo. ${abierta} Ruta de la galería: ${galeria}"
 contexto="${contexto//\\/\\\\}"
 contexto="${contexto//\"/\\\"}"
 printf '{"hookSpecificOutput":{"hookEventName":"UserPromptSubmit","additionalContext":"%s"}}\n' "$contexto"
