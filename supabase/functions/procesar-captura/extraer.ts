@@ -104,14 +104,20 @@ function contenidoDesdeVideo(d: DatosVideo, extra: Partial<Contenido>, uso: unkn
 }
 
 // Videos largos: Gemini analiza tramos en paralelo (videoMetadata con inicio y fin) para que la
-// llamada completa quepa en los 150 s de la función. Tramo por defecto: 5 minutos (ajuste youtube_tramo_s).
+// llamada completa quepa en los 150 s de la función. Tramo por defecto: 3 minutos (ajuste youtube_tramo_s).
 const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 const unir = (listas: (string[] | undefined)[]) => [...new Set(listas.flatMap((l) => l ?? []))];
 
-async function videoYoutube(url: string, duracion: number | null, ajuste: Ajustes): Promise<Contenido> {
+// Tiempo máximo de lectura de tramos por llamada (la función tiene 150 s). Cada tramo terminado se
+// guarda en `eventos` (etapa 'tramo'); la llamada siguiente lee solo los que faltan.
+const PLAZO_TRAMOS_MS = 100_000;
+
+async function videoYoutube(
+  db: SupabaseClient, capturaId: string, url: string, duracion: number | null, ajuste: Ajustes,
+): Promise<Contenido> {
   const modelo = await ajuste("gemini_modelo_video", "gemini-flash-latest");
   const respaldo = await ajuste("gemini_modelo_respaldo", "gemini-flash-lite-latest");
-  const tramo = Number(await ajuste("youtube_tramo_s", "300")) || 300;
+  const tramo = Number(await ajuste("youtube_tramo_s", "180")) || 180;
   const cortes: [number, number][] = [];
   if (duracion && duracion > tramo * 1.2) {
     for (let ini = 0; ini < duracion; ini += tramo) cortes.push([ini, Math.min(duracion, ini + tramo)]);
@@ -138,7 +144,44 @@ async function videoYoutube(url: string, duracion: number | null, ajuste: Ajuste
     return contenidoDesdeVideo(datos, {}, uso, modelo);
   }
 
-  const partes = await Promise.all(cortes.map((c) => pedir(c)));
+  type Tramo = { datos: DatosVideo; uso: unknown };
+  const hechos = new Map<number, Tramo>();
+  const { data: guardados } = await db.from("eventos").select("detalle")
+    .eq("captura_id", capturaId).eq("etapa", "tramo").order("creado_en");
+  for (const g of guardados ?? []) {
+    const t = g.detalle as { inicio: number; fin: number; datos: DatosVideo; uso: unknown };
+    if (cortes.some((c) => c[0] === t.inicio && c[1] === t.fin)) hechos.set(t.inicio, { datos: t.datos, uso: t.uso });
+  }
+
+  const limite = Date.now() + PLAZO_TRAMOS_MS;
+  const errores: string[] = [];
+  let nuevos = 0;
+  await Promise.all(cortes.filter((c) => !hechos.has(c[0])).map(async (c) => {
+    let reloj: ReturnType<typeof setTimeout> | undefined;
+    const plazo = new Promise<null>((ok) => { reloj = setTimeout(() => ok(null), Math.max(0, limite - Date.now())); });
+    try {
+      const r = await Promise.race([pedir(c), plazo]);
+      if (!r) return;
+      hechos.set(c[0], r);
+      nuevos++;
+      await db.from("eventos").insert({
+        captura_id: capturaId, etapa: "tramo", nivel: "info", detalle: { inicio: c[0], fin: c[1], datos: r.datos, uso: r.uso },
+      });
+    } catch (e) {
+      errores.push(String(e instanceof Error ? e.message : e));
+    } finally {
+      clearTimeout(reloj);
+    }
+  }));
+
+  const faltan = cortes.filter((c) => !hechos.has(c[0])).length;
+  if (faltan) {
+    const estado = `${cortes.length - faltan} de ${cortes.length} tramos listos`;
+    // Con avance en esta llamada, la captura sigue sin gastar intento ("parcial:").
+    if (nuevos) throw new Error(`parcial: ${estado}; el resto en la próxima llamada`);
+    throw new Error(errores[0] ?? `tramos sin respuesta a tiempo (${estado})`);
+  }
+  const partes = cortes.map((c) => hechos.get(c[0])!);
   const d = partes.map((p) => p.datos);
   const conTramo = (campo: "transcripcion" | "texto_pantalla" | "descripcion_visual") =>
     d.map((x, i) => x[campo] ? `[${mmss(cortes[i][0])}–${mmss(cortes[i][1])}]\n${x[campo]}` : "").filter(Boolean).join("\n\n");
@@ -367,7 +410,7 @@ export async function extraer(
 
   if (p === "youtube") {
     const duracion = previos.find((c) => c.duracion_s)?.duracion_s ?? null; // la deja youtube-lista
-    return { contenidos: [await videoYoutube(url, duracion, ajuste)], ruta: "gemini_youtube" };
+    return { contenidos: [await videoYoutube(db, captura.id, url, duracion, ajuste)], ruta: "gemini_youtube" };
   }
   if (p === "github") return { contenidos: [await github(url)], ruta: "github_api" };
   if (p === "web") return { contenidos: [await web(url)], ruta: "web" };

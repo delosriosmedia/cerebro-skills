@@ -138,14 +138,17 @@ async function procesar(captura: Captura, solo?: string): Promise<Record<string,
   } catch (e) {
     const mensaje = cortar(e);
     // Un secreto faltante es un problema de configuración: la captura espera sin gastar intentos.
+    // Un video largo con tramos avanzados en esta llamada ("parcial:") tampoco gasta intento.
     const faltaSecreto = mensaje.startsWith("falta el secreto");
-    const agotada = !faltaSecreto && captura.intentos >= 3;
+    const parcial = mensaje.startsWith("parcial:");
+    const sinGasto = faltaSecreto || parcial;
+    const agotada = !sinGasto && captura.intentos >= 3;
     await db.from("capturas").update({
       estado: agotada ? "error" : "recibida",
       ultimo_error: mensaje,
-      ...(faltaSecreto ? { intentos: Math.max(0, captura.intentos - 1) } : {}),
+      ...(sinGasto ? { intentos: Math.max(0, captura.intentos - 1) } : {}),
     }).eq("id", captura.id);
-    await evento(captura.id, "extraccion", "error", { mensaje, intento: captura.intentos });
+    await evento(captura.id, "extraccion", parcial ? "aviso" : "error", { mensaje, intento: captura.intentos });
     return { ...resultado, error: mensaje, reintento: !agotada };
   }
 

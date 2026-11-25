@@ -18,7 +18,7 @@ Si la extracción falla, la captura vuelve a `recibida` con el motivo en `ultimo
 
 | Plataforma | Ruta | Resultado en `contenidos` |
 | --- | --- | --- |
-| YouTube | Gemini recibe el enlace y ve el video (resolución baja). Un video de más de 6 minutos se lee en tramos de 5 minutos en paralelo y se une con marcas `[mm:ss–mm:ss]` | `gemini`: transcripción, texto en pantalla, prompts visibles, pasos, herramientas, repos, momentos |
+| YouTube | Gemini recibe el enlace y ve el video (resolución baja). Un video de más de 3,6 minutos se lee en tramos de 3 minutos en paralelo; cada tramo listo queda en `eventos` (etapa `tramo`) y la llamada siguiente lee solo los que faltan. El resultado se une con marcas `[mm:ss–mm:ss]` | `gemini`: transcripción, texto en pantalla, prompts visibles, pasos, herramientas, repos, momentos |
 | Instagram por DM | Medio del CDN de Meta → bucket privado `medios` (`capturas/<id>.mp4` o `capturas/<id>-1.jpg`) → Gemini | `gemini`, con `medio_ruta` |
 | Instagram, Threads, Facebook por enlace | Apify trae texto, autor, video e imágenes. Las imágenes se guardan en `medios/capturas/<id>-<n>.<ext>` (hasta 10). Gemini lee el video o, si no hay video, las imágenes | `apify` (con `bruto.imagenes`) y `gemini` |
 | GitHub | API pública: descripción, README, estrellas, licencia | `github_api` |
@@ -44,7 +44,7 @@ Si la extracción falla, la captura vuelve a `recibida` con el motivo en `ultimo
 | Secreto de Edge Functions | `ANTHROPIC_API_KEY` | Interpretación con Claude (opcional) |
 | Tabla `ajustes` | `gemini_modelo_video`, `gemini_modelo_interprete` | Modelo de Gemini (por defecto `gemini-flash-latest`) |
 | Tabla `ajustes` | `gemini_modelo_respaldo` | Modelo para demanda alta (por defecto `gemini-flash-lite-latest`) |
-| Tabla `ajustes` | `youtube_tramo_s` | Duración de cada tramo de video largo (por defecto 300 s) |
+| Tabla `ajustes` | `youtube_tramo_s` | Duración de cada tramo de video largo (por defecto 180 s) |
 | Tabla `ajustes` | `claude_modelo_interprete` | Modelo de Claude (por defecto `claude-opus-5-5`) |
 | Tabla `ajustes` | `apify_actor_<plataforma>`, `apify_entrada_<plataforma>` | Actor de Apify y su entrada (`{url}` se reemplaza) |
 | Tabla `ajustes` | `procesar_lote` | Capturas por llamada (por defecto 3) |

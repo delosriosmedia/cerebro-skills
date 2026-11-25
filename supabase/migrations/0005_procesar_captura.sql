@@ -12,7 +12,7 @@ insert into public.ajustes (clave, valor) values
   ('gemini_modelo_interprete', 'gemini-flash-latest'),
   ('claude_modelo_interprete', 'claude-opus-5-5'),
   ('procesar_lote', '3'),
-  ('youtube_tramo_s', '300'),                            -- tramo de video largo por llamada a Gemini
+  ('youtube_tramo_s', '180'),                            -- tramo de video largo por llamada a Gemini
   ('gemini_modelo_respaldo', 'gemini-flash-lite-latest') -- modelo para demanda alta (429/503)
 on conflict (clave) do nothing;
 
