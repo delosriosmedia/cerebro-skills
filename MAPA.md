@@ -20,6 +20,12 @@
 | --- | --- | --- |
 | Selector de extensiones de HyperFrames | `plugins/cerebro/skills/selector-hyperframes/` | Galería visual y pregunta de qué extensiones usar; la activa el hook `plugins/cerebro/hooks/selector-hyperframes.sh` al mencionar HyperFrames |
 
+## Sub-skills
+
+| Sub-skill | Skill madre | Ruta | Qué hace |
+| --- | --- | --- | --- |
+| Auditar la seguridad de una app con IA | Automatización y agentes con IA | `plugins/cerebro/skills/automatizacion-ia/sub-skills/auditar-seguridad-ia.md` | Elige según el contexto qué riesgos del OWASP Top 10 para LLMs (2026) revisar; la sugiere el hook `plugins/cerebro/hooks/sugerir-seguridad-ia.sh` |
+
 ## Destinos posibles de un guardado
 
 | Lo que llega | Destino |
