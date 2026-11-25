@@ -88,3 +88,4 @@ Un resumen corto para Angel:
 ## Fuente
 
 - [Carrusel de @chanti.dev en Instagram](https://www.instagram.com/p/DgDpP79kUQo/) · 2026-11-22, basado en el OWASP Top 10 para aplicaciones con LLMs, edición 2026.
+- [Video de @corespear en Instagram](https://www.instagram.com/p/DfhpCg0Jdba/), «From Vibe Coder to AI Engineer» · 2026-11-25: refuerza LLM03 con el caso de un agente que borra una tabla de producción sin aprobación. La sub-skill `claude-mods/sub-skills/proyecto-produccion-claude-code.md` remite aquí en su paso 6.
