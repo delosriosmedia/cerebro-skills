@@ -22,6 +22,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
 import { type Captura, type Contenido, extraer, releerVideoGuardado } from "./extraer.ts";
 import { armarEntrada, interpretar } from "./interpretar.ts";
+import { fijarPlazo } from "./gemini.ts";
 
 const db = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -164,7 +165,8 @@ async function procesar(captura: Captura, solo?: string): Promise<Record<string,
     const faltaSecreto = mensaje.startsWith("falta el secreto");
     const parcial = mensaje.startsWith("parcial:");
     // Gemini saturado (429/500/503 tras todos los reintentos y respaldos): la captura vuelve a la cola sin gastar intento.
-    const saturado = /^gemini (429|500|503)/.test(mensaje);
+    // Lo mismo si la llamada se acerca a los 150 s de la función ("plazo:").
+    const saturado = /^(gemini (429|500|503)|plazo:)/.test(mensaje);
     const sinGasto = faltaSecreto || parcial || saturado;
     const agotada = !sinGasto && captura.intentos >= 3;
     await db.from("capturas").update({
@@ -189,6 +191,7 @@ async function procesar(captura: Captura, solo?: string): Promise<Record<string,
 
 Deno.serve(async (req) => {
   cacheAjustes.clear(); // cada llamada lee los ajustes vigentes
+  fijarPlazo(125_000); // margen de 25 s bajo los 150 s para guardar estados y responder
   const url = new URL(req.url);
   const claveEsperada = await ajuste("cron_clave");
   if (!claveEsperada || req.headers.get("x-cerebro-clave") !== claveEsperada) return json({ error: "no autorizado" }, 401);

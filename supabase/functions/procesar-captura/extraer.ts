@@ -9,7 +9,7 @@
 
 import type { SupabaseClient } from "npm:@supabase/supabase-js@2.49.4";
 import { encodeBase64 } from "jsr:@std/encoding@1.0.10/base64";
-import { borrarArchivo, geminiJSON, type Parte, subirArchivo } from "./gemini.ts";
+import { borrarArchivo, geminiJSON, type Parte, quedaMs, subirArchivo } from "./gemini.ts";
 
 export type Captura = {
   id: string;
@@ -426,8 +426,14 @@ async function apify(plataforma: string, url: string, ajuste: Ajustes): Promise<
   const entrada = plantilla.replaceAll("{url}", url.replaceAll('"', "%22"));
   const r = await fetch(
     `https://api.apify.com/v2/acts/${actor}/run-sync-get-dataset-items?timeout=90&clean=true`,
-    { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: entrada },
-  );
+    {
+      method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: entrada,
+      signal: Number.isFinite(quedaMs()) ? AbortSignal.timeout(Math.max(1_000, Math.min(95_000, quedaMs() - 30_000))) : undefined,
+    },
+  ).catch((e) => {
+    if (e instanceof DOMException && e.name === "TimeoutError") throw new Error("plazo: Apify tardó más del tiempo disponible; la captura vuelve a la cola");
+    throw e;
+  });
   const items = await r.json().catch(() => null);
   if (!r.ok) throw new Error(`apify ${r.status}: ${JSON.stringify(items).slice(0, 300)}`);
   if (!Array.isArray(items) || !items.length) throw new Error("apify no devolvió resultados");

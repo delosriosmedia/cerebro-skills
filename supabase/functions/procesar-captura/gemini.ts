@@ -8,6 +8,14 @@ export type Parte =
   | { inlineData: { mimeType: string; data: string } }
   | { fileData: { fileUri: string; mimeType?: string }; videoMetadata?: { startOffset?: string; endOffset?: string; fps?: number } };
 
+// Plazo de la llamada actual a la función (150 s de pared). index.ts lo fija al recibir cada petición;
+// los reintentos y cada llamada a Gemini se cortan antes con un error «plazo:», que devuelve la captura a la cola.
+let plazoFuncion = Number.POSITIVE_INFINITY;
+export function fijarPlazo(msDesdeAhora: number): void {
+  plazoFuncion = Date.now() + msDesdeAhora;
+}
+export const quedaMs = (): number => plazoFuncion - Date.now();
+
 function clave(): string {
   const k = Deno.env.get("GEMINI_API_KEY");
   if (!k) throw new Error("falta el secreto GEMINI_API_KEY");
@@ -41,7 +49,7 @@ export async function geminiJSON<T>(opciones: {
     { modelo: opciones.modelo, espera: 6000 }, { modelo: opciones.modelo, espera: 12000 },
     ...respaldos.flatMap((m) => [{ modelo: m, espera: 2000 }, { modelo: m, espera: 6000 }]),
   ];
-  const limite = Date.now() + 75_000;
+  const limite = Math.min(Date.now() + 75_000, plazoFuncion);
   const saturado = (status: number) => status === 429 || status === 500 || status === 503;
   let r!: Response;
   let res: Record<string, any> = {};
@@ -51,10 +59,16 @@ export async function geminiJSON<T>(opciones: {
       if (Date.now() + turno.espera > limite) break;
       await new Promise((ok) => setTimeout(ok, turno.espera));
     }
+    const resta = plazoFuncion - Date.now();
+    if (resta < 5_000) throw new Error("plazo: tiempo de la función agotado; la captura vuelve a la cola");
     r = await fetch(`${BASE}/v1beta/models/${turno.modelo}:generateContent`, {
       method: "POST",
+      signal: Number.isFinite(resta) ? AbortSignal.timeout(resta) : undefined,
       headers: { "Content-Type": "application/json", "x-goog-api-key": clave() },
       body: JSON.stringify(cuerpo),
+    }).catch((e) => {
+      if (e instanceof DOMException && e.name === "TimeoutError") throw new Error("plazo: tiempo de la función agotado; la captura vuelve a la cola");
+      throw e;
     });
     res = await r.json().catch(() => ({}));
     if (r.ok) break;
