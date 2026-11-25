@@ -6,3 +6,4 @@
 | 2026-11-25 | Instagram | [video](https://www.instagram.com/p/DfhpCg0Jdba/) | Caso de un agente que borra una tabla de producción: refuerza la aprobación humana de LLM03 | sub-skills/auditar-seguridad-ia.md (fuente extra) |
 | 2026-11-25 | Instagram | [carrusel](https://www.instagram.com/p/Df90pdYE1M2/) | Nueve repos de código abierto para apps con IA: PDF, documentos a datos, análisis en lote y chat | `repos/` (4 fichas), skill `selector-herramientas-ia` y `buzon/` |
 | 2026-11-25 | Instagram | [reel](https://www.instagram.com/p/DgAhDSPjXh-/) | MiroFish: simular miles de personas con IA para ensayar una idea de negocio antes de invertir | `repos/666ghj-mirofish.md` |
+| 2026-11-25 | Instagram | [carrusel](https://www.instagram.com/p/DgB7U_ilNel/) | Construir o comprar: pagar infraestructura y construir con Claude las automatizaciones simples | criterios/herramientas-no-code.md (C-001) |
