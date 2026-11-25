@@ -23,6 +23,7 @@
 | Selector de herramientas para apps con IA | `plugins/cerebro/skills/selector-herramientas-ia/` | Galería con maquetas de lo que produce pdfme, Unstract, DocETL y assistant-ui, y pregunta cuál usar; la activa el hook `plugins/cerebro/hooks/sugerir-herramientas-ia.sh` al hablar de PDF en serie, extraer datos de documentos, análisis en lote o chats con IA |
 | Selector de redacción | `plugins/cerebro/skills/selector-redaccion/` | Galería con el mismo texto pasado por edit-copy y por humanizer, y pregunta si usar una, la otra, las dos o ninguna; la activa el hook `plugins/cerebro/hooks/sugerir-redaccion.sh` al pedir copy, anuncios, posts, guiones, correos, landings o botones |
 | Experto en color | `plugins/cerebro/skills/experto-color/` | Mide los colores de una pieza, interfaz o paleta, deja tres, asigna 60/30/10 (C-001), corrige con psicología del color y propone paletas de su biblioteca (34, con contraste medido y galería); la activa el hook `plugins/cerebro/hooks/sugerir-color.sh` al trabajar colores o paletas |
+| Estilo retro para interfaces | `plugins/cerebro/skills/estilo-retro/` | Galería de dieciséis estilos retro (aparatos, sistemas de época, pantallas y juegos, impresos y web temprana) y brief para la skill dueña del estilo; el hook `plugins/cerebro/hooks/sugerir-estilo-retro.sh` la ofrece como una opción más al diseñar una interfaz visual |
 
 ## Sub-skills
 
@@ -53,3 +54,4 @@ Cada corrección de Angel se guarda aquí como regla y guía las interpretacione
 
 - Las gráficas de datos (qué resaltar, anotaciones, storytelling con datos) van a `diseno-grafico/visualizacion-datos`. La regla 60-30-10 de color (C-001) aplica a la interfaz o pieza completa y queda fuera de las gráficas (Angel, 2026-11-25).
 - Diseñar APIs propias, servicios de servidor, funciones en la nube y webhooks va a `desarrollo-backend`. `automatizacion-ia/apis-modelos` queda para consumir APIs de modelos de IA (Angel, 2026-11-25).
+- Las estéticas de interfaz que Angel quiere tener a mano (por ejemplo, retro) van como skill de apoyo con galería y hook que la ofrece como opción al diseñar, junto a las skills de estilo que ya usa (Angel, 2026-11-25).
