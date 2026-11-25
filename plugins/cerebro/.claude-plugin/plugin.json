@@ -2,6 +2,9 @@
   "name": "cerebro",
   "description": "Skills madre alimentadas con los guardados aprobados por Angel.",
   "author": {
-    "name": "Angel"
-  }
+    "name": "Angel · delosriosmedia",
+    "url": "https://github.com/delosriosmedia"
+  },
+  "homepage": "https://github.com/delosriosmedia/cerebro-skills",
+  "repository": "https://github.com/delosriosmedia/cerebro-skills"
 }
