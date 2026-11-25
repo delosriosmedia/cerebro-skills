@@ -163,14 +163,16 @@ async function procesar(captura: Captura, solo?: string): Promise<Record<string,
     // Un video largo con tramos avanzados en esta llamada ("parcial:") tampoco gasta intento.
     const faltaSecreto = mensaje.startsWith("falta el secreto");
     const parcial = mensaje.startsWith("parcial:");
-    const sinGasto = faltaSecreto || parcial;
+    // Gemini saturado (429/500/503 tras todos los reintentos y respaldos): la captura vuelve a la cola sin gastar intento.
+    const saturado = /^gemini (429|500|503)/.test(mensaje);
+    const sinGasto = faltaSecreto || parcial || saturado;
     const agotada = !sinGasto && captura.intentos >= 3;
     await db.from("capturas").update({
       estado: agotada ? "error" : "recibida",
       ultimo_error: mensaje,
       ...(sinGasto ? { intentos: Math.max(0, captura.intentos - 1) } : {}),
     }).eq("id", captura.id);
-    await evento(captura.id, "extraccion", parcial ? "aviso" : "error", { mensaje, intento: captura.intentos });
+    await evento(captura.id, "extraccion", parcial || saturado ? "aviso" : "error", { mensaje, intento: captura.intentos });
     return { ...resultado, error: mensaje, reintento: !agotada };
   }
 

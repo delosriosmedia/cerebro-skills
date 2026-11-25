@@ -45,7 +45,7 @@ Si la extracción falla, la captura vuelve a `recibida` con el motivo en `ultimo
 | Secreto de Edge Functions | `APIFY_TOKEN` | Posts que llegan solo como enlace |
 | Secreto de Edge Functions | `ANTHROPIC_API_KEY` | Interpretación con Claude (opcional) |
 | Tabla `ajustes` | `gemini_modelo_video`, `gemini_modelo_interprete` | Modelo de Gemini (por defecto `gemini-flash-latest`) |
-| Tabla `ajustes` | `gemini_modelo_respaldo` | Modelo para demanda alta (por defecto `gemini-flash-lite-latest`) |
+| Tabla `ajustes` | `gemini_modelo_respaldo` | Modelos para demanda alta, separados por comas (por defecto `gemini-flash-lite-latest`). Con Gemini saturado, el modelo principal reintenta a los 3, 6 y 12 s, cada respaldo prueba dos veces y, si todo sigue saturado, la captura vuelve a la cola sin gastar intento |
 | Tabla `ajustes` | `gemini_modelo_archivo` | Modelo para videos descargados y carruseles (reels, DM); sin valor usa `gemini_modelo_video` |
 | Tabla `ajustes` | `gemini_fps_corto`, `gemini_fps_archivo` | Cuadros por segundo al leer videos descargados: hasta 15 MB (10) y mayores (4) |
 | Tabla `ajustes` | `youtube_tramo_s` | Duración de cada tramo de video largo (por defecto 180 s) |
