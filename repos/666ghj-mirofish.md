@@ -4,7 +4,9 @@
 
 **Enlace y estado:** [github.com/666ghj/MiroFish](https://github.com/666ghj/MiroFish) · 86.600 estrellas · último commit 2026-10-16 · AGPL-3.0. Variante en inglés que corre todo en local con Neo4j y Ollama: [nikmcfly/MiroFish-Offline](https://github.com/nikmcfly/MiroFish-Offline) (AGPL-3.0).
 
-**Para qué le sirve a Angel:** skill madre `automatizacion-ia` (subtema `flujos-agentes`). Uso: ensayar una idea de negocio, propia o de un cliente, antes de invertir. El informe muestra los puntos débiles (precio, privacidad, miedos del público) y las conversaciones con las personas simuladas dan pistas para ajustar la oferta.
+**Para qué le sirve a Angel:** skill madre `automatizacion-ia` (subtema `flujos-agentes`). Uso: ensayar una idea de negocio, propia o de un cliente, antes de invertir. El informe muestra los puntos débiles (precio, privacidad, miedos del público) y las conversaciones con las personas simuladas dan pistas para ajustar la oferta. También sirve en la auditoría de una app o web terminada o recién publicada: se describe la app y se simula cómo la recibe su público.
+
+**Hook:** `plugins/cerebro/hooks/sugerir-mirofish.sh` sugiere este ensayo cuando Angel pide auditar una app o web terminada o cuenta que acaba de lanzarla o publicarla. Cuando la app usa un modelo de lenguaje, el hook `sugerir-seguridad-ia.sh` suma la auditoría de seguridad.
 
 **Cómo leer el resultado:** las personas simuladas son una IA representando a un público. El informe sirve como ensayo para encontrar objeciones; la demanda real se confirma con clientes reales.
 
