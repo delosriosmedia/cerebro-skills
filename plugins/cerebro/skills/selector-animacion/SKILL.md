@@ -1,11 +1,11 @@
 ---
 name: selector-animacion
-description: Úsala cada vez que Angel pida una animación o un video animado con Claude Code (reel, explicativo, promo). Antes de escribir código, muestra la galería con el resultado de cada estilo, pregunta cuál usar y sigue el recurso o el prompt de ese estilo.
+description: Úsala cada vez que Angel pida una animación o un video animado (reel, explicativo, promo), hecho con código en Claude Code o generado con IA desde una imagen. Antes de empezar, muestra la galería con el resultado de cada estilo, pregunta cuál usar y sigue el recurso o el prompt de ese estilo.
 ---
 
 # Selector de estilos de animación
 
-Angel elige el estilo mirando el resultado. Esta skill abre una galería con una muestra animada de diez estilos, le pregunta cuál quiere y aplica el recurso listo o el prompt base del estilo elegido.
+Angel elige el estilo mirando el resultado. Esta skill abre una galería con dos familias: diez estilos hechos con código (01 a 10) y ocho estilos generados con IA de video desde una imagen fija (IA-01 a IA-08). Le pregunta cuál quiere y aplica el recurso listo o el prompt base del estilo elegido.
 
 ## Cuándo se activa
 
@@ -16,7 +16,7 @@ Angel elige el estilo mirando el resultado. Esta skill abre una galería con una
 
 1. **Galería.** Abrir `galeria.html` de esta carpeta en el navegador (`open <ruta>/galeria.html` en el Mac). El hook ya la abre en el primer mensaje de la sesión; en los siguientes, abrirla si Angel la pide.
 2. **Pregunta.** Con la herramienta de preguntas (AskUserQuestion), preguntar qué estilo usar. Recomendar de uno a tres según la historia de Angel y ofrecer «Otro estilo» para describirlo en palabras.
-3. **Recurso.** Si el estilo tiene recurso listo, usarlo (instalarlo antes con la aprobación de Angel si falta). Si tiene prompt base, completar sus variables con la historia de Angel.
+3. **Recurso.** Si el estilo tiene recurso listo, usarlo (instalarlo antes con la aprobación de Angel si falta). Si tiene prompt base, completar sus variables con la historia de Angel. Para un estilo IA, completar su plantilla de la biblioteca de prompts y entregarla junto con la imagen de partida que pide.
 4. **Vista previa.** Renderizar una versión corta y mostrarla antes del render final.
 5. **Aprendizaje.** Si Angel cuenta por qué eligió o descartó un estilo, ofrecer guardarlo como criterio en `produccion-video`.
 
@@ -107,6 +107,23 @@ Iceberg low poly blanco y celeste en agua azul clara. Arriba del agua, la punta 
 La cámara baja en un movimiento continuo bajo la superficie y revela capas del iceberg, cada una con una etiqueta en píldora blanca: {capa 1}, {capa 2}, {capa 3}. La línea de flotación se ve como una línea blanca que sube por el cuadro.
 ```
 
+## Estilos con IA de video desde una imagen
+
+Se generan con Seedance 2.5 en modo imagen a video (el autor original usa Picsart Flow). Las plantillas viven en `plugins/cerebro/skills/prompts/biblioteca/video-estilos-animacion-artesanal.md`, marcadas «por probar».
+
+| # | Estilo | Qué se ve | Uso posible |
+| --- | --- | --- | --- |
+| IA-01 | Van Gogh Oil | Óleo empastado; cada pincelada y el cielo en remolino se mueven | Retratos, homenajes, piezas emotivas |
+| IA-02 | Ink Wash | Tinta china sobre papel de arroz que respira | Historias tranquilas, naturaleza |
+| IA-03 | Surreal Cut-Out | Recorte de papel de los 70 con plumilla, movimiento lento | Ideas raras, ciencia ficción |
+| IA-04 | Rotoscope | Movimiento real calcado con contornos que tiemblan | Escenas cotidianas con tono de sueño |
+| IA-05 | Manuscript | Nudos celtas que crecen y pan de oro | Mitos, marcas con herencia |
+| IA-06 | Comic 3D | Semitono, impresión corrida, 12 fps y cuadros de impacto | Acción, deportes |
+| IA-07 | Needle Felt | Stop-motion de lana en set macro | Ternura, productos artesanales |
+| IA-08 | Colored Pencil | Lápiz de color con grano de papel que titila | Recuerdos, mensajes cálidos |
+
 ## Fuente
 
 [viashaan · 10 Claude Animation styles](https://www.instagram.com/p/DgGaMp_DCp4/) · Instagram · guardado el 2026-11-25. Las muestras de `muestras/` son fragmentos de 1,25 s de ese reel, con crédito a su autor. Selector pedido por Angel el 2026-11-25.
+
+Estilos IA: [ai.withphil · 8 hand-animated cartoon styles](https://www.instagram.com/p/Df68uJLCHBX/) · Instagram · guardado el 2026-11-25. Las muestras `muestras/ia-0N.gif` son fragmentos de 1,25 s de ese carrusel, con crédito a su autor. Angel pidió sumarlos como sección aparte el 2026-11-25.
