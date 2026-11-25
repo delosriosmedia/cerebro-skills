@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Componentes de ReUI</title>
+<style>
+  :root {
+    --fondo: #f3f2ef; --tarjeta: #ffffff; --texto: #1c1b19; --suave: #5f5d58;
+    --borde: #e3e0d9; --acento: #6d4fd8; --etiqueta: #f1edff;
+    --lienzo: #eceae6; --hoja: #ffffff; --tinta: #1f2937; --tenue: #9ca3af; --linea: #e5e7eb;
+    --barra: #d9cdfc; --barra2: #c7f0d8; --hoy: #e11d48; --sel: #ede9fe;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fondo: #141414; --tarjeta: #1e1e1e; --texto: #f1f0ec; --suave: #a9a7a1;
+      --borde: #2e2e2e; --acento: #a78bfa; --etiqueta: #2a2342; --lienzo: #101010;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--texto);
+    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  header { max-width: 1200px; margin: 0 auto; padding: 32px 16px 8px; }
+  h1 { margin: 0 0 6px; font-size: 28px; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--suave); max-width: 72ch; }
+  main { max-width: 1200px; margin: 0 auto; padding: 16px; display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); gap: 20px; }
+  article { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 14px;
+    overflow: hidden; display: flex; flex-direction: column; }
+  .media { height: 230px; background: var(--lienzo); display: flex; align-items: center; justify-content: center; padding: 14px; }
+  .cuerpo { padding: 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .num { font-size: 12px; font-weight: 600; color: var(--acento); letter-spacing: .06em; text-transform: uppercase; }
+  h2 { margin: 0; font-size: 19px; }
+  .produce { margin: 0; }
+  .ideal { margin: 0; color: var(--suave); font-size: 14px; }
+  code { display: block; margin-top: 4px; padding: 8px 10px; background: var(--etiqueta); border-radius: 8px;
+    font: 13px/1.4 ui-monospace, Menlo, monospace; overflow-wrap: anywhere; }
+  .enlaces { margin-top: auto; padding-top: 8px; font-size: 14px; }
+  a { color: var(--acento); }
+  footer { max-width: 1200px; margin: 0 auto; padding: 8px 16px 40px; color: var(--suave); font-size: 14px; }
+
+  /* Maquetas propias de cada componente */
+  .ui { background: var(--hoja); color: var(--tinta); border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,.12);
+    width: 100%; max-width: 320px; font-size: 10px; line-height: 1.3; overflow: hidden; }
+  .barra-sup { display: flex; gap: 8px; align-items: center; padding: 7px 9px; border-bottom: 1px solid var(--linea); font-weight: 600; }
+  .barra-sup span { font-weight: 400; color: var(--tenue); }
+  .gantt { display: grid; grid-template-columns: 70px 1fr; }
+  .gantt .fila { display: contents; }
+  .gantt .nombre { padding: 5px 8px; border-bottom: 1px solid var(--linea); border-right: 1px solid var(--linea); }
+  .gantt .pista { position: relative; border-bottom: 1px solid var(--linea);
+    background: repeating-linear-gradient(90deg, transparent 0 39px, var(--linea) 39px 40px); }
+  .gantt .b { position: absolute; top: 4px; height: 12px; border-radius: 4px; background: var(--barra); }
+  .gantt .b.v { background: var(--barra2); }
+  .gantt .b.mueve { animation: mover 3s ease-in-out infinite; outline: 1.5px solid var(--acento); }
+  .hoyl { position: absolute; top: 0; bottom: 0; left: 120px; width: 1.5px; background: var(--hoy); }
+  @keyframes mover { 0%, 15% { transform: translateX(0); } 50%, 65% { transform: translateX(40px); } 100% { transform: translateX(0); } }
+  table { border-collapse: collapse; width: 100%; }
+  td, th { border: 1px solid var(--linea); padding: 4px 6px; text-align: left; }
+  th { color: var(--tenue); font-weight: 500; }
+  td.n { text-align: right; }
+  td.r { background: var(--sel); outline: 1.5px solid var(--acento); outline-offset: -1px; }
+  .cal { display: grid; grid-template-columns: repeat(7, 1fr); }
+  .cal div { height: 28px; border-right: 1px solid var(--linea); border-bottom: 1px solid var(--linea); padding: 2px 3px; color: var(--tenue); position: relative; }
+  .ev { position: absolute; left: 2px; right: 2px; bottom: 3px; height: 9px; border-radius: 3px; background: var(--barra); }
+  .ev.v { background: var(--barra2); }
+  .vistas { display: flex; gap: 4px; margin-left: auto; }
+  .vistas b { padding: 2px 6px; border-radius: 5px; border: 1px solid var(--linea); font-weight: 500; }
+  .vistas b.on { background: var(--tinta); color: #fff; }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; padding: 8px; border-bottom: 1px solid var(--linea); }
+  .chip { border: 1px solid var(--linea); border-radius: 6px; padding: 3px 6px; }
+  .chip i { color: var(--tenue); font-style: normal; }
+  .json { background: #f6f6f4; padding: 8px 10px; font: 9.5px/1.45 ui-monospace, Menlo, monospace; white-space: pre; }
+  .campo { margin: 9px; border: 1px solid var(--linea); border-radius: 7px; padding: 6px 8px; color: var(--tenue); }
+  .migas { padding: 0 10px 4px; color: var(--tenue); }
+  .migas b { color: var(--tinta); }
+  .op { padding: 5px 10px; display: flex; justify-content: space-between; }
+  .op.on { background: var(--sel); }
+  @media (prefers-reduced-motion: reduce) { .gantt .b.mueve { animation: none; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Cinco componentes de ReUI</h1>
+  <p>Componentes React gratuitos (licencia MIT) que Claude instala con un comando en un proyecto con shadcn/ui. El código queda en tu proyecto para adaptarlo. Elige el que necesitas; las maquetas son representaciones propias de cada uno.</p>
+</header>
+<main>
+  <article>
+    <div class="media">
+      <div class="ui">
+        <div class="barra-sup">Noviembre 2026 <span>Semana 45</span></div>
+        <div class="gantt">
+          <div class="fila"><div class="nombre">Guion</div><div class="pista"><div class="b" style="left:4px;width:70px"></div><div class="hoyl"></div></div></div>
+          <div class="fila"><div class="nombre">Rodaje</div><div class="pista"><div class="b mueve" style="left:60px;width:60px"></div></div></div>
+          <div class="fila"><div class="nombre">Edición</div><div class="pista"><div class="b" style="left:120px;width:80px"></div></div></div>
+          <div class="fila"><div class="nombre">Publicar</div><div class="pista"><div class="b v" style="left:200px;width:30px"></div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="cuerpo">
+      <span class="num">01 · Gantt</span>
+      <h2>Cronograma de tareas</h2>
+      <p class="produce">Tareas en una línea de tiempo. Arrastrar una barra la mueve; tirar del borde cambia su duración.</p>
+      <p class="ideal">Ideal para cronogramas de proyectos, producción de contenido y lanzamientos.</p>
+      <code>npx shadcn@latest add @reui/gantt</code>
+      <div class="enlaces"><a href="https://reui.io/components/gantt">Ver demo en reui.io</a></div>
+    </div>
+  </article>
+
+  <article>
+    <div class="media">
+      <div class="ui">
+        <table>
+          <tr><th>Cliente</th><th>Fecha</th><th>Cant.</th><th>Valor</th></tr>
+          <tr><td>Ana</td><td>4 nov</td><td class="n r">42</td><td class="n r">189</td></tr>
+          <tr><td>Luis</td><td>12 nov</td><td class="n r">18</td><td class="n r">124</td></tr>
+          <tr><td>Sara</td><td>1 dic</td><td class="n r">7</td><td class="n r">445</td></tr>
+          <tr><td>Juan</td><td>16 dic</td><td class="n">84</td><td class="n">139</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="cuerpo">
+      <span class="num">02 · Data grid</span>
+      <h2>Tabla tipo hoja de cálculo</h2>
+      <p class="produce">Seleccionar un rango de celdas, copiar, pegar y escribir directo en la celda. Maneja miles de filas.</p>
+      <p class="ideal">Ideal para inventarios, presupuestos y listas de clientes editables.</p>
+      <code>npx shadcn@latest add @reui/data-grid</code>
+      <div class="enlaces"><a href="https://reui.io/components">Ver demo en reui.io</a></div>
+    </div>
+  </article>
+
+  <article>
+    <div class="media">
+      <div class="ui">
+        <div class="barra-sup">Noviembre <div class="vistas"><b class="on">Mes</b><b>Semana</b><b>Día</b><b>Agenda</b></div></div>
+        <div class="cal">
+          <div>2</div><div>3<span class="ev"></span></div><div>4</div><div>5<span class="ev v"></span></div><div>6</div><div>7</div><div>8</div>
+          <div>9</div><div>10</div><div>11<span class="ev"></span></div><div>12</div><div>13</div><div>14<span class="ev v"></span></div><div>15</div>
+          <div>16</div><div>17<span class="ev v"></span></div><div>18</div><div>19</div><div>20<span class="ev"></span></div><div>21</div><div>22</div>
+        </div>
+      </div>
+    </div>
+    <div class="cuerpo">
+      <span class="num">03 · Event calendar</span>
+      <h2>Calendario de eventos</h2>
+      <p class="produce">Vistas de mes, semana, día y agenda. Los eventos se arrastran de un día a otro y respetan zonas horarias.</p>
+      <p class="ideal">Ideal para reservas, agendas de equipo y calendarios editoriales.</p>
+      <code>npx shadcn@latest add @reui/event-calendar</code>
+      <div class="enlaces"><a href="https://reui.io/components">Ver demo en reui.io</a></div>
+    </div>
+  </article>
+
+  <article>
+    <div class="media">
+      <div class="ui">
+        <div class="chips">
+          <span class="chip">Responsable <i>es uno de</i> Ana, Luis</span>
+          <span class="chip">Prioridad <i>es</i> Urgente</span>
+          <span class="chip">Estado <i>es uno de</i> 2</span>
+        </div>
+<div class="json">{ "combinator": "and",
+  "rules": [
+    { "path": "responsable",
+      "operator": "has_any_of",
+      "value": ["ana", "luis"] } ] }</div>
+      </div>
+    </div>
+    <div class="cuerpo">
+      <span class="num">04 · Filter builder</span>
+      <h2>Constructor de filtros</h2>
+      <p class="produce">Condiciones que se suman paso a paso, cada una con su editor de valor. Devuelve el árbol de reglas en JSON para consultar la base de datos.</p>
+      <p class="ideal">Ideal para búsquedas avanzadas en paneles y tablas con muchos campos.</p>
+      <code>npx shadcn@latest add @reui/filters</code>
+      <div class="enlaces"><a href="https://reui.io/components">Ver demo en reui.io</a></div>
+    </div>
+  </article>
+
+  <article>
+    <div class="media">
+      <div class="ui">
+        <div class="campo">Buscar categoría…</div>
+        <div class="migas">Colombia › <b>Santander</b></div>
+        <div class="op">Bucaramanga <span>›</span></div>
+        <div class="op on">San Gil <span>›</span></div>
+        <div class="op">Barichara <span>›</span></div>
+        <div class="op">Socorro <span>›</span></div>
+      </div>
+    </div>
+    <div class="cuerpo">
+      <span class="num">05 · Cascader</span>
+      <h2>Selector anidado</h2>
+      <p class="produce">Una lista con niveles dentro de un solo campo: entrar a cada nivel, volver con las migas de pan y buscar.</p>
+      <p class="ideal">Ideal para categorías, ubicaciones (país › ciudad) y carpetas.</p>
+      <code>npx shadcn@latest add @reui/cascader</code>
+      <div class="enlaces"><a href="https://reui.io/components">Ver demo en reui.io</a></div>
+    </div>
+  </article>
+</main>
+<footer>Ficha con riesgos e instalación: <code style="display:inline;padding:2px 6px">repos/keenthemes-reui.md</code> · Fuente: <a href="https://www.instagram.com/reel/Dfq2lKoRIEq/">reel de reui_io</a>, guardado el 2026-11-25.</footer>
+</body>
+</html>

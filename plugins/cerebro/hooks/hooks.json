@@ -46,6 +46,10 @@
           {
             "type": "command",
             "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/sugerir-piramide-reglas.sh\""
+          },
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/sugerir-componentes-reui.sh\""
           }
         ]
       }
