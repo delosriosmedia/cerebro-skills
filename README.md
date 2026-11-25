@@ -17,6 +17,7 @@
 | `buzon/` | Guardados de referencia que esperan un uso claro | La rutina nocturna de consolidación |
 | `.claude/skills/revisar-guardados/` | Procedimiento del hilo que hace las preguntas y pide las aprobaciones | Claude, en cada revisión |
 | `supabase/migrations/` | Esquema de la base de datos del motor que procesa los guardados | Quien monte o mantenga el motor |
+| `supabase/functions/` | Funciones del motor; cada una trae su `LEEME.md` (por ejemplo `youtube-lista`, que lee la lista «Cerebro» de YouTube cada 10 minutos) | Quien monte o mantenga el motor |
 | `.claude-plugin/marketplace.json` | Catálogo que permite instalar el plugin | Claude Code y la app de Claude |
 
 ## Las siete skills madre
