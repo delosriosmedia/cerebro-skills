@@ -2,3 +2,4 @@
 
 | Fecha | Plataforma | Enlace | Qué aportó | Destino |
 | --- | --- | --- | --- | --- |
+| 2026-11-25 | YouTube | [10 GitHub Repos That Level Up HyperFrames Videos](https://www.youtube.com/watch?v=Dx6c5isxnN0) | HyperFrames y nueve repos que lo amplían: escritura a mano, diagramas, cámara, sonido, plantillas y kits de lanzamiento | `repos/` (10 fichas) |
