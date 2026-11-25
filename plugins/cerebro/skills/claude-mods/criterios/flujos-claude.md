@@ -14,6 +14,11 @@
 - **Cuándo aplica:** al limpiar un proyecto trabajado con agentes y al revisar sus pull requests. Un atajo deliberado marcado con `shortcut:` que nombra su límite y su ruta de mejora (convención de la skill `ponytail`) es deuda registrada y se conserva; el comentario-excusa suelto, sin límite ni ruta, se borra.
 - **Fuente:** [Video de @alexaguirre.ai en YouTube](https://www.youtube.com/watch?v=yvhC3ZiaWsI), sobre la charla de Lauren Tan en AI Engineer Code Summit · 2026-11-25
 
+### C-003 · Cada regla vive en el piso más bajo de la pirámide que la sostiene
+- **Regla:** ordena las reglas de un proyecto con agentes en cinco pisos, de la base a la punta: 1 diseño del código (estructura, API, tipos que vuelven imposible el error), 2 análisis estático (lint, tipos, compilador, pruebas, CI), 3 verificación en ejecución (restricciones de la base de datos, validaciones, aserciones), 4 texto (CLAUDE.md, AGENTS.md, skills) y 5 revisión humana. Cada regla va al piso más bajo capaz de sostenerla: cuanto más abajo vive, menos depende de que el agente la lea, la recuerde y la obedezca. El texto queda para lo que pide juicio, y la revisión humana para las decisiones y para mirar la evidencia de que algo funciona.
+- **Cuándo aplica:** al planear un proyecto nuevo, al decidir dónde escribir una regla y al auditar un proyecto para reestructurarlo. C-001 cubre el momento del error repetido: esa regla baja un piso. La skill `piramide-reglas` del plugin aplica este criterio en modo planear y en modo auditar.
+- **Fuente:** [Reel de @jamessotovalle en Instagram](https://www.instagram.com/reel/DgGZ0AIiY6I/), sobre el modelo de Lauren Tan en «All Code Is Slop (Except Mine)», AI Engineer CODE Summit 2026 · 2026-11-25
+
 ## Formato de cada criterio
 
 ```markdown

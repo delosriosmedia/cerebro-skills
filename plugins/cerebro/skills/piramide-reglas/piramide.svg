@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" font-family="Helvetica, Arial, sans-serif" role="img" aria-label="Pirámide de reglas: cinco pisos, de la base a la punta: diseño del código, análisis estático, verificación en ejecución, texto y revisión humana">
+  <rect width="720" height="420" rx="16" fill="#14161c"/>
+  <text x="32" y="44" fill="#f4f4f6" font-size="22" font-weight="700">Pirámide de reglas</text>
+  <text x="32" y="68" fill="#a9adb8" font-size="13">Cada regla va al piso más bajo que la sostiene</text>
+  <!-- piso 5 -->
+  <polygon points="286,96 354,96 364,140 276,140" fill="#f2c94c"/>
+  <text x="320" y="123" fill="#14161c" font-size="11" font-weight="700" text-anchor="middle">5 · Humano</text>
+  <!-- piso 4 -->
+  <polygon points="276,146 364,146 396,206 244,206" fill="#eb5e4b"/>
+  <text x="320" y="182" fill="#14161c" font-size="13" font-weight="700" text-anchor="middle">4 · Texto</text>
+  <!-- piso 3 -->
+  <polygon points="241,212 399,212 431,272 209,272" fill="#56b4f0"/>
+  <text x="320" y="247" fill="#14161c" font-size="13" font-weight="700" text-anchor="middle">3 · Verificación en ejecución</text>
+  <!-- piso 2 -->
+  <polygon points="206,278 434,278 466,338 174,338" fill="#2ed3a6"/>
+  <text x="320" y="313" fill="#14161c" font-size="13" font-weight="700" text-anchor="middle">2 · Análisis estático</text>
+  <!-- piso 1 -->
+  <polygon points="171,344 469,344 501,398 139,398" fill="#2f6fe4"/>
+  <text x="320" y="376" fill="#ffffff" font-size="13" font-weight="700" text-anchor="middle">1 · Diseño del código</text>
+  <!-- etiquetas -->
+  <text x="380" y="122" fill="#a9adb8" font-size="12">decisiones y evidencia</text>
+  <text x="412" y="180" fill="#a9adb8" font-size="12">CLAUDE.md, AGENTS.md, skills</text>
+  <text x="446" y="246" fill="#a9adb8" font-size="12">CHECK, validación, RLS</text>
+  <text x="482" y="312" fill="#a9adb8" font-size="12">lint, tipos, pruebas, CI</text>
+  <text x="516" y="376" fill="#a9adb8" font-size="12">carpetas, API, tipos</text>
+  <!-- flecha -->
+  <line x1="90" y1="120" x2="90" y2="384" stroke="#f2c94c" stroke-width="3"/>
+  <polygon points="82,376 98,376 90,394" fill="#f2c94c"/>
+  <text x="70" y="252" fill="#f2c94c" font-size="12" font-weight="700" text-anchor="middle" transform="rotate(-90 70 252)">más abajo = menos depende del agente</text>
+</svg>
