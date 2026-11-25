@@ -21,7 +21,14 @@ Este procedimiento convierte cada guardado extraído en una propuesta aprobada p
 ## Recorrido de estados de una captura
 
 `extraida` → `interpretando` → `esperando_respuesta` → `redactando` → `propuesta` → `aprobada` o `descartada`.
-Una nota de texto (`plataforma = 'nota'`) entra a la cola desde `recibida`. Cada paso suma una fila en `eventos` con `ruta = 'revision_claude'`.
+Una nota de texto (`plataforma = 'nota'`) entra a la cola desde `recibida`. Cada paso suma una fila en `eventos`:
+
+```sql
+insert into public.eventos (captura_id, etapa, nivel, ruta, detalle)
+values ('<id>', '<paso>', 'info', 'revision_claude', '{}'::jsonb);
+```
+
+Cada consulta va en su propia llamada a `execute_sql`, porque la herramienta devuelve solo el resultado de la última sentencia.
 
 ## Paso 1 · Mirar la cola
 
