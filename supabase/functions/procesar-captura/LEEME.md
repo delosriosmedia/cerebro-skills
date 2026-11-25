@@ -20,13 +20,13 @@ Si la extracción falla, la captura vuelve a `recibida` con el motivo en `ultimo
 | --- | --- | --- |
 | YouTube | Gemini recibe el enlace y ve el video (resolución baja). Un video de más de 3,6 minutos se lee en tramos de 3 minutos en paralelo; cada tramo listo queda en `eventos` (etapa `tramo`) y la llamada siguiente lee solo los que faltan. El resultado se une con marcas `[mm:ss–mm:ss]` | `gemini`: transcripción, texto en pantalla, prompts visibles, pasos, herramientas, repos, momentos |
 | Instagram por DM | Medio del CDN de Meta → bucket privado `medios` (`capturas/<id>.mp4` o `capturas/<id>-1.jpg`) → Gemini | `gemini`, con `medio_ruta` |
-| Instagram, Threads, Facebook por enlace | Apify trae texto, autor, video e imágenes. Las imágenes se guardan en `medios/capturas/<id>-<n>.<ext>` (hasta 10). Gemini lee el video o, si no hay video, las imágenes | `apify` (con `bruto.imagenes`) y `gemini` |
+| Instagram, Threads, Facebook por enlace | Apify trae texto, autor, video e imágenes. Las imágenes se guardan en `medios/capturas/<id>-<n>.<ext>` (hasta 10). Gemini lee el video o, si no hay video, las imágenes. En un carrusel con diapositivas en video, cada video queda en `medios/capturas/<id>-<n>.mp4` (n = posición) y Gemini recibe todas las diapositivas en orden | `apify` (con `bruto.imagenes`) y `gemini` |
 | GitHub | API pública: descripción, README, estrellas, licencia | `github_api` |
 | Web | HTML reducido a texto | `otra` |
 
 **Momentos:** cada lectura de Gemini guarda en `bruto.momentos` de 3 a 6 instantes clave (`segundo`, `que_se_ve`) contados desde el inicio del video. En imágenes, `segundo` es el número de imagen. La revisión los usa para señalar dónde se ve cada pieza.
 
-**Animaciones:** cada lectura de video guarda en `bruto.animaciones` las animaciones, transiciones y microinteracciones visibles (`segundo`, `elemento`, `disparador`, `movimiento`, `duracion_ms`, `ritmo`, `efectos`). Los videos descargados se leen a 4 cuadros por segundo (ajuste `gemini_fps_archivo`) para captar movimientos cortos.
+**Animaciones:** cada lectura de video guarda en `bruto.animaciones` las animaciones, transiciones, microinteracciones (hover incluido) y movimientos de cámara del montaje (`segundo`, `capa` interfaz o montaje, `elemento`, `disparador`, `movimiento`, `duracion_ms`, `ritmo`, `efectos`). Los videos descargados se leen a 10 cuadros por segundo si pesan hasta 15 MB (ajuste `gemini_fps_corto`) y a 4 en los demás (ajuste `gemini_fps_archivo`), para captar movimientos cortos.
 
 **Demanda alta:** ante una respuesta 429 o 503, Gemini se reintenta dos veces (esperas de 4 y 8 s) y luego usa el modelo de respaldo.
 
@@ -46,7 +46,8 @@ Si la extracción falla, la captura vuelve a `recibida` con el motivo en `ultimo
 | Secreto de Edge Functions | `ANTHROPIC_API_KEY` | Interpretación con Claude (opcional) |
 | Tabla `ajustes` | `gemini_modelo_video`, `gemini_modelo_interprete` | Modelo de Gemini (por defecto `gemini-flash-latest`) |
 | Tabla `ajustes` | `gemini_modelo_respaldo` | Modelo para demanda alta (por defecto `gemini-flash-lite-latest`) |
-| Tabla `ajustes` | `gemini_fps_archivo` | Cuadros por segundo al leer videos descargados (por defecto 4) |
+| Tabla `ajustes` | `gemini_modelo_archivo` | Modelo para videos descargados y carruseles (reels, DM); sin valor usa `gemini_modelo_video` |
+| Tabla `ajustes` | `gemini_fps_corto`, `gemini_fps_archivo` | Cuadros por segundo al leer videos descargados: hasta 15 MB (10) y mayores (4) |
 | Tabla `ajustes` | `youtube_tramo_s` | Duración de cada tramo de video largo (por defecto 180 s) |
 | Tabla `ajustes` | `claude_modelo_interprete` | Modelo de Claude (por defecto `claude-opus-5-5`) |
 | Tabla `ajustes` | `apify_actor_<plataforma>`, `apify_entrada_<plataforma>` | Actor de Apify y su entrada (`{url}` se reemplaza) |
@@ -62,4 +63,4 @@ Todas llevan la cabecera `x-cerebro-clave` con el valor de `ajustes.cron_clave`.
 - `POST {"captura_id": "…", "solo": "video"}`: relee el video guardado en `medios`, actualiza su fila de `contenidos` y repite la interpretación, sin cambiar el estado de la captura.
 - `GET ?estado=1`: muestra qué secretos están configurados, sin revelarlos.
 
-Esquema y tarea programada: [`supabase/migrations/0005_procesar_captura.sql`](../../migrations/0005_procesar_captura.sql).
+Esquema y tarea programada: [`supabase/migrations/0006_procesar_captura.sql`](../../migrations/0006_procesar_captura.sql).

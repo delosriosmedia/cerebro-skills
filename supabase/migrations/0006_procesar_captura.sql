@@ -14,7 +14,8 @@ insert into public.ajustes (clave, valor) values
   ('procesar_lote', '3'),
   ('youtube_tramo_s', '180'),                            -- tramo de video largo por llamada a Gemini
   ('gemini_modelo_respaldo', 'gemini-flash-lite-latest'), -- modelo para demanda alta (429/503)
-  ('gemini_fps_archivo', '4')                             -- cuadros por segundo al leer videos descargados
+  ('gemini_fps_corto', '10'),                            -- cuadros por segundo en videos de hasta 15 MB
+  ('gemini_fps_archivo', '4')                             -- cuadros por segundo en videos mayores
 on conflict (clave) do nothing;
 
 -- 3. Toma un lote de capturas listas para trabajar:

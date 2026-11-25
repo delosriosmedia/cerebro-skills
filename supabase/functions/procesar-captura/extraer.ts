@@ -55,19 +55,20 @@ const ESQUEMA_VIDEO = {
     descripcion_visual: { type: "string", description: "Qué se ve: interfaz, herramienta, demostración, pasos mostrados, estilo visual (colores, tipografía, composición)" },
     animaciones: {
       type: "array",
-      description: "Cada animación, transición o microinteracción visible: qué elemento se mueve, qué lo dispara (clic, hover, scroll, carga), cómo se mueve (desliza, escala, se desvanece, rebota, se reordena, morph), duración aproximada, curva o ritmo y efectos asociados (desenfoque, sombra, brillo, cambio de color). Lista vacía si el video carece de movimiento de interfaz o gráfico",
+      description: "Cada animación, transición, microinteracción o movimiento de cámara visible, de principio a fin del video: qué elemento se mueve, qué lo dispara (clic, hover o cursor encima, seguimiento del cursor, scroll, carga, corte de edición), cómo se mueve (desliza, escala, se desvanece, pasa de borroso a nítido, entra escalonado elemento por elemento, rebota, se reordena, morph, lupa o lente que sigue al cursor, zoom, paneo), duración aproximada, curva o ritmo y efectos asociados (desenfoque del entorno, vidrio esmerilado, sombra, brillo, cambio de color). Incluye efectos continuos de hover aunque carezcan de clic. Lista vacía si el video carece de movimiento de interfaz, gráfico o de cámara",
       items: {
         type: "object",
         properties: {
           segundo: { type: "integer" },
+          capa: { type: "string", enum: ["interfaz", "montaje"], description: "interfaz = animación del producto mostrado; montaje = movimiento de cámara o efecto de edición del video (zoom hacia el cursor, paneo, corte)" },
           elemento: { type: "string" },
           disparador: { type: "string" },
           movimiento: { type: "string" },
-          duracion_ms: { type: "integer" },
+          duracion_ms: { type: "integer", description: "Duración medida contando cuadros, de la primera a la última imagen en movimiento" },
           ritmo: { type: "string", description: "Curva o sensación: ease-out, resorte, lineal, escalonado" },
           efectos: { type: "string" },
         },
-        required: ["segundo", "elemento", "movimiento"],
+        required: ["segundo", "capa", "elemento", "movimiento"],
       },
     },
     prompts_visibles: { type: "array", items: { type: "string" }, description: "Prompts completos que aparecen o se dictan, copiados literalmente" },
@@ -92,8 +93,10 @@ const SISTEMA_VIDEO =
   "Eres el extractor del cerebro de skills de Angel. Recibes un video corto o largo sobre inteligencia artificial, " +
   "diseño, video o automatización. Devuelve el contenido completo y literal: transcripción íntegra, todo el texto en pantalla, " +
   "prompts copiados palabra por palabra y cada herramienta o repositorio mencionado. Conserva el idioma original del video. " +
-  "En videos de diseño, interfaz o motion, describe con precisión cada animación, transición y microinteracción: " +
-  "qué se mueve, qué la dispara, cómo se mueve, cuánto dura y qué efectos la acompañan, como para poder recrearla.";
+  "En videos de diseño, interfaz o motion, recorre el video completo y describe con precisión cada animación, transición, " +
+  "microinteracción y movimiento de cámara, como para poder recrearlo: qué se mueve, qué lo dispara, cómo se mueve, cuánto dura " +
+  "y qué efectos lo acompañan. Presta atención especial a lo que ocurre bajo el cursor sin clic (hover, lupas, agrandamientos, " +
+  "desenfoques del entorno) y a los movimientos de la cámara de edición (zoom hacia una zona, paneos), que se anotan con capa montaje.";
 
 type DatosVideo = {
   titulo?: string; autor?: string; idioma?: string; duracion_s?: number;
@@ -253,14 +256,17 @@ async function videoDesdeArchivo(
   return await leerVideo(captura, bytes, mime, ruta, textoPost, ajuste);
 }
 
-// Lee con Gemini un video ya descargado. Usa varios cuadros por segundo (ajuste gemini_fps_archivo,
-// 4 por defecto) para que las animaciones cortas queden visibles.
+// Lee con Gemini un video ya descargado con varios cuadros por segundo, para que las animaciones cortas
+// queden visibles: 10 fps en videos de hasta 15 MB (reels), y el ajuste gemini_fps_archivo (4) en los demás.
 async function leerVideo(
   captura: Captura, bytes: Uint8Array<ArrayBuffer>, mime: string, ruta: string, textoPost: string | null, ajuste: Ajustes,
 ): Promise<Contenido> {
-  const modelo = await ajuste("gemini_modelo_video", "gemini-flash-latest");
+  // Videos descargados (reels, DM): modelo propio, por defecto el mismo de video (ajuste gemini_modelo_archivo).
+  const modelo = await ajuste("gemini_modelo_archivo", await ajuste("gemini_modelo_video", "gemini-flash-latest"));
   const respaldo = await ajuste("gemini_modelo_respaldo", "gemini-flash-lite-latest");
-  const fps = Number(await ajuste("gemini_fps_archivo", "4")) || 4;
+  const fps = bytes.byteLength <= 15 * 1024 * 1024
+    ? Number(await ajuste("gemini_fps_corto", "10")) || 10
+    : Number(await ajuste("gemini_fps_archivo", "4")) || 4;
   const archivo = await subirArchivo(bytes, mime, `captura-${captura.id}`);
   try {
     const { datos, uso } = await geminiJSON<DatosVideo>({
@@ -329,6 +335,63 @@ async function imagenesConGemini(
     partes: [...partes, { text: `Extrae el contenido de estas imágenes, en orden. Deja transcripcion vacía y usa "momentos" con segundo = número de imagen.${textoPost ? `\n\nTexto de la publicación:\n${textoPost}` : ""}` }],
   });
   return contenidoDesdeVideo(datos, { medio_ruta: rutas[0] }, uso, modelo);
+}
+
+// Carrusel con diapositivas en video: cada video se guarda como capturas/<id>-<n>.mp4 (n = posición desde 1)
+// y Gemini recibe todas las diapositivas en orden (videos completos e imágenes), para captar sus animaciones.
+async function carruselConGemini(
+  db: SupabaseClient, captura: Captura, hijos: ItemApify[], textoPost: string | null, ajuste: Ajustes,
+): Promise<Contenido> {
+  const modelo = await ajuste("gemini_modelo_archivo", await ajuste("gemini_modelo_video", "gemini-flash-latest"));
+  const respaldo = await ajuste("gemini_modelo_respaldo", "gemini-flash-lite-latest");
+  const fps = Number(await ajuste("gemini_fps_corto", "10")) || 10;
+  const subidos: string[] = [];
+  const rutas: string[] = [];
+  try {
+    const bloques = await Promise.all(hijos.slice(0, 10).map(async (h, i): Promise<Parte[]> => {
+      const n = i + 1;
+      const etiqueta: Parte = { text: `Diapositiva ${n}:` };
+      const urlVideo = typeof h.videoUrl === "string" ? h.videoUrl : null;
+      const urlImagen = typeof h.displayUrl === "string" ? h.displayUrl : null;
+      try {
+        if (urlVideo) {
+          const r = await fetch(urlVideo);
+          if (!r.ok) throw new Error(`http ${r.status}`);
+          const bytes = new Uint8Array(await r.arrayBuffer());
+          if (bytes.byteLength > MAX_VIDEO) throw new Error("video muy pesado");
+          const ruta = `capturas/${captura.id}-${n}.mp4`;
+          await db.storage.from("medios").upload(ruta, bytes, { contentType: "video/mp4", upsert: true });
+          rutas.push(ruta);
+          const archivo = await subirArchivo(bytes, "video/mp4", `captura-${captura.id}-${n}`);
+          subidos.push(archivo.name);
+          return [etiqueta, { fileData: { fileUri: archivo.uri, mimeType: "video/mp4" }, videoMetadata: { fps } }];
+        }
+        if (urlImagen) {
+          const r = await fetch(urlImagen);
+          if (!r.ok) throw new Error(`http ${r.status}`);
+          const mime = (r.headers.get("content-type") ?? "image/jpeg").split(";")[0];
+          return [etiqueta, { inlineData: { mimeType: mime, data: encodeBase64(new Uint8Array(await r.arrayBuffer())) } }];
+        }
+      } catch (e) {
+        console.warn(`diapositiva ${n} omitida:`, String(e));
+      }
+      return [];
+    }));
+    const partes = bloques.flat();
+    if (!partes.length) throw new Error("carrusel sin diapositivas legibles");
+    const { datos, uso } = await geminiJSON<DatosVideo>({
+      modelo,
+      sistema: SISTEMA_VIDEO.replace("Recibes un video corto o largo", "Recibes las diapositivas de un carrusel (videos e imágenes)"),
+      esquema: ESQUEMA_VIDEO,
+      respaldo,
+      partes: [...partes, { text: `Extrae el contenido de este carrusel, diapositiva por diapositiva. En "momentos" y "animaciones" usa segundo = número de diapositiva y describe el instante dentro de ella.${textoPost ? `\n\nTexto de la publicación:\n${textoPost}` : ""}` }],
+    });
+    const c = contenidoDesdeVideo(datos, { medio_ruta: rutas.sort()[0] ?? null }, uso, modelo);
+    c.bruto = { ...c.bruto, videos_carrusel: rutas.sort() };
+    return c;
+  } finally {
+    await Promise.all(subidos.map((n) => borrarArchivo(n)));
+  }
 }
 
 // Todas las URL de imagen de un ítem de Apify (portada y carrusel), sin repetir.
@@ -486,6 +549,11 @@ export async function extraer(
     const imagenes = await guardarImagenes(db, captura, imagenesDe(item));
     if (imagenes.length) deApify.bruto = { ...deApify.bruto, imagenes };
     const contenidos: Contenido[] = [deApify];
+    const hijos = Array.isArray(item.childPosts) ? item.childPosts as ItemApify[] : [];
+    if (hijos.some((h) => typeof h.videoUrl === "string")) {
+      contenidos.push(await carruselConGemini(db, captura, hijos, texto, ajuste));
+      return { contenidos, ruta: "apify+carrusel+gemini" };
+    }
     if (video) contenidos.push(await videoDesdeArchivo(db, captura, video, texto, ajuste));
     else if (imagenes.length) contenidos.push(await imagenesConGemini(db, captura, imagenes, texto, ajuste));
     return { contenidos, ruta: video ? "apify+gemini" : "apify" };
