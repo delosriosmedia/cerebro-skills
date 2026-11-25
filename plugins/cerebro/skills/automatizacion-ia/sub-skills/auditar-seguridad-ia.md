@@ -1,17 +1,61 @@
 # Auditar la seguridad de una app con IA
 
-Revisión en 10 puntos para cualquier app, agente o automatización que use un modelo de lenguaje. Sigue el OWASP Top 10 para aplicaciones con LLMs, edición 2026.
+Revisión de seguridad a la medida de cada app, agente o automatización que use un modelo de lenguaje. Parte del OWASP Top 10 para aplicaciones con LLMs, edición 2026, y elige según el contexto del proyecto qué riesgos revisar y con cuánta profundidad.
 
 ## Cuándo usar
 
-- Antes de publicar una app, un agente o un flujo que llama a un modelo de lenguaje.
+- Al planear o construir una app, un agente o un flujo que llama a un modelo de lenguaje.
+- Antes de publicar ese proyecto o abrirlo a otros usuarios.
 - Al darle a un agente herramientas nuevas, acceso a datos o permisos de escritura.
 - Al conectar un RAG, un servidor MCP o una fuente externa (webs, correos, documentos).
 - Cuando Angel pide revisar la seguridad de un proyecto con IA.
+- Cuando el hook `hooks/sugerir-seguridad-ia.sh` del plugin detecta un proyecto con IA y Claude ve que el momento lo amerita.
 
 ## Pasos
 
-Recorre los 10 riesgos en orden. En cada uno, mira la app real (código, prompts, herramientas, permisos) y anota: cumple, falla o no aplica.
+### 1 · Leer el contexto del proyecto
+
+Antes de revisar, Claude arma un perfil corto del proyecto con lo que ve en el código, el plan o la conversación. Pregunta a Angel solo lo que falte.
+
+| Rasgo | Qué mirar |
+| --- | --- |
+| Usuarios | Solo Angel, un equipo cerrado o público abierto |
+| Entradas externas | El modelo lee webs, correos, archivos subidos o mensajes de terceros |
+| Datos | Maneja datos personales, de clientes o de varios usuarios |
+| Herramientas | El modelo ejecuta acciones: escribir, borrar, pagar, enviar, publicar |
+| Costo | Paga por uso una API de modelos |
+| RAG | Busca en una base vectorial o en documentos |
+| Salida | Lo que genera el modelo se muestra en una web, se ejecuta o alimenta otro sistema |
+| Piezas de terceros | Usa modelos, plugins, MCP o paquetes externos |
+| Decisiones | Las respuestas del modelo guían decisiones importantes o instalaciones |
+| Entrenamiento | Entrena o ajusta un modelo propio |
+
+### 2 · Elegir los riesgos que aplican
+
+Cada riesgo se activa con rasgos concretos del perfil. Claude revisa solo los activos y deja los demás como «no aplica», con el motivo en una línea.
+
+| Riesgo | Se revisa cuando el proyecto… |
+| --- | --- |
+| LLM01 Prompt injection | Recibe entradas externas o de usuarios que el modelo lee |
+| LLM02 Revelación de datos sensibles | Maneja datos personales o datos de varios usuarios |
+| LLM03 Agencia excesiva | Da herramientas que actúan (escribir, borrar, pagar, enviar) |
+| LLM04 Cadena de suministro | Usa modelos, plugins, MCP o paquetes de terceros |
+| LLM05 Envenenamiento | Entrena o ajusta un modelo, o alimenta una base con datos externos |
+| LLM06 Consumo sin límites | Paga una API por uso y la abre a otros usuarios |
+| LLM07 Desinformación | Sus respuestas guían decisiones, código o instalaciones |
+| LLM08 Contexto oculto | Tiene prompt del sistema con reglas internas o datos privados |
+| LLM09 Vectores y embeddings | Usa RAG o una base vectorial |
+| LLM10 Manejo de la salida | Muestra, ejecuta o reenvía lo que genera el modelo |
+
+Prioridad entre los activos: primero los que exponen datos o permiten acciones (LLM01, LLM02, LLM03, LLM08), luego costo (LLM06) y luego el resto.
+
+Escala según el momento:
+- **Plan o prototipo personal:** una lista corta de los 2 o 3 riesgos activos más graves, con la protección a incluir desde el diseño.
+- **Antes de publicar o con usuarios externos:** revisión completa de todos los activos, con evidencia.
+
+### 3 · Revisar cada riesgo activo
+
+En cada riesgo activo, mira la app real (código, prompts, herramientas, permisos) y anota: cumple o falla, con la evidencia. La tabla de abajo da qué pasa y cómo protegerte.
 
 | # | Riesgo | Qué pasa | Cómo protegerte |
 | --- | --- | --- | --- |
@@ -26,13 +70,20 @@ Recorre los 10 riesgos en orden. En cada uno, mira la app real (código, prompts
 | LLM09 | Debilidades en vectores y embeddings | El RAG mezcla datos de usuarios o usa documentos falsos. | Separa los datos por usuario o cliente, aplica permisos en la búsqueda y valida lo que entra a la base vectorial. |
 | LLM10 | Manejo inadecuado de la salida | La app usa lo que genera el modelo sin revisarlo y termina ejecutando código o scripts. | Trata la salida del modelo igual que la entrada de un usuario: valídala, escápala y evita ejecutarla directamente. |
 
+### 4 · Entregar el resultado
+
+Un resumen corto para Angel:
+1. Perfil del proyecto en dos o tres líneas.
+2. Riesgos activos con su estado (cumple o falla) y la corrección propuesta para cada falla, en orden de prioridad.
+3. Riesgos descartados en una línea cada uno, con el motivo.
+
 ## Verificación
 
-- Los 10 puntos tienen estado (cumple, falla o no aplica) con la evidencia: archivo, prompt o configuración revisada.
-- Cada punto que falla tiene una corrección propuesta y su prioridad. Primero LLM01, LLM02, LLM03 y LLM08, porque exponen datos o permiten acciones.
+- Cada riesgo tiene estado: cumple, falla o no aplica, y cada «no aplica» nombra el rasgo del perfil que lo descarta.
+- Cada falla tiene una corrección propuesta y su prioridad.
 - Las claves y credenciales viven en secretos del servidor y quedan fuera de prompts, código del cliente y repositorios.
 - Toda herramienta que borra, paga, publica o envía pide confirmación humana.
-- Hay topes de gasto y alertas configurados en cada API de modelos que usa la app.
+- Cada API de modelos abierta a otros usuarios tiene topes de gasto y alertas.
 
 ## Fuente
 

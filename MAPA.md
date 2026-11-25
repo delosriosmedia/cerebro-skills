@@ -23,7 +23,7 @@
 
 | Sub-skill | Skill madre | Ruta | Qué hace |
 | --- | --- | --- | --- |
-| Auditar la seguridad de una app con IA | Automatización y agentes con IA | `plugins/cerebro/skills/automatizacion-ia/sub-skills/auditar-seguridad-ia.md` | Revisión en 10 puntos según el OWASP Top 10 para LLMs (2026) |
+| Auditar la seguridad de una app con IA | Automatización y agentes con IA | `plugins/cerebro/skills/automatizacion-ia/sub-skills/auditar-seguridad-ia.md` | Elige según el contexto qué riesgos del OWASP Top 10 para LLMs (2026) revisar; la sugiere el hook `plugins/cerebro/hooks/sugerir-seguridad-ia.sh` |
 
 ## Destinos posibles de un guardado
 
