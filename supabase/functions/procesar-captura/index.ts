@@ -186,6 +186,7 @@ async function procesar(captura: Captura, solo?: string): Promise<Record<string,
 }
 
 Deno.serve(async (req) => {
+  cacheAjustes.clear(); // cada llamada lee los ajustes vigentes
   const url = new URL(req.url);
   const claveEsperada = await ajuste("cron_clave");
   if (!claveEsperada || req.headers.get("x-cerebro-clave") !== claveEsperada) return json({ error: "no autorizado" }, 401);
