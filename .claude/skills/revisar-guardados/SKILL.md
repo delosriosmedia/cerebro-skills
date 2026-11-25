@@ -119,7 +119,7 @@ ffmpeg -loglevel error -y -i "$D/video.mp4" -vf "fps=4/<duracion_s>,scale=360:-2
 rm "$D/video.mp4"
 ```
 
-YouTube: descargar `miniaturas` (portada y tres cuadros automáticos). Carruseles e imágenes: descargar `imagenes` tal cual.
+YouTube: descargar `miniaturas` (portada y tres cuadros automáticos). Carruseles e imágenes: descargar `imagenes` tal cual; en un carrusel, el `segundo` de cada momento es el número de la imagen (`capturas/<id>-<n>.<ext>`).
 
 3. Mirar cada imagen con la herramienta de lectura y elegir de una a tres por pregunta: el cuadro donde aparece el prompt, el paso, la herramienta o el dato que se está preguntando. Descartar cuadros borrosos o de transición.
 4. Adjuntar las imágenes elegidas al mensaje de la ficha (`attached_outputs`, tipo `file`) y nombrar en el texto qué muestra cada una («Imagen 1: el prompt en pantalla, segundo 12»).
