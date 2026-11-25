@@ -19,7 +19,7 @@
 | `supabase/migrations/` | Esquema de la base de datos del motor que procesa los guardados | Quien monte o mantenga el motor |
 | `.claude-plugin/marketplace.json` | Catálogo que permite instalar el plugin | Claude Code y la app de Claude |
 
-## Las seis skills madre
+## Las siete skills madre
 
 | Skill | Dominio |
 | --- | --- |
@@ -29,6 +29,7 @@
 | `automatizacion-ia` | Agentes, integraciones MCP, herramientas no-code y APIs de modelos |
 | `claude-mods` | Skills, plugins, configuración de Claude Code, servidores MCP y flujos con Claude |
 | `produccion-video` | Guion y gancho, edición y ritmo, IA para video, audio y subtítulos |
+| `desarrollo-backend` | Diseño de APIs propias, servicios, funciones en la nube y webhooks |
 
 ## Cómo llega un guardado al cerebro
 
