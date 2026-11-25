@@ -5,7 +5,8 @@ const BASE = "https://generativelanguage.googleapis.com";
 
 export type Parte =
   | { text: string }
-  | { fileData: { fileUri: string; mimeType?: string } };
+  | { inlineData: { mimeType: string; data: string } }
+  | { fileData: { fileUri: string; mimeType?: string }; videoMetadata?: { startOffset?: string; endOffset?: string } };
 
 function clave(): string {
   const k = Deno.env.get("GEMINI_API_KEY");
@@ -20,6 +21,7 @@ export async function geminiJSON<T>(opciones: {
   esquema: Record<string, unknown>;
   sistema?: string;
   resolucionBaja?: boolean;
+  respaldo?: string;
 }): Promise<{ datos: T; uso: unknown }> {
   const cuerpo: Record<string, unknown> = {
     contents: [{ role: "user", parts: opciones.partes }],
@@ -31,15 +33,23 @@ export async function geminiJSON<T>(opciones: {
   };
   if (opciones.sistema) cuerpo.systemInstruction = { parts: [{ text: opciones.sistema }] };
 
-  const r = await fetch(`${BASE}/v1beta/models/${opciones.modelo}:generateContent`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "x-goog-api-key": clave() },
-    body: JSON.stringify(cuerpo),
-  });
-  const res = await r.json().catch(() => ({}));
+  // Demanda alta (429/503): dos reintentos con espera y luego el modelo de respaldo.
+  const modelos = [opciones.modelo, opciones.modelo, opciones.modelo, ...(opciones.respaldo ? [opciones.respaldo] : [])];
+  let r!: Response;
+  let res: Record<string, any> = {};
+  for (const [i, modelo] of modelos.entries()) {
+    if (i > 0 && i < 3) await new Promise((ok) => setTimeout(ok, i * 4000));
+    r = await fetch(`${BASE}/v1beta/models/${modelo}:generateContent`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": clave() },
+      body: JSON.stringify(cuerpo),
+    });
+    res = await r.json().catch(() => ({}));
+    if (r.ok || (r.status !== 429 && r.status !== 503)) break;
+  }
   if (!r.ok) throw new Error(`gemini ${r.status}: ${JSON.stringify(res?.error ?? res).slice(0, 500)}`);
   const cand = res.candidates?.[0];
-  const texto = (cand?.content?.parts ?? []).map((p: { text?: string }) => p.text ?? "").join("");
+  const texto = (cand?.content?.parts ?? []).map((p: { text?: string; thought?: boolean }) => p.thought ? "" : p.text ?? "").join("");
   if (!texto) throw new Error(`gemini sin texto (finishReason=${cand?.finishReason ?? "?"})`);
   return { datos: JSON.parse(texto) as T, uso: res.usageMetadata ?? null };
 }

@@ -8,7 +8,8 @@
 //   nota                 → la nota de Angel es el contenido.
 
 import type { SupabaseClient } from "npm:@supabase/supabase-js@2.49.4";
-import { borrarArchivo, geminiJSON, subirArchivo } from "./gemini.ts";
+import { encodeBase64 } from "jsr:@std/encoding@1.0.10/base64";
+import { borrarArchivo, geminiJSON, type Parte, subirArchivo } from "./gemini.ts";
 
 export type Captura = {
   id: string;
@@ -57,8 +58,17 @@ const ESQUEMA_VIDEO = {
     herramientas: { type: "array", items: { type: "string" }, description: "Apps, modelos, repos, MCP, plugins o servicios mencionados" },
     enlaces: { type: "array", items: { type: "string" }, description: "URLs dichas o mostradas" },
     repos: { type: "array", items: { type: "string" }, description: "Repositorios en formato owner/nombre o URL de GitHub" },
+    momentos: {
+      type: "array",
+      description: "De 3 a 6 instantes donde se ve cada pieza clave (prompt en pantalla, paso, herramienta, dato), en segundos desde el inicio del video completo",
+      items: {
+        type: "object",
+        properties: { segundo: { type: "integer" }, que_se_ve: { type: "string" } },
+        required: ["segundo", "que_se_ve"],
+      },
+    },
   },
-  required: ["titulo", "transcripcion", "texto_pantalla", "descripcion_visual", "prompts_visibles", "pasos", "herramientas", "enlaces", "repos"],
+  required: ["titulo", "transcripcion", "texto_pantalla", "descripcion_visual", "prompts_visibles", "pasos", "herramientas", "enlaces", "repos", "momentos"],
 };
 
 const SISTEMA_VIDEO =
@@ -70,6 +80,7 @@ type DatosVideo = {
   titulo?: string; autor?: string; idioma?: string; duracion_s?: number;
   transcripcion?: string; texto_pantalla?: string; descripcion_visual?: string;
   prompts_visibles?: string[]; pasos?: string[]; herramientas?: string[]; enlaces?: string[]; repos?: string[];
+  momentos?: { segundo: number; que_se_ve: string }[];
 };
 
 function contenidoDesdeVideo(d: DatosVideo, extra: Partial<Contenido>, uso: unknown, modelo: string): Contenido {
@@ -86,22 +97,70 @@ function contenidoDesdeVideo(d: DatosVideo, extra: Partial<Contenido>, uso: unkn
     bruto: {
       modelo, uso,
       descripcion_visual: d.descripcion_visual, prompts_visibles: d.prompts_visibles,
-      pasos: d.pasos, herramientas: d.herramientas,
+      pasos: d.pasos, herramientas: d.herramientas, momentos: d.momentos ?? [],
     },
     ...extra,
   };
 }
 
-async function videoYoutube(url: string, ajuste: Ajustes): Promise<Contenido> {
+// Videos largos: Gemini analiza tramos en paralelo (videoMetadata con inicio y fin) para que la
+// llamada completa quepa en los 150 s de la función. Tramo por defecto: 5 minutos (ajuste youtube_tramo_s).
+const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+const unir = (listas: (string[] | undefined)[]) => [...new Set(listas.flatMap((l) => l ?? []))];
+
+async function videoYoutube(url: string, duracion: number | null, ajuste: Ajustes): Promise<Contenido> {
   const modelo = await ajuste("gemini_modelo_video", "gemini-flash-latest");
-  const { datos, uso } = await geminiJSON<DatosVideo>({
+  const respaldo = await ajuste("gemini_modelo_respaldo", "gemini-flash-lite-latest");
+  const tramo = Number(await ajuste("youtube_tramo_s", "300")) || 300;
+  const cortes: [number, number][] = [];
+  if (duracion && duracion > tramo * 1.2) {
+    for (let ini = 0; ini < duracion; ini += tramo) cortes.push([ini, Math.min(duracion, ini + tramo)]);
+  }
+
+  const pedir = (corte?: [number, number]) => geminiJSON<DatosVideo>({
     modelo,
     sistema: SISTEMA_VIDEO,
     esquema: ESQUEMA_VIDEO,
+    respaldo,
     resolucionBaja: true, // menos tokens por cuadro; el texto en pantalla sigue legible en la mayoría de videos
-    partes: [{ fileData: { fileUri: url } }, { text: "Extrae el contenido de este video." }],
+    partes: [
+      corte
+        ? { fileData: { fileUri: url }, videoMetadata: { startOffset: `${corte[0]}s`, endOffset: `${corte[1]}s` } }
+        : { fileData: { fileUri: url } },
+      { text: corte
+        ? `Extrae el contenido de este tramo del video (${mmss(corte[0])} a ${mmss(corte[1])}). En "momentos" usa segundos contados desde el inicio del video completo (entre ${corte[0]} y ${corte[1]}).`
+        : "Extrae el contenido de este video." },
+    ],
   });
-  return contenidoDesdeVideo(datos, {}, uso, modelo);
+
+  if (!cortes.length) {
+    const { datos, uso } = await pedir();
+    return contenidoDesdeVideo(datos, {}, uso, modelo);
+  }
+
+  const partes = await Promise.all(cortes.map((c) => pedir(c)));
+  const d = partes.map((p) => p.datos);
+  const conTramo = (campo: "transcripcion" | "texto_pantalla" | "descripcion_visual") =>
+    d.map((x, i) => x[campo] ? `[${mmss(cortes[i][0])}–${mmss(cortes[i][1])}]\n${x[campo]}` : "").filter(Boolean).join("\n\n");
+  const unido: DatosVideo = {
+    titulo: d.find((x) => x.titulo)?.titulo,
+    autor: d.find((x) => x.autor)?.autor,
+    idioma: d.find((x) => x.idioma)?.idioma,
+    duracion_s: duracion ?? undefined,
+    transcripcion: conTramo("transcripcion"),
+    texto_pantalla: conTramo("texto_pantalla"),
+    descripcion_visual: conTramo("descripcion_visual"),
+    prompts_visibles: unir(d.map((x) => x.prompts_visibles)),
+    pasos: d.flatMap((x) => x.pasos ?? []),
+    herramientas: unir(d.map((x) => x.herramientas)),
+    enlaces: unir(d.map((x) => x.enlaces)),
+    repos: unir(d.map((x) => x.repos)),
+    // Si el modelo contó desde el inicio del tramo, se corrige sumando el inicio.
+    momentos: d.flatMap((x, i) => (x.momentos ?? []).map((m) => ({
+      ...m, segundo: m.segundo < cortes[i][0] ? m.segundo + cortes[i][0] : m.segundo,
+    }))),
+  };
+  return contenidoDesdeVideo(unido, {}, { tramos: cortes.length, por_tramo: partes.map((p) => p.uso) }, modelo);
 }
 
 // Descarga un video, lo guarda en `medios` y lo analiza con Gemini.
@@ -112,6 +171,14 @@ async function videoDesdeArchivo(
   if (!r.ok) throw new Error(`descarga de video ${r.status}`);
   const mime = (r.headers.get("content-type") ?? "video/mp4").split(";")[0];
   const bytes = new Uint8Array(await r.arrayBuffer());
+  if (mime.startsWith("image/")) {
+    // El DM trajo una imagen: se guarda como capturas/<id>-1.<ext> y se lee con Gemini.
+    const ext = mime === "image/png" ? "png" : mime === "image/webp" ? "webp" : "jpg";
+    const rutaImg = `capturas/${captura.id}-1.${ext}`;
+    const { error } = await db.storage.from("medios").upload(rutaImg, bytes, { contentType: mime, upsert: true });
+    if (error) throw new Error(`storage: ${error.message}`);
+    return await imagenesConGemini(db, captura, [rutaImg], textoPost, ajuste);
+  }
   if (bytes.byteLength > MAX_VIDEO) throw new Error(`video de ${Math.round(bytes.byteLength / 1e6)} MB supera el tope de 50 MB`);
 
   const ext = mime.includes("mp4") ? "mp4" : mime.split("/")[1] ?? "bin";
@@ -120,12 +187,14 @@ async function videoDesdeArchivo(
   if (error) throw new Error(`storage: ${error.message}`);
 
   const modelo = await ajuste("gemini_modelo_video", "gemini-flash-latest");
+  const respaldo = await ajuste("gemini_modelo_respaldo", "gemini-flash-lite-latest");
   const archivo = await subirArchivo(bytes, mime, `captura-${captura.id}`);
   try {
     const { datos, uso } = await geminiJSON<DatosVideo>({
       modelo,
       sistema: SISTEMA_VIDEO,
       esquema: ESQUEMA_VIDEO,
+      respaldo,
       partes: [
         { fileData: { fileUri: archivo.uri, mimeType: mime } },
         { text: `Extrae el contenido de este video.${textoPost ? `\n\nTexto que acompaña la publicación:\n${textoPost}` : ""}` },
@@ -135,6 +204,61 @@ async function videoDesdeArchivo(
   } finally {
     await borrarArchivo(archivo.name);
   }
+}
+
+// Guarda imágenes de la publicación (carrusel, portada) en `medios` como capturas/<id>-<n>.<ext>.
+// La revisión las muestra en la ficha junto a la pregunta. Devuelve las rutas guardadas.
+async function guardarImagenes(db: SupabaseClient, captura: Captura, urls: string[]): Promise<string[]> {
+  const rutas: string[] = [];
+  for (const [i, u] of urls.slice(0, 10).entries()) {
+    try {
+      const r = await fetch(u);
+      if (!r.ok) continue;
+      const mime = (r.headers.get("content-type") ?? "image/jpeg").split(";")[0];
+      if (!mime.startsWith("image/")) { await r.body?.cancel(); continue; }
+      const ext = mime === "image/png" ? "png" : mime === "image/webp" ? "webp" : "jpg";
+      const ruta = `capturas/${captura.id}-${i + 1}.${ext}`;
+      const { error } = await db.storage.from("medios").upload(ruta, new Uint8Array(await r.arrayBuffer()), { contentType: mime, upsert: true });
+      if (!error) rutas.push(ruta);
+    } catch { /* una imagen caída se omite */ }
+  }
+  return rutas;
+}
+
+// Lee con Gemini las imágenes ya guardadas en `medios` (texto en pantalla, prompts, herramientas).
+async function imagenesConGemini(
+  db: SupabaseClient, captura: Captura, rutas: string[], textoPost: string | null, ajuste: Ajustes,
+): Promise<Contenido> {
+  const partes: Parte[] = [];
+  for (const ruta of rutas) {
+    const { data } = await db.storage.from("medios").download(ruta);
+    if (!data) continue;
+    partes.push({ inlineData: { mimeType: data.type || "image/jpeg", data: encodeBase64(new Uint8Array(await data.arrayBuffer())) } });
+  }
+  if (!partes.length) throw new Error("sin imágenes legibles");
+  const modelo = await ajuste("gemini_modelo_video", "gemini-flash-latest");
+  const respaldo = await ajuste("gemini_modelo_respaldo", "gemini-flash-lite-latest");
+  const { datos, uso } = await geminiJSON<DatosVideo>({
+    modelo,
+    sistema: SISTEMA_VIDEO.replace("Recibes un video corto o largo", "Recibes las imágenes de una publicación (carrusel o captura)"),
+    esquema: ESQUEMA_VIDEO,
+    respaldo,
+    partes: [...partes, { text: `Extrae el contenido de estas imágenes, en orden. Deja transcripcion vacía y usa "momentos" con segundo = número de imagen.${textoPost ? `\n\nTexto de la publicación:\n${textoPost}` : ""}` }],
+  });
+  return contenidoDesdeVideo(datos, { medio_ruta: rutas[0] }, uso, modelo);
+}
+
+// Todas las URL de imagen de un ítem de Apify (portada y carrusel), sin repetir.
+function imagenesDe(item: ItemApify): string[] {
+  const s = new Set<string>();
+  const agregar = (v: unknown) => {
+    if (typeof v === "string" && v.startsWith("http")) s.add(v);
+    else if (v && typeof v === "object" && typeof (v as Record<string, unknown>).url === "string") s.add((v as Record<string, string>).url);
+  };
+  for (const k of ["displayUrl", "imageUrl", "image", "thumbnailUrl", "thumbnail"]) agregar(item[k]);
+  for (const k of ["images", "imageUrls", "media"]) if (Array.isArray(item[k])) (item[k] as unknown[]).forEach(agregar);
+  if (Array.isArray(item.childPosts)) for (const h of item.childPosts as ItemApify[]) agregar(h.displayUrl);
+  return [...s];
 }
 
 // ---------- Apify (posts que llegan solo como enlace) ----------
@@ -241,7 +365,10 @@ export async function extraer(
   }
   if (!url) throw new Error("captura sin URL");
 
-  if (p === "youtube") return { contenidos: [await videoYoutube(url, ajuste)], ruta: "gemini_youtube" };
+  if (p === "youtube") {
+    const duracion = previos.find((c) => c.duracion_s)?.duracion_s ?? null; // la deja youtube-lista
+    return { contenidos: [await videoYoutube(url, duracion, ajuste)], ruta: "gemini_youtube" };
+  }
   if (p === "github") return { contenidos: [await github(url)], ruta: "github_api" };
   if (p === "web") return { contenidos: [await web(url)], ruta: "web" };
 
@@ -254,7 +381,7 @@ export async function extraer(
       try {
         return { contenidos: [await videoDesdeArchivo(db, captura, urlDm, dm?.texto_post ?? null, ajuste)], ruta: "dm_cdn+gemini" };
       } catch (e) {
-        console.warn("video del DM falló, sigo con Apify:", String(e));
+        console.warn("medio del DM falló, sigo con Apify:", String(e));
       }
     }
 
@@ -273,8 +400,11 @@ export async function extraer(
       repos: reposDe([texto]),
       bruto: { item },
     };
+    const imagenes = await guardarImagenes(db, captura, imagenesDe(item));
+    if (imagenes.length) deApify.bruto = { ...deApify.bruto, imagenes };
     const contenidos: Contenido[] = [deApify];
     if (video) contenidos.push(await videoDesdeArchivo(db, captura, video, texto, ajuste));
+    else if (imagenes.length) contenidos.push(await imagenesConGemini(db, captura, imagenes, texto, ajuste));
     return { contenidos, ruta: video ? "apify+gemini" : "apify" };
   }
 

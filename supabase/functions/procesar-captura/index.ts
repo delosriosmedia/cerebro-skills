@@ -4,7 +4,8 @@
 //   1. La marca 'extrayendo' (función SQL tomar_capturas, con reintentos hasta 3 veces).
 //   2. Extrae su contenido (extraer.ts): Gemini para video, Apify para posts que llegan solo como enlace,
 //      API de GitHub para repos, HTML para páginas web. Guarda filas nuevas en `contenidos`.
-//   3. Interpreta el guardado (interpretar.ts) y guarda una fila en `interpretaciones` con destino,
+//   3. Interpreta el guardado (interpretar.ts; si la extracción fue larga, en la llamada siguiente
+//      con la captura en estado 'interpretando') y guarda una fila en `interpretaciones` con destino,
 //      piezas aprovechables y preguntas sugeridas para Angel (en `detalle`).
 //   4. Deja la captura en 'extraida', que es la señal para el hilo de revisión (vista cola_revision).
 //
@@ -64,7 +65,9 @@ async function paso_interpretar(captura: Captura): Promise<Record<string, unknow
     : await ajuste("gemini_modelo_interprete", "gemini-flash-latest");
 
   const entrada = armarEntrada(captura, contenidos, mapa, reglas);
-  const { datos, modelo: usado, uso } = await interpretar(entrada, usarClaude ? "claude" : "gemini", modelo);
+  const { datos, modelo: usado, uso } = await interpretar(
+    entrada, usarClaude ? "claude" : "gemini", modelo, await ajuste("gemini_modelo_respaldo", "gemini-flash-lite-latest"),
+  );
 
   await db.from("interpretaciones").update({ vigente: false }).eq("captura_id", captura.id).eq("vigente", true);
   const confianza = Math.min(1, Math.max(0, Math.round(Number(datos.confianza ?? 0) * 100) / 100));
@@ -90,44 +93,69 @@ async function paso_interpretar(captura: Captura): Promise<Record<string, unknow
   return { interpretacion_id: data.id, tipo: datos.tipo, skill_destino: datos.skill_destino, confianza, modelo: usado };
 }
 
+// Margen de tiempo: la función tiene 150 s por llamada. Si la extracción tardó más de esto,
+// la interpretación queda para la siguiente llamada (estado 'interpretando').
+const MARGEN_INTERPRETAR_MS = 50_000;
+
+async function paso_interpretar_y_cerrar(captura: Captura, resultado: Record<string, unknown>, moverEstado = true): Promise<void> {
+  try {
+    resultado.interpretacion = await paso_interpretar(captura);
+    await evento(captura.id, "interpretacion", "info", resultado.interpretacion);
+    if (moverEstado) await db.from("capturas").update({ estado: "extraida", ultimo_error: null }).eq("id", captura.id);
+  } catch (e) {
+    resultado.interpretacion_error = cortar(e);
+    await evento(captura.id, "interpretacion", "aviso", { mensaje: resultado.interpretacion_error, intento: captura.intentos });
+    if (!moverEstado) return;
+    // La interpretación es un adelanto para la revisión: tras 3 intentos la captura sigue a 'extraida' igual.
+    const enReintento = captura.estado === "interpretando";
+    const agotada = enReintento && captura.intentos >= 3;
+    await db.from("capturas").update(
+      agotada
+        ? { estado: "extraida" }
+        : { estado: "interpretando", ultimo_error: resultado.interpretacion_error, ...(enReintento ? {} : { intentos: 0 }) },
+    ).eq("id", captura.id);
+  }
+}
+
 async function procesar(captura: Captura, solo?: string): Promise<Record<string, unknown>> {
   const t0 = Date.now();
   const resultado: Record<string, unknown> = { captura_id: captura.id, plataforma: captura.plataforma };
 
-  if (solo !== "interpretar") {
-    try {
-      const previos = await contenidosDe(captura.id);
-      const { contenidos, ruta } = await extraer(db, captura, previos, ajuste);
-      const { error } = await db.from("contenidos").insert(contenidos.map((c) => ({ captura_id: captura.id, ...c })));
-      if (error) throw new Error(`guardar contenidos: ${error.message}`);
-      await db.from("capturas").update({ ruta_extraccion: ruta, ultimo_error: null }).eq("id", captura.id);
-      await evento(captura.id, "extraccion", "info", { ruta, fuentes: contenidos.map((c) => c.fuente_extraccion), ms: Date.now() - t0 }, ruta);
-      resultado.extraccion = { ruta, fuentes: contenidos.map((c) => c.fuente_extraccion) };
-    } catch (e) {
-      const mensaje = cortar(e);
-      // Un secreto faltante es un problema de configuración: la captura espera sin gastar intentos.
-      const faltaSecreto = mensaje.startsWith("falta el secreto");
-      const agotada = !faltaSecreto && captura.intentos >= 3;
-      await db.from("capturas").update({
-        estado: agotada ? "error" : "recibida",
-        ultimo_error: mensaje,
-        ...(faltaSecreto ? { intentos: Math.max(0, captura.intentos - 1) } : {}),
-      }).eq("id", captura.id);
-      await evento(captura.id, "extraccion", "error", { mensaje, intento: captura.intentos });
-      return { ...resultado, error: mensaje, reintento: !agotada };
-    }
+  if (solo === "interpretar" || captura.estado === "interpretando") {
+    await paso_interpretar_y_cerrar(captura, resultado, captura.estado === "interpretando");
+    resultado.ms = Date.now() - t0;
+    return resultado;
   }
 
-  // La interpretación es un adelanto para la revisión: si falla, la captura sigue igual hacia 'extraida'.
   try {
-    resultado.interpretacion = await paso_interpretar(captura);
-    await evento(captura.id, "interpretacion", "info", resultado.interpretacion);
+    const previos = await contenidosDe(captura.id);
+    const { contenidos, ruta } = await extraer(db, captura, previos, ajuste);
+    const { error } = await db.from("contenidos").insert(contenidos.map((c) => ({ captura_id: captura.id, ...c })));
+    if (error) throw new Error(`guardar contenidos: ${error.message}`);
+    await db.from("capturas").update({ ruta_extraccion: ruta, ultimo_error: null }).eq("id", captura.id);
+    await evento(captura.id, "extraccion", "info", { ruta, fuentes: contenidos.map((c) => c.fuente_extraccion), ms: Date.now() - t0 }, ruta);
+    resultado.extraccion = { ruta, fuentes: contenidos.map((c) => c.fuente_extraccion) };
   } catch (e) {
-    resultado.interpretacion_error = cortar(e);
-    await evento(captura.id, "interpretacion", "aviso", { mensaje: resultado.interpretacion_error });
+    const mensaje = cortar(e);
+    // Un secreto faltante es un problema de configuración: la captura espera sin gastar intentos.
+    const faltaSecreto = mensaje.startsWith("falta el secreto");
+    const agotada = !faltaSecreto && captura.intentos >= 3;
+    await db.from("capturas").update({
+      estado: agotada ? "error" : "recibida",
+      ultimo_error: mensaje,
+      ...(faltaSecreto ? { intentos: Math.max(0, captura.intentos - 1) } : {}),
+    }).eq("id", captura.id);
+    await evento(captura.id, "extraccion", "error", { mensaje, intento: captura.intentos });
+    return { ...resultado, error: mensaje, reintento: !agotada };
   }
 
-  if (solo !== "interpretar") await db.from("capturas").update({ estado: "extraida" }).eq("id", captura.id);
+  if (Date.now() - t0 < MARGEN_INTERPRETAR_MS) {
+    await paso_interpretar_y_cerrar(captura, resultado);
+  } else {
+    // Extracción larga (video extenso): la interpretación corre en la siguiente llamada.
+    await db.from("capturas").update({ estado: "interpretando", intentos: 0 }).eq("id", captura.id);
+    resultado.interpretacion = "pendiente para la siguiente llamada";
+  }
   resultado.ms = Date.now() - t0;
   return resultado;
 }
@@ -152,7 +180,7 @@ Deno.serve(async (req) => {
   if (cuerpo.captura_id) {
     const { data: captura } = await db.from("capturas").select("*").eq("id", cuerpo.captura_id).maybeSingle();
     if (!captura) return json({ error: "captura inexistente" }, 404);
-    if (cuerpo.solo !== "interpretar") {
+    if (cuerpo.solo !== "interpretar" && captura.estado !== "interpretando") {
       await db.from("capturas").update({ estado: "extrayendo", intentos: captura.intentos + 1 }).eq("id", captura.id);
       captura.intentos += 1;
     }

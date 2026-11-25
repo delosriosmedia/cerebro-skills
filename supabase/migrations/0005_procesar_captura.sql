@@ -11,12 +11,16 @@ insert into public.ajustes (clave, valor) values
   ('gemini_modelo_video', 'gemini-flash-latest'),
   ('gemini_modelo_interprete', 'gemini-flash-latest'),
   ('claude_modelo_interprete', 'claude-opus-5-5'),
-  ('procesar_lote', '3')
+  ('procesar_lote', '3'),
+  ('youtube_tramo_s', '300'),                            -- tramo de video largo por llamada a Gemini
+  ('gemini_modelo_respaldo', 'gemini-flash-lite-latest') -- modelo para demanda alta (429/503)
 on conflict (clave) do nothing;
 
--- 3. Toma un lote de capturas listas para extraer y las marca como 'extrayendo'.
---    Espera 3 minutos desde la llegada para que la nota de Angel alcance a pegarse.
---    Reintenta capturas atascadas en 'extrayendo' más de 10 minutos, hasta 3 intentos.
+-- 3. Toma un lote de capturas listas para trabajar:
+--    - 'recibida' con más de 3 minutos (la nota de Angel alcanza a pegarse) → pasa a 'extrayendo'.
+--    - 'extrayendo' atascada más de 10 minutos → reintento.
+--    - 'interpretando' (extracción larga ya guardada) → interpretación en esta llamada.
+--    Máximo 3 intentos por etapa.
 create or replace function public.tomar_capturas(lote int default 3)
 returns setof public.capturas
 language plpgsql
@@ -32,9 +36,18 @@ begin
      and intentos >= 3
      and actualizado_en < now() - interval '10 minutes';
 
+  -- Interpretación agotada: la captura sigue a la revisión, que interpreta por su cuenta
+  update public.capturas
+     set estado = 'extraida'
+   where estado = 'interpretando'
+     and intentos >= 3
+     and actualizado_en < now() - interval '10 minutes';
+
   return query
   update public.capturas c
-     set estado = 'extrayendo', intentos = c.intentos + 1
+     set intentos = c.intentos + 1
+     -- 'interpretando' conserva su estado; el cambio de intentos renueva actualizado_en
+     , estado = case when c.estado = 'interpretando' then 'interpretando' else 'extrayendo' end
    where c.id in (
      select id from public.capturas
       where plataforma <> 'nota'
@@ -42,6 +55,7 @@ begin
         and (
           (estado = 'recibida' and creado_en < now() - interval '3 minutes')
           or (estado = 'extrayendo' and actualizado_en < now() - interval '10 minutes')
+          or (estado = 'interpretando' and (intentos = 0 or actualizado_en < now() - interval '10 minutes'))
         )
       order by creado_en
       limit lote
@@ -67,6 +81,6 @@ select cron.schedule(
     body := '{}'::jsonb,
     timeout_milliseconds := 150000
   )
-  where exists (select 1 from public.capturas where estado in ('recibida','extrayendo') and plataforma <> 'nota');
+  where exists (select 1 from public.capturas where estado in ('recibida','extrayendo','interpretando') and plataforma <> 'nota');
   $cron$
 );

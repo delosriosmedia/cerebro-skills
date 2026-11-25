@@ -135,6 +135,7 @@ export async function interpretar(
   entrada: string,
   interprete: string,
   modelo: string,
+  respaldo?: string,
 ): Promise<{ datos: Interpretacion; modelo: string; uso: unknown }> {
   if (interprete === "claude") {
     const client = new Anthropic(); // lee ANTHROPIC_API_KEY
@@ -155,6 +156,7 @@ export async function interpretar(
     modelo,
     sistema: SISTEMA_INTERPRETE,
     esquema: ESQUEMA_INTERPRETACION,
+    respaldo,
     partes: [{ text: entrada }],
   });
   return { datos, modelo, uso };
