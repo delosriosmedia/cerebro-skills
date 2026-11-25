@@ -18,6 +18,10 @@
           {
             "type": "command",
             "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/sugerir-diseno-apis.sh\""
+          },
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/sugerir-proyecto-produccion.sh\""
           }
         ]
       }
@@ -33,6 +37,10 @@
           {
             "type": "command",
             "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/sugerir-diseno-apis.sh\""
+          },
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/sugerir-proyecto-produccion.sh\""
           }
         ]
       }

@@ -30,7 +30,7 @@ Esta skill reúne los criterios sobre personalización y extensión de Claude gu
 
 Aquí se listan los procedimientos completos de este dominio a medida que se aprueben.
 
-- (ninguna todavía)
+- [`sub-skills/proyecto-produccion-claude-code.md`](sub-skills/proyecto-produccion-claude-code.md): lista de verificación de ocho pasos para construir con Claude Code una app que va a producción (arquitectura, diseño propio, documentación por MCP, prompts, decisiones, aprobaciones, pruebas y triaje de errores). La sugiere el hook `hooks/sugerir-proyecto-produccion.sh`.
 
 ## Reglas de mantenimiento
 

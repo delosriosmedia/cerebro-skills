@@ -26,6 +26,7 @@
 | Sub-skill | Skill madre | Ruta | Qué hace |
 | --- | --- | --- | --- |
 | Auditar la seguridad de una app con IA | Automatización y agentes con IA | `plugins/cerebro/skills/automatizacion-ia/sub-skills/auditar-seguridad-ia.md` | Elige según el contexto qué riesgos del OWASP Top 10 para LLMs (2026) revisar; la sugiere el hook `plugins/cerebro/hooks/sugerir-seguridad-ia.sh` |
+| Montar un proyecto de producción con Claude Code | Claude, sus skills, plugins, MCP y configuración | `plugins/cerebro/skills/claude-mods/sub-skills/proyecto-produccion-claude-code.md` | Ocho pasos para construir con Claude Code una app de producción, con el ingeniero al mando; la sugiere el hook `plugins/cerebro/hooks/sugerir-proyecto-produccion.sh` |
 
 ## Destinos posibles de un guardado
 
