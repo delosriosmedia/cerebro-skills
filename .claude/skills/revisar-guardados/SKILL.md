@@ -58,7 +58,7 @@ order by q.creado_en;
 
 1. Marcar la captura: `update public.capturas set despachada_en = now() where id = '<id>';`
 2. Pedir el hilo al coordinador con un mensaje por captura:
-   - Título: verbo más tema del contenido, de tres a seis palabras, en español (por ejemplo «Revisar prompt de miniaturas YouTube»).
+   - Título: «💡LINK: » seguido de una descripción muy breve del contenido, en español (por ejemplo «💡LINK: Prompt para miniaturas de YouTube»). Formato pedido por Angel.
    - Instrucción para el hilo nuevo, textual: «Eres el hilo de revisión del guardado `<captura_id>` (<plataforma>). Sigue .claude/skills/revisar-guardados/SKILL.md, pasos 2 a 5, solo con esta captura. Al empezar, guarda tu id de hilo en capturas.hilo_revision.»
 3. Un solo mensaje corto a Angel por despertar: cuántos hilos nuevos se abrieron, con su tema.
 4. Una captura despachada que pasa dos horas sin `hilo_revision` vuelve a la cola sola; se pide su hilo de nuevo.
