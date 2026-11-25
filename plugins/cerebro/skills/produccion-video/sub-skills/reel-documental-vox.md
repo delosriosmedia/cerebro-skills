@@ -98,7 +98,7 @@ Cada primer corte tiene una escena floja: se arregla esa, las demás se quedan.
 
 El mismo flujo corre en Claude Code con dos cambios:
 
-- **Paso 4:** las imágenes se generan con la API de Gemini (`GEMINI_API_KEY`), pasando la imagen de la escena 1 como referencia en cada llamada.
+- **Paso 4:** las imágenes se generan con la API de Gemini (`GEMINI_API_KEY`), pasando la imagen de la escena 1 como referencia en cada llamada. Cada imagen se cobra: antes de cada tanda, Claude le muestra a Angel el modelo, la cantidad y el costo estimado, y genera solo con su sí.
 - **Pasos 6 y 7:** el reproductor se guarda como `reproductor.html` con las imágenes y la voz en la misma carpeta, se graba con Playwright a 1080×1920 y 30 fps, y ffmpeg une el video con la voz en un MP4 listo para subir. La skill `vox-explainer` de skills-angel trae ese montaje.
 
 ## Verificación
