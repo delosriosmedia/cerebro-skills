@@ -4,7 +4,8 @@
 # acaba de lanzarla o publicarla, le recuerda a Claude la ficha de MiroFish
 # (repos/666ghj-mirofish.md): simular cómo reacciona su público antes o justo
 # después del lanzamiento. Complementa al hook sugerir-seguridad-ia.sh, que cubre
-# la seguridad cuando la app usa un modelo de lenguaje. Un aviso por sesión.
+# la seguridad cuando la app usa un modelo de lenguaje, y a sugerir-proyecto-produccion.sh,
+# que cubre la lista técnica de producción. Un aviso por sesión.
 
 entrada="$(cat)"
 texto="$(printf '%s' "$entrada" | tr '[:upper:]' '[:lower:]')"
