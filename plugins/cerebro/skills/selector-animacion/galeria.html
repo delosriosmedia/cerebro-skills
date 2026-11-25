@@ -26,6 +26,8 @@
   article { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 14px;
     overflow: hidden; display: flex; flex-direction: column; }
   .media { aspect-ratio: 240 / 432; background: var(--media); }
+  .media.ia { aspect-ratio: 3 / 4; }
+  .familia { padding-top: 40px; }
   .media img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .cuerpo { padding: 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
   .num { font-size: 12px; font-weight: 600; color: var(--acento); letter-spacing: .06em; }
@@ -39,7 +41,7 @@
 </head>
 <body>
 <header>
-  <h1>Estilos de animación</h1>
+  <h1>Estilos de animación con código</h1>
   <p>Cada tarjeta muestra en movimiento el resultado del estilo. Elige uno y díselo a Claude por su nombre o su número; también puedes describir otro estilo en palabras.</p>
 </header>
 <main>
@@ -165,6 +167,110 @@
 </article>
 
 </main>
-<footer>Muestras de 1,25 s tomadas del reel <a href="https://www.instagram.com/p/DgGaMp_DCp4/">«10 Claude Animation styles» de viashaan</a>, guardado el 2026-11-25. Recursos y prompts de cada estilo en <code>SKILL.md</code>.</footer>
+
+<header class="familia">
+  <h1>Video con IA desde una imagen</h1>
+  <p>Estos estilos se generan con un modelo de video (Seedance 2.5) a partir de una imagen fija. El prompt de cada uno está en <code>prompts/biblioteca/video-estilos-animacion-artesanal.md</code>, marcado «por probar».</p>
+</header>
+<main>
+
+<article>
+  <div class="media ia"><img loading="lazy" src="muestras/ia-01.gif" alt="Muestra animada del estilo Van Gogh Oil"></div>
+  <div class="cuerpo">
+    <span class="num">IA-01</span>
+    <h2>Van Gogh Oil</h2>
+    <p class="produce">Ciclista en un campo de trigo bajo un cielo en remolino; cada pincelada de óleo se mueve.</p>
+    <p class="ideal">Ideal para retratos, homenajes, piezas emotivas.</p>
+    <p class="recurso">Cómo se hace: imagen fija + prompt IA-01 en Seedance 2.5</p>
+    <p class="pedido">Pídelo así: «Video Van Gogh Oil desde mi imagen: …»</p>
+  </div>
+</article>
+
+<article>
+  <div class="media ia"><img loading="lazy" src="muestras/ia-02.gif" alt="Muestra animada del estilo Ink Wash"></div>
+  <div class="cuerpo">
+    <span class="num">IA-02</span>
+    <h2>Ink Wash</h2>
+    <p class="produce">Niño sobre un búfalo en tinta china; la tinta respira sobre el papel de arroz.</p>
+    <p class="ideal">Ideal para historias tranquilas, naturaleza, tradición.</p>
+    <p class="recurso">Cómo se hace: imagen fija + prompt IA-02 en Seedance 2.5</p>
+    <p class="pedido">Pídelo así: «Video Ink Wash desde mi imagen: …»</p>
+  </div>
+</article>
+
+<article>
+  <div class="media ia"><img loading="lazy" src="muestras/ia-03.gif" alt="Muestra animada del estilo Surreal Cut-Out"></div>
+  <div class="cuerpo">
+    <span class="num">IA-03</span>
+    <h2>Surreal Cut-Out</h2>
+    <p class="produce">Gigante azul y flor que se abre, en recorte de papel de los 70 con plumilla.</p>
+    <p class="ideal">Ideal para ideas raras, ciencia ficción, intros llamativas.</p>
+    <p class="recurso">Cómo se hace: imagen fija + prompt IA-03 en Seedance 2.5</p>
+    <p class="pedido">Pídelo así: «Video Surreal Cut-Out desde mi imagen: …»</p>
+  </div>
+</article>
+
+<article>
+  <div class="media ia"><img loading="lazy" src="muestras/ia-04.gif" alt="Muestra animada del estilo Rotoscope"></div>
+  <div class="cuerpo">
+    <span class="num">IA-04</span>
+    <h2>Rotoscope</h2>
+    <p class="produce">Hombre con paraguas en la parada de bus; movimiento real con contornos que tiemblan.</p>
+    <p class="ideal">Ideal para escenas cotidianas con tono de sueño.</p>
+    <p class="recurso">Cómo se hace: imagen fija + prompt IA-04 en Seedance 2.5</p>
+    <p class="pedido">Pídelo así: «Video Rotoscope desde mi imagen: …»</p>
+  </div>
+</article>
+
+<article>
+  <div class="media ia"><img loading="lazy" src="muestras/ia-05.gif" alt="Muestra animada del estilo Manuscript"></div>
+  <div class="cuerpo">
+    <span class="num">IA-05</span>
+    <h2>Manuscript</h2>
+    <p class="produce">Monje que escribe y un zorro que sale del libro; nudos celtas y pan de oro.</p>
+    <p class="ideal">Ideal para historias, mitos, marcas con herencia.</p>
+    <p class="recurso">Cómo se hace: imagen fija + prompt IA-05 en Seedance 2.5</p>
+    <p class="pedido">Pídelo así: «Video Manuscript desde mi imagen: …»</p>
+  </div>
+</article>
+
+<article>
+  <div class="media ia"><img loading="lazy" src="muestras/ia-06.gif" alt="Muestra animada del estilo Comic 3D"></div>
+  <div class="cuerpo">
+    <span class="num">IA-06</span>
+    <h2>Comic 3D</h2>
+    <p class="produce">Patinadora en una azotea nocturna con semitono, impresión corrida y cuadros de impacto.</p>
+    <p class="ideal">Ideal para acción, juventud, deportes.</p>
+    <p class="recurso">Cómo se hace: imagen fija + prompt IA-06 en Seedance 2.5</p>
+    <p class="pedido">Pídelo así: «Video Comic 3D desde mi imagen: …»</p>
+  </div>
+</article>
+
+<article>
+  <div class="media ia"><img loading="lazy" src="muestras/ia-07.gif" alt="Muestra animada del estilo Needle Felt"></div>
+  <div class="cuerpo">
+    <span class="num">IA-07</span>
+    <h2>Needle Felt</h2>
+    <p class="produce">Erizo de lana entre manzanas en un set macro de stop-motion.</p>
+    <p class="ideal">Ideal para ternura, infancia, productos artesanales.</p>
+    <p class="recurso">Cómo se hace: imagen fija + prompt IA-07 en Seedance 2.5</p>
+    <p class="pedido">Pídelo así: «Video Needle Felt desde mi imagen: …»</p>
+  </div>
+</article>
+
+<article>
+  <div class="media ia"><img loading="lazy" src="muestras/ia-08.gif" alt="Muestra animada del estilo Colored Pencil"></div>
+  <div class="cuerpo">
+    <span class="num">IA-08</span>
+    <h2>Colored Pencil</h2>
+    <p class="produce">Niño y perro con una cometa en una colina, en lápiz de color con grano de papel.</p>
+    <p class="ideal">Ideal para recuerdos, familia, mensajes cálidos.</p>
+    <p class="recurso">Cómo se hace: imagen fija + prompt IA-08 en Seedance 2.5</p>
+    <p class="pedido">Pídelo así: «Video Colored Pencil desde mi imagen: …»</p>
+  </div>
+</article>
+
+</main>
+<footer>Muestras de 1,25 s tomadas del reel <a href="https://www.instagram.com/p/DgGaMp_DCp4/">«10 Claude Animation styles» de viashaan</a>, guardado el 2026-11-25. Muestras IA de 1,25 s tomadas del carrusel <a href="https://www.instagram.com/p/Df68uJLCHBX/">«8 hand-animated cartoon styles» de ai.withphil</a>, guardado el 2026-11-25. Recursos y prompts de cada estilo en <code>SKILL.md</code>.</footer>
 </body>
 </html>
