@@ -10,3 +10,4 @@
 | 2026-11-24 | Instagram | [carrusel](https://www.instagram.com/p/DgIOHbujntN/) | Rate limiting con 429 y Retry-After | criterios/diseno-apis.md · C-006 |
 | 2026-11-24 | Instagram | [carrusel](https://www.instagram.com/p/DgIOHbujntN/) | Versión en la ruta | criterios/diseno-apis.md · C-007 |
 | 2026-11-24 | Instagram | [carrusel](https://www.instagram.com/p/DgIOHbujntN/) | HTTPS y token validado en cada llamada | criterios/diseno-apis.md · C-008 |
+| 2026-11-25 | Instagram | [carrusel](https://www.instagram.com/p/DfHhUHxjT-I/) | Límite por IP en cada endpoint público (fuente extra) | criterios/diseno-apis.md · C-006 |

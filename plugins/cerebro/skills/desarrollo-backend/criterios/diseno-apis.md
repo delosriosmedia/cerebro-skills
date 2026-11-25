@@ -30,9 +30,9 @@
 - **Fuente:** [Carrusel de @chanti.dev](https://www.instagram.com/p/DgIOHbujntN/) · 2026-11-24
 
 ### C-006 · Rate limiting con 429 y Retry-After
-- **Regla:** Fija una cuota de peticiones por cliente (por ejemplo, 100 por minuto). Al superarla, responde `429 Too Many Requests` con la cabecera `Retry-After` para que el cliente sepa cuándo reintentar.
+- **Regla:** Fija una cuota de peticiones por cliente en cada endpoint público (por ejemplo, 100 por minuto por usuario o por IP cuando no hay sesión). Al superarla, responde `429 Too Many Requests` con la cabecera `Retry-After` para que el cliente sepa cuándo reintentar.
 - **Cuándo aplica:** Toda API expuesta a clientes externos o a usuarios finales. Para fijar topes de tokens y de gasto en apps con IA, ver también LLM06 en `automatizacion-ia/sub-skills/auditar-seguridad-ia.md`.
-- **Fuente:** [Carrusel de @chanti.dev](https://www.instagram.com/p/DgIOHbujntN/) · 2026-11-24
+- **Fuente:** [Carrusel de @chanti.dev](https://www.instagram.com/p/DgIOHbujntN/) · 2026-11-24 · [Carrusel de @kema_the_engineer](https://www.instagram.com/p/DfHhUHxjT-I/) · 2026-11-25
 
 ### C-007 · Versión en la ruta
 - **Regla:** Incluye la versión en la ruta (`/api/v1/`). Publica una `v2` cuando cambie el formato de respuesta y mantén la `v1` activa hasta retirarla con aviso.
