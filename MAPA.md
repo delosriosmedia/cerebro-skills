@@ -22,7 +22,7 @@
 | Selector de estilos de animación | `plugins/cerebro/skills/selector-animacion/` | Galería con la muestra animada de 10 estilos, recursos y prompts base; la activa el hook `plugins/cerebro/hooks/selector-animacion.sh` al mencionar una animación |
 | Selector de herramientas para apps con IA | `plugins/cerebro/skills/selector-herramientas-ia/` | Galería con maquetas de lo que produce pdfme, Unstract, DocETL y assistant-ui, y pregunta cuál usar; la activa el hook `plugins/cerebro/hooks/sugerir-herramientas-ia.sh` al hablar de PDF en serie, extraer datos de documentos, análisis en lote o chats con IA |
 | Selector de redacción | `plugins/cerebro/skills/selector-redaccion/` | Galería con el mismo texto pasado por edit-copy y por humanizer, y pregunta si usar una, la otra, las dos o ninguna; la activa el hook `plugins/cerebro/hooks/sugerir-redaccion.sh` al pedir copy, anuncios, posts, guiones, correos, landings o botones |
-| Estilo retro para interfaces | `plugins/cerebro/skills/estilo-retro/` | Galería de cuatro variantes retro (Skin Y2K, Aparato, Terminal de fósforo, Arcade) y brief para la skill dueña del estilo; el hook `plugins/cerebro/hooks/sugerir-estilo-retro.sh` la ofrece como una opción más al diseñar una interfaz visual |
+| Estilo retro para interfaces | `plugins/cerebro/skills/estilo-retro/` | Galería de dieciséis estilos retro (aparatos, sistemas de época, pantallas y juegos, impresos y web temprana) y brief para la skill dueña del estilo; el hook `plugins/cerebro/hooks/sugerir-estilo-retro.sh` la ofrece como una opción más al diseñar una interfaz visual |
 
 ## Sub-skills
 

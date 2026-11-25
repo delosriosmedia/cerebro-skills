@@ -29,9 +29,9 @@ skill="$raiz/skills/estilo-retro/SKILL.md"
 galeria="$raiz/skills/estilo-retro/galeria.html"
 
 if [ "$tipo" = retro ]; then
-  contexto="Angel pidió una interfaz con aire retro. Sigue la skill estilo-retro del plugin cerebro: abre la galería, pregunta con AskUserQuestion qué variante usar y entrega el brief a la skill dueña del estilo. Skill: ${skill} · Galería: ${galeria}"
+  contexto="Angel pidió una interfaz con aire retro. Sigue la skill estilo-retro del plugin cerebro: abre la galería, pregunta con AskUserQuestion qué estilo usar y entrega el brief a la skill dueña del estilo. Skill: ${skill} · Galería: ${galeria}"
 else
-  contexto="Angel va a diseñar una interfaz visual. Cuando le preguntes por el estilo o por la skill de diseño a usar (impeccable, design-taste-frontend, hallmark u otra), suma una opción más: «Estilo retro (aparato, Y2K, terminal o arcade)», descrita en una línea, sin recomendarla salvo que el producto lo pida. Si no hay pregunta de estilo en este flujo, menciónala en una sola línea como alternativa disponible. Si Angel la elige, sigue la skill estilo-retro del plugin cerebro y abre su galería; si no, sigue sin volver a mencionarla. Si el pedido es una consulta puntual o un ajuste pequeño, omite la sugerencia. Skill: ${skill} · Galería: ${galeria}"
+  contexto="Angel va a diseñar una interfaz visual. Cuando le preguntes por el estilo o por la skill de diseño a usar (impeccable, design-taste-frontend, hallmark u otra), suma una opción más: «Estilo retro (16 estilos con galería: aparato, Y2K, ventanas clásicas, terminal, arcade, vaporwave y más)», descrita en una línea, sin recomendarla salvo que el producto lo pida. Si no hay pregunta de estilo en este flujo, menciónala en una sola línea como alternativa disponible. Si Angel la elige, sigue la skill estilo-retro del plugin cerebro y abre su galería; si no, sigue sin volver a mencionarla. Si el pedido es una consulta puntual o un ajuste pequeño, omite la sugerencia. Skill: ${skill} · Galería: ${galeria}"
 fi
 contexto="${contexto//\\/\\\\}"
 contexto="${contexto//\"/\\\"}"

@@ -1,11 +1,11 @@
 ---
 name: estilo-retro
-description: Úsala cuando Angel diseñe una interfaz visual (app, web, panel, landing, componente) y elija la opción «Estilo retro» que sugiere el hook. Muestra la galería de cuatro variantes retro, pregunta cuál usar y la convierte en brief para la skill dueña del estilo, con comportamientos accesibles de UI SDK.
+description: Úsala cuando Angel diseñe una interfaz visual (app, web, panel, landing, componente) y elija la opción «Estilo retro» que sugiere el hook. Muestra la galería de dieciséis estilos retro, pregunta cuál usar y la convierte en brief para la skill dueña del estilo, con comportamientos accesibles de UI SDK.
 ---
 
 # Estilo retro para interfaces
 
-Interfaces con la personalidad de los aparatos y programas de los 2000: reproductores con skin, equipos con perillas y pantallas LCD, terminales de fósforo y máquinas arcade. La estética es retro; el comportamiento (teclado, foco, lectores de pantalla) es actual.
+Interfaces con la personalidad de los aparatos, sistemas, juegos e impresos de los 80, 90 y 2000: reproductores con skin, equipos con perillas, ventanas clásicas, terminales de fósforo, arcade, casetes y fanzines. La estética es retro; el comportamiento (teclado, foco, lectores de pantalla) es actual.
 
 Esta skill es una alternativa que Angel marca o deja pasar. Cuando la marca, define la dirección de arte y se la entrega como brief a la skill que construye.
 
@@ -17,31 +17,45 @@ Esta skill es una alternativa que Angel marca o deja pasar. Cuando la marca, def
 
 ## Pasos
 
-1. **Galería.** Abrir `galeria.html` de esta carpeta (`open <ruta>/galeria.html` en el Mac). Muestra cada variante dibujada en vivo.
-2. **Pregunta.** Con la herramienta de preguntas (AskUserQuestion), preguntar qué variante usar. Recomendar una según el producto (tabla de abajo) y ofrecer «Mezcla de dos» y «Sin retro».
-3. **Brief.** Escribir el brief de la variante elegida (sección «Brief para el dueño») y entregarlo a la skill dueña del estilo:
-   - Variantes 1, 2 y 3: `impeccable`. Un brief explícito libera lo que esa skill solo evita por defecto (biseles, texturas, tipografía mono).
-   - Variante 4: el tema «Arcade» de `hallmark` (`references/themes/arcade.md`), que ya trae esa estética resuelta.
+1. **Galería.** Abrir `galeria.html` de esta carpeta (`open <ruta>/galeria.html` en el Mac). Muestra los dieciséis estilos dibujados en vivo, en cuatro grupos.
+2. **Pregunta.** Con la herramienta de preguntas (AskUserQuestion), preguntar qué estilo usar. Recomendar de uno a tres según el producto (tabla de abajo) y ofrecer «Mezcla de dos» y «Sin retro».
+3. **Brief.** Escribir el brief del estilo elegido (sección «Brief para el dueño») y entregarlo a la skill dueña del estilo:
+   - Todos los estilos salvo el 10: `impeccable`. Un brief explícito libera lo que esa skill solo evita por defecto (biseles, texturas, tipografía mono).
+   - Estilo 10 (Arcade): el tema «Arcade» de `hallmark` (`references/themes/arcade.md`), que ya trae esa estética resuelta.
    - Si el proyecto ya declaró dueño (`Diseño web: dueño del estilo = …` en su CLAUDE.md), el brief va a ese dueño.
 4. **Comportamiento.** Cada control a medida (perilla, rueda, selector de fecha, lista tipo playlist, menú contextual) se arma sobre primitivas accesibles. En proyectos React, Vue, Svelte, Solid o Web Components, proponer UI SDK de Vercel Labs (`npm install @ui-sdk/core @ui-sdk/<framework>` y su skill `npx skills add vercel-labs/ui --skill ui-sdk`) y seguir `design-engineering`: `references/meta/ui-sdk-reconciliation.md` y `references/components/component-behavior-spec.md`. La perilla es un `slider` con flechas, Inicio y Fin; la rueda de fecha, un `spinbutton`.
 5. **Revisión.** Antes de entregar, pasar la lista «Retro que se lee» y mostrar una captura a Angel.
 
-## Las cuatro variantes
+## Los dieciséis estilos
 
-| # | Variante | Cómo se ve | Ideal para |
+La galería los muestra en cuatro grupos, cada uno dibujado en vivo.
+
+| # | Estilo | Cómo se ve | Ideal para |
 | --- | --- | --- | --- |
-| 1 | Skin Y2K | Carcasa metálica con biseles, pantalla LCD azul con texto que corre, ecualizador de barras, botones con relieve | Reproductores, herramientas creativas, páginas de producto con guiño nostálgico |
-| 2 | Aparato | Carcasa clara mate, pantalla LCD negra con cifras en rojo, perillas y botones físicos, rótulos mono pequeños | Paneles, configuradores, apps de audio o domótica, landings de hardware o SaaS con carácter |
-| 3 | Terminal de fósforo | Fondo casi negro, texto verde o ámbar con brillo, líneas de barrido, todo en mono | Herramientas para desarrolladores, registros, paneles de despliegue, consolas de comandos |
-| 4 | Arcade | Fondo oscuro, títulos pixel con desfase RGB, sombras duras, colores de neón | Juegos, eventos, hackatones, lanzamientos ruidosos |
+| 01 | Skin Y2K | Carcasa metálica con biseles, LCD azul con texto que corre, ecualizador, botones con relieve | Reproductores, herramientas creativas, páginas de producto nostálgicas |
+| 02 | Aparato | Carcasa clara mate, LCD negra con cifras en rojo, perillas y botones físicos, rótulos mono | Paneles, configuradores, apps de audio o domótica, landings de hardware o SaaS |
+| 03 | Consola portátil | Cruceta, botón rojo y pantalla oscura con gráficas y registros | Paneles de control, despliegues, herramientas internas con humor |
+| 04 | LCD de 7 segmentos | Pantalla verde grisácea de calculadora o reloj, cifras inclinadas, teclas de goma | Calculadoras, cotizadores, contadores, temporizadores, métricas grandes |
+| 05 | Escritorio clásico | Ventanas grises con biseles, barra de título azul, foco punteado | Portafolios lúdicos, herramientas internas, campañas con humor |
+| 06 | Mac clásico 1 bit | Blanco y negro puro, barra de título rayada, sombras duras, tramas | Blogs personales, portafolios de diseño, herramientas de escritura |
+| 07 | Aqua | Botones de gel, rayas finas, semáforos con reflejo, progreso animado | Apps de escritorio, instaladores, configuración, productos para creativos |
+| 08 | Frutiger Aero | Cielo azul, pasto verde, burbujas, paneles de vidrio brillante | Bienestar, ecología, nube, servicios con tono optimista |
+| 09 | Terminal de fósforo | Texto verde o ámbar con brillo sobre negro, líneas de barrido, todo mono | Herramientas de desarrollo, registros, consolas de comandos |
+| 10 | Arcade | Fondo oscuro, títulos con desfase RGB, sombras duras, neón | Juegos, eventos, hackatones, lanzamientos ruidosos |
+| 11 | RPG de 8 bits | Escenario de cuadritos, corazones de vida, caja de diálogo con menú de flecha | Onboarding, gamificación, logros, tutoriales |
+| 12 | Vaporwave | Atardecer magenta, sol rayado, cuadrícula de neón en perspectiva | Música, moda, eventos nocturnos, landings de campaña |
+| 13 | Muestrario de papelería | Bloques de color sólido con nombre en serif y número de catálogo | Selectores de color o variante, catálogos, tiendas, marcas editoriales |
+| 14 | Web de los 90 | Fondo con estrellas, texto que corre, cinta «en construcción», contador | Humor, fan sites, eventos temáticos, portafolios irreverentes |
+| 15 | Casete | Etiqueta escrita a mano con franjas, carretes que giran | Listas de reproducción, podcasts, notas de voz |
+| 16 | Fanzine fotocopiado | Fotocopia en blanco y negro, recortes con cinta, titulares torcidos | Música independiente, eventos, colectivos, portafolios con actitud |
 
 ## Brief para el dueño
 
 Plantilla que Claude completa y pega en el chat antes de construir:
 
 ```text
-Dirección de arte: <variante>, estética de aparato o programa de los 2000.
-Materiales: <carcasa / pantalla / relieve propios de la variante>.
+Dirección de arte: <estilo de la galería>, con su época y referencia.
+Materiales: <carcasa, pantalla, papel o relieve propios del estilo>.
 Tipografía: <mono pequeña para rótulos y cifras + sans para el texto largo>.
 Color: <base neutra de la carcasa + un acento propio de la pantalla (rojo LCD, azul LCD, verde fósforo)>.
 Controles físicos: <qué acciones toman forma de perilla, rueda, botón o interruptor>.
@@ -65,10 +79,10 @@ Se mantiene: jerarquía clara, texto largo legible, contraste AA, comportamiento
 | Skill | Relación |
 | --- | --- |
 | `impeccable` | Dueña habitual: construye con el brief retro |
-| `hallmark` | Su tema «Arcade» resuelve la variante 4 |
+| `hallmark` | Su tema «Arcade» resuelve el estilo 10 |
 | `design-engineering` | Integración y comportamiento de UI SDK; controles a medida |
 | `diseno-web` | Elige al dueño; esta skill le suma la dirección de arte |
-| `ux-ui` (cerebro) | Sus criterios siguen aplicando sobre la variante elegida |
+| `ux-ui` (cerebro) | Sus criterios siguen aplicando sobre el estilo elegido |
 
 ## Fuente
 

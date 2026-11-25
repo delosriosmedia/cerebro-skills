@@ -18,166 +18,221 @@
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--fondo); color: var(--texto);
     font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-  header { max-width: 1200px; margin: 0 auto; padding: 32px 16px 8px; }
+  header { max-width: 1280px; margin: 0 auto; padding: 32px 16px 8px; }
   h1 { margin: 0 0 6px; font-size: 28px; letter-spacing: -0.01em; }
-  header p { margin: 0; color: var(--suave); max-width: 72ch; }
-  main { max-width: 1200px; margin: 0 auto; padding: 16px; display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); gap: 20px; }
+  header p { margin: 0; color: var(--suave); max-width: 76ch; }
+  .grupo { max-width: 1280px; margin: 0 auto; padding: 24px 16px 0; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--suave); }
+  main { max-width: 1280px; margin: 0 auto; padding: 12px 16px; display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 18px; }
   article { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
-  .media { height: 280px; background: var(--lienzo); display: flex; align-items: center; justify-content: center; padding: 16px; overflow: hidden; }
-  .cuerpo { padding: 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .media { height: 200px; background: var(--lienzo); display: flex; align-items: center; justify-content: center; padding: 14px; overflow: hidden; }
+  .media > * { zoom: .78; flex: none; }
+  .cuerpo { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
   .num { font-size: 12px; font-weight: 600; color: var(--acento); letter-spacing: .06em; text-transform: uppercase; }
-  h2 { margin: 0; font-size: 19px; }
-  .produce, .ideal { margin: 0; }
+  h2 { margin: 0; font-size: 18px; }
+  .produce, .ideal { margin: 0; font-size: 15px; }
   .ideal { color: var(--suave); font-size: 14px; }
-  .pedido { margin: 4px 0 0; padding: 8px 10px; background: var(--etiqueta); border-radius: 8px; font-size: 14px; }
-  footer { max-width: 1200px; margin: 0 auto; padding: 8px 16px 40px; color: var(--suave); font-size: 14px; }
-  .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .pedido { margin: 4px 0 0; padding: 7px 10px; background: var(--etiqueta); border-radius: 8px; font-size: 13px; }
+  footer { max-width: 1280px; margin: 0 auto; padding: 16px 16px 40px; color: var(--suave); font-size: 14px; }
+  .m { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
 
-  /* 1 · Skin Y2K */
-  .y2k { width: 340px; max-width: 100%; padding: 8px; border-radius: 6px;
-    background: linear-gradient(180deg, #dfe4ec 0%, #9aa4b5 48%, #c9cfda 52%, #8590a3 100%);
+  /* 01 Skin Y2K */
+  .y2k { width: 320px; padding: 8px; border-radius: 6px; background: linear-gradient(180deg,#dfe4ec 0%,#9aa4b5 48%,#c9cfda 52%,#8590a3 100%);
     border: 1px solid #4b5466; box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #5a6478, 0 8px 20px rgba(0,0,0,.35); }
-  .y2k .barra { height: 14px; border-radius: 3px; margin-bottom: 6px; color: #fff; font: 700 9px/14px Tahoma, Verdana, sans-serif; padding: 0 6px;
-    background: linear-gradient(90deg, #1e3a8a, #3b82f6 60%, #1e3a8a); letter-spacing: .08em; }
+  .y2k .barra { height: 14px; border-radius: 3px; margin-bottom: 6px; color: #fff; font: 700 9px/14px Tahoma, Verdana, sans-serif; padding: 0 6px; background: linear-gradient(90deg,#1e3a8a,#3b82f6 60%,#1e3a8a); letter-spacing: .08em; }
   .y2k .lcd { background: #04122b; border: 2px inset #6b7690; border-radius: 3px; padding: 6px 8px; color: #6ee7ff; }
-  .y2k .tiempo { font: 700 26px/1 ui-monospace, Menlo, monospace; text-shadow: 0 0 6px #22d3ee; }
-  .y2k .titulo { font-size: 10px; white-space: nowrap; overflow: hidden; }
-  .y2k .titulo span { display: inline-block; animation: correr 9s linear infinite; }
+  .y2k .t { font: 700 24px/1 ui-monospace, Menlo, monospace; text-shadow: 0 0 6px #22d3ee; }
+  .y2k .tit { font-size: 10px; white-space: nowrap; overflow: hidden; } .y2k .tit span { display: inline-block; animation: correr 9s linear infinite; }
   @keyframes correr { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
-  .y2k .eq { display: flex; gap: 3px; align-items: flex-end; height: 34px; margin-top: 6px; }
-  .y2k .eq i { flex: 1; background: linear-gradient(0deg, #22c55e, #facc15 70%, #ef4444); border-radius: 1px; animation: eq 1.1s ease-in-out infinite alternate; }
+  .y2k .eq { display: flex; gap: 3px; align-items: flex-end; height: 30px; margin-top: 6px; }
+  .y2k .eq i { flex: 1; background: linear-gradient(0deg,#22c55e,#facc15 70%,#ef4444); animation: eq 1.1s ease-in-out infinite alternate; }
   @keyframes eq { from { height: 20%; } to { height: 100%; } }
-  .y2k .botones { display: flex; gap: 4px; margin-top: 8px; }
-  .y2k .botones b { flex: 1; height: 22px; border-radius: 4px; display: grid; place-items: center; font-size: 10px; color: #1f2937;
-    background: linear-gradient(180deg, #f8fafc, #b8c1d1); border: 1px solid #56607a; box-shadow: inset 1px 1px 0 #fff; }
+  .y2k .bt { display: flex; gap: 4px; margin-top: 8px; } .y2k .bt b { flex: 1; height: 20px; border-radius: 4px; display: grid; place-items: center; font-size: 10px; color: #1f2937; background: linear-gradient(180deg,#f8fafc,#b8c1d1); border: 1px solid #56607a; }
 
-  /* 2 · Aparato */
-  .aparato { width: 400px; max-width: 100%; display: flex; gap: 16px; align-items: center; padding: 18px; border-radius: 18px;
-    background: #f4f3ef; box-shadow: 0 1px 0 #fff inset, 0 10px 24px rgba(0,0,0,.18), 0 0 0 1px #dedbd3; }
-  .aparato .pantalla { flex: 1; background: #0d0d0d; border-radius: 8px; padding: 10px 12px; color: #e5e5e5; box-shadow: inset 0 2px 6px rgba(0,0,0,.6); }
-  .aparato .rotulo { font: 9px/1.2 ui-monospace, Menlo, monospace; color: #8a8a8a; letter-spacing: .1em; display: flex; justify-content: space-between; }
-  .aparato .fecha { font: 400 21px/1.4 ui-monospace, Menlo, monospace; letter-spacing: .02em; white-space: nowrap; }
-  .aparato .fecha .rojo { background: #e11d2a; color: #fff; padding: 0 4px; border-radius: 3px; }
-  .aparato .puntos { display: grid; grid-template-columns: repeat(12, 6px); gap: 3px; margin-top: 4px; }
-  .aparato .puntos i { width: 6px; height: 6px; border-radius: 50%; background: #333; }
-  .aparato .puntos i.on { background: #e11d2a; box-shadow: 0 0 4px #e11d2a; }
-  .aparato .perilla { width: 84px; height: 84px; border-radius: 50%; position: relative;
-    background: repeating-conic-gradient(#e9e7e1 0 4deg, #f7f6f2 4deg 8deg); box-shadow: 0 6px 12px rgba(0,0,0,.2), inset 0 0 0 1px #d6d3cb; }
-  .aparato .perilla b { position: absolute; inset: 22px; border-radius: 50%; background: #1a1a1a; color: #fff; display: grid; place-items: center; font: 700 9px ui-monospace, Menlo, monospace; letter-spacing: .1em; }
+  /* 02 Aparato */
+  .ap { width: 340px; display: flex; gap: 14px; align-items: center; padding: 16px; border-radius: 18px; background: #f4f3ef; box-shadow: 0 1px 0 #fff inset, 0 10px 24px rgba(0,0,0,.18), 0 0 0 1px #dedbd3; }
+  .ap .p { flex: 1; background: #0d0d0d; border-radius: 8px; padding: 10px 12px; color: #e5e5e5; }
+  .ap .r { font: 9px/1.2 ui-monospace, Menlo, monospace; color: #8a8a8a; letter-spacing: .1em; display: flex; justify-content: space-between; }
+  .ap .f { font: 19px/1.5 ui-monospace, Menlo, monospace; white-space: nowrap; } .ap .f span { background: #e11d2a; color: #fff; padding: 0 4px; border-radius: 3px; }
+  .ap .pt { display: grid; grid-template-columns: repeat(12,5px); gap: 3px; } .ap .pt i { width: 5px; height: 5px; border-radius: 50%; background: #333; } .ap .pt i.on { background: #e11d2a; }
+  .ap .k { width: 76px; height: 76px; border-radius: 50%; position: relative; flex: none; background: repeating-conic-gradient(#e9e7e1 0 4deg,#f7f6f2 4deg 8deg); box-shadow: 0 6px 12px rgba(0,0,0,.2), inset 0 0 0 1px #d6d3cb; }
+  .ap .k b { position: absolute; inset: 20px; border-radius: 50%; background: #1a1a1a; color: #fff; display: grid; place-items: center; font: 700 9px ui-monospace, Menlo, monospace; }
 
-  /* 3 · Terminal de fósforo */
-  .crt { width: 380px; max-width: 100%; height: 200px; border-radius: 16px; padding: 16px; position: relative; overflow: hidden;
-    background: radial-gradient(ellipse at center, #0b1a0f 0%, #040805 100%); color: #4ade80; box-shadow: 0 0 0 10px #2b2b27, 0 10px 24px rgba(0,0,0,.45);
-    font: 12px/1.55 ui-monospace, Menlo, monospace; text-shadow: 0 0 5px rgba(74,222,128,.7); }
-  .crt::after { content: ""; position: absolute; inset: 0; pointer-events: none;
-    background: repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 1px, transparent 1px 3px); }
-  .crt .ok { color: #86efac; } .crt .err { color: #fbbf24; text-shadow: 0 0 5px rgba(251,191,36,.7); }
-  .crt .cursor { display: inline-block; width: 8px; height: 13px; background: #4ade80; vertical-align: -2px; animation: parpadeo 1.2s steps(1) infinite; }
-  @keyframes parpadeo { 50% { opacity: 0; } }
+  /* 03 Consola portátil */
+  .cp { width: 340px; padding: 14px; border-radius: 16px; background: #ecebe6; display: flex; gap: 14px; align-items: center; box-shadow: 0 10px 22px rgba(0,0,0,.18), 0 0 0 1px #d9d6cd; }
+  .cp .cruz { width: 70px; height: 70px; position: relative; flex: none; }
+  .cp .cruz::before, .cp .cruz::after { content: ""; position: absolute; background: #1c1c1c; border-radius: 6px; }
+  .cp .cruz::before { left: 24px; top: 0; width: 22px; height: 70px; } .cp .cruz::after { top: 24px; left: 0; height: 22px; width: 70px; }
+  .cp .pan { flex: 1; background: #111; border-radius: 8px; padding: 10px; color: #ddd; font: 10px/1.5 ui-monospace, Menlo, monospace; }
+  .cp .bar { display: flex; gap: 2px; align-items: flex-end; height: 34px; margin-top: 4px; } .cp .bar i { flex: 1; background: #ef3b2d; }
+  .cp .btn { width: 26px; height: 26px; border-radius: 50%; background: #e0322a; box-shadow: 0 3px 0 #9e1d17; flex: none; }
 
-  /* 4 · Arcade */
-  .arcade { width: 380px; max-width: 100%; height: 220px; border-radius: 10px; padding: 18px; background: #1b0f24; color: #f1e9ff; position: relative; overflow: hidden;
-    box-shadow: 0 10px 24px rgba(0,0,0,.45); display: flex; flex-direction: column; justify-content: space-between; }
-  .arcade h3 { margin: 0; font: 900 38px/1 Impact, "Arial Black", sans-serif; letter-spacing: .04em; text-transform: uppercase;
-    text-shadow: -3px 0 #ff2e88, 3px 0 #2ee6ff; }
-  .arcade .marcador { font: 700 13px/1.4 ui-monospace, Menlo, monospace; letter-spacing: .2em; color: #ffd23f; }
-  .arcade .boton { align-self: flex-start; padding: 10px 18px; background: #ff5a1f; color: #1b0f24; font: 800 14px ui-monospace, Menlo, monospace;
-    letter-spacing: .12em; box-shadow: 5px 5px 0 #ffd23f; border-radius: 2px; }
-  .arcade .pix { position: absolute; right: 22px; bottom: 24px; width: 72px; height: 72px;
-    background: conic-gradient(from 45deg, #2ee6ff 0 25%, #ff2e88 0 50%, #ffd23f 0 75%, #8b5cf6 0); image-rendering: pixelated;
-    clip-path: polygon(0 25%, 25% 25%, 25% 0, 75% 0, 75% 25%, 100% 25%, 100% 75%, 75% 75%, 75% 100%, 25% 100%, 25% 75%, 0 75%); }
+  /* 04 Terminal de fósforo */
+  .crt { width: 340px; height: 190px; border-radius: 16px; padding: 14px; position: relative; overflow: hidden; background: radial-gradient(ellipse at center,#0b1a0f 0%,#040805 100%); color: #4ade80; box-shadow: 0 0 0 9px #2b2b27, 0 10px 24px rgba(0,0,0,.45); font: 11.5px/1.55 ui-monospace, Menlo, monospace; text-shadow: 0 0 5px rgba(74,222,128,.7); }
+  .crt::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 1px,transparent 1px 3px); }
+  .crt .a { color: #fbbf24; } .crt .c { display: inline-block; width: 7px; height: 12px; background: #4ade80; vertical-align: -2px; animation: parp 1.2s steps(1) infinite; }
+  @keyframes parp { 50% { opacity: 0; } }
 
-  @media (prefers-reduced-motion: reduce) {
-    .y2k .titulo span, .y2k .eq i, .crt .cursor { animation: none; }
-  }
+  /* 05 Arcade */
+  .ar { width: 340px; height: 190px; border-radius: 10px; padding: 16px; background: #1b0f24; color: #f1e9ff; position: relative; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 24px rgba(0,0,0,.45); }
+  .ar h3 { margin: 0; font: 900 34px/1 Impact, "Arial Black", sans-serif; text-transform: uppercase; text-shadow: -3px 0 #ff2e88, 3px 0 #2ee6ff; }
+  .ar .hs { font: 700 12px ui-monospace, Menlo, monospace; letter-spacing: .2em; color: #ffd23f; }
+  .ar .b { align-self: flex-start; padding: 8px 14px; background: #ff5a1f; color: #1b0f24; font: 800 13px ui-monospace, Menlo, monospace; letter-spacing: .12em; box-shadow: 5px 5px 0 #ffd23f; }
+
+  /* 06 Escritorio clásico */
+  .w95 { width: 320px; background: #c0c0c0; border: 2px solid; border-color: #fff #404040 #404040 #fff; box-shadow: 1px 1px 0 #000; font: 12px/1.3 Tahoma, "MS Sans Serif", Verdana, sans-serif; color: #000; }
+  .w95 .tb { background: linear-gradient(90deg,#000080,#1084d0); color: #fff; font-weight: 700; padding: 3px 4px; display: flex; justify-content: space-between; align-items: center; }
+  .w95 .tb b { width: 16px; height: 14px; background: #c0c0c0; color: #000; border: 1px solid; border-color: #fff #404040 #404040 #fff; font-size: 10px; display: grid; place-items: center; }
+  .w95 .cu { padding: 12px; display: flex; gap: 12px; align-items: center; } .w95 .ic { font-size: 30px; }
+  .w95 .ba { display: flex; justify-content: center; gap: 8px; padding: 0 12px 12px; }
+  .w95 .ba span { min-width: 72px; text-align: center; padding: 4px 8px; border: 2px solid; border-color: #fff #404040 #404040 #fff; box-shadow: 1px 1px 0 #000; }
+  .w95 .ba span:first-child { outline: 1px dotted #000; outline-offset: -5px; }
+
+  /* 07 Mac clásico 1-bit */
+  .mac { width: 300px; background: #fff; border: 2px solid #000; box-shadow: 3px 3px 0 #000; font: 12px/1.4 Chicago, Geneva, "Helvetica Neue", sans-serif; color: #000; }
+  .mac .tb { height: 22px; border-bottom: 2px solid #000; position: relative; background: repeating-linear-gradient(0deg,#000 0 1px,#fff 1px 3px); display: flex; justify-content: center; align-items: center; }
+  .mac .tb span { background: #fff; padding: 0 8px; font-weight: 700; }
+  .mac .cu { padding: 12px 14px; } .mac .fi { display: flex; gap: 16px; margin-top: 8px; } .mac .fi div { text-align: center; font-size: 11px; }
+  .mac .fi i { display: block; width: 32px; height: 26px; margin: 0 auto 4px; border: 2px solid #000; background: repeating-linear-gradient(45deg,#000 0 1px,#fff 1px 4px); }
+
+  /* 08 Aqua */
+  .aq { width: 320px; border-radius: 10px; overflow: hidden; background: repeating-linear-gradient(0deg,#eef1f5 0 2px,#e4e8ee 2px 4px); box-shadow: 0 12px 28px rgba(0,0,0,.35); font: 12px "Lucida Grande", -apple-system, sans-serif; color: #111; }
+  .aq .tb { height: 24px; background: linear-gradient(180deg,#f4f4f4,#c9c9c9); display: flex; align-items: center; gap: 6px; padding: 0 8px; border-bottom: 1px solid #9a9a9a; }
+  .aq .tb i { width: 12px; height: 12px; border-radius: 50%; background: radial-gradient(circle at 40% 30%,#fff 0 15%,#ff5f57 45%,#b9221c); }
+  .aq .tb i:nth-child(2) { background: radial-gradient(circle at 40% 30%,#fff 0 15%,#ffbd2e 45%,#c2870b); } .aq .tb i:nth-child(3) { background: radial-gradient(circle at 40% 30%,#fff 0 15%,#28c840 45%,#14801f); }
+  .aq .cu { padding: 18px; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+  .aq .gel { padding: 7px 26px; border-radius: 999px; color: #fff; font-weight: 600; text-shadow: 0 -1px 0 rgba(0,0,0,.3); background: linear-gradient(180deg,#a7d4ff 0%,#3a8ee6 50%,#1b6fd0 51%,#5fb3ff 100%); box-shadow: inset 0 1px 1px rgba(255,255,255,.8), 0 2px 4px rgba(0,0,0,.35); }
+  .aq .prog { width: 220px; height: 14px; border-radius: 999px; background: #d4d8de; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,.3); }
+  .aq .prog b { display: block; width: 64%; height: 100%; background: repeating-linear-gradient(-45deg,#4a9cf0 0 8px,#7bbaf7 8px 16px); animation: barber 1s linear infinite; background-size: 200% 100%; }
+  @keyframes barber { to { background-position: -22.6px 0; } }
+
+  /* 09 Frutiger Aero */
+  .fa { width: 330px; height: 190px; border-radius: 16px; position: relative; overflow: hidden; background: linear-gradient(180deg,#5fc6ff 0%,#bdeaff 55%,#7ed957 56%,#3fae3a 100%); box-shadow: 0 10px 24px rgba(0,0,0,.25); }
+  .fa .bur { position: absolute; border-radius: 50%; background: radial-gradient(circle at 35% 30%,rgba(255,255,255,.95) 0 10%,rgba(255,255,255,.25) 40%,rgba(255,255,255,.08) 70%); border: 1px solid rgba(255,255,255,.7); }
+  .fa .vid { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 210px; padding: 14px; border-radius: 14px; background: linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,.35)); border: 1px solid rgba(255,255,255,.9); box-shadow: 0 6px 18px rgba(0,60,120,.25); color: #0b4a7a; font: 600 14px "Segoe UI", sans-serif; text-align: center; }
+  .fa .vid small { display: block; font-weight: 400; font-size: 11px; color: #2a6a96; }
+
+  /* 10 Muestrario de papelería */
+  .mu { width: 300px; display: flex; flex-direction: column; box-shadow: 0 10px 22px rgba(0,0,0,.2); border-radius: 4px; overflow: hidden; font: 17px/1 Georgia, "Times New Roman", serif; }
+  .mu div { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 14px; color: #2a1608; }
+  .mu small { font: 9px ui-monospace, Menlo, monospace; opacity: .7; }
+
+  /* 11 Vaporwave */
+  .vw { width: 330px; height: 190px; border-radius: 10px; position: relative; overflow: hidden; background: linear-gradient(180deg,#2b0f54 0%,#ab1f8a 52%,#ff6f91 60%,#1a0633 60%); box-shadow: 0 10px 24px rgba(0,0,0,.35); }
+  .vw .sol { position: absolute; left: 50%; top: 30px; width: 110px; height: 110px; transform: translateX(-50%); border-radius: 50%; background: repeating-linear-gradient(180deg,#ffd36e 0 9px,transparent 9px 13px), linear-gradient(#ffd36e,#ff4f8b); -webkit-mask: linear-gradient(#000 58%,transparent 58%); mask: linear-gradient(#000 58%,transparent 58%); }
+  .vw .suelo { position: absolute; left: -40%; right: -40%; bottom: 0; height: 40%; background: repeating-linear-gradient(90deg,#ff3ec8 0 1px,transparent 1px 30px), repeating-linear-gradient(0deg,#ff3ec8 0 1px,transparent 1px 14px); transform: perspective(120px) rotateX(55deg); transform-origin: top; }
+  .vw h3 { position: absolute; left: 0; right: 0; bottom: 14px; margin: 0; text-align: center; font: 700 22px/1 "Times New Roman", serif; letter-spacing: .5em; color: #9ff3ff; text-shadow: 2px 2px 0 #ff3ec8; }
+
+  /* 12 RPG 8 bits */
+  .rpg { width: 330px; height: 190px; border-radius: 6px; padding: 12px; background: #3a7d44; position: relative; image-rendering: pixelated; box-shadow: 0 10px 22px rgba(0,0,0,.3);
+    background-image: linear-gradient(45deg,#2f6b39 25%,transparent 25%,transparent 75%,#2f6b39 75%), linear-gradient(45deg,#2f6b39 25%,transparent 25%,transparent 75%,#2f6b39 75%); background-size: 16px 16px; background-position: 0 0, 8px 8px; }
+  .rpg .dlg { position: absolute; left: 10px; right: 10px; bottom: 10px; background: #0b1c6b; color: #fff; border: 4px solid #fff; outline: 3px solid #0b1c6b; padding: 8px 10px; font: 700 12px/1.5 ui-monospace, Menlo, monospace; }
+  .rpg .dlg em { color: #ffd23f; font-style: normal; } .rpg .dlg span { display: block; }
+  .rpg .vida { position: absolute; top: 10px; left: 12px; display: flex; gap: 3px; } .rpg .vida i { width: 14px; height: 12px; background: #e3262f; clip-path: polygon(50% 100%,0 35%,15% 0,50% 20%,85% 0,100% 35%); }
+
+  /* 13 LCD de 7 segmentos */
+  .lcd7 { width: 300px; padding: 16px; border-radius: 12px; background: #2b2b2b; box-shadow: 0 10px 22px rgba(0,0,0,.35); }
+  .lcd7 .pan { background: #9aa58a; border-radius: 6px; padding: 10px 14px; box-shadow: inset 0 2px 6px rgba(0,0,0,.4); color: #1d2318; }
+  .lcd7 .tp { display: flex; justify-content: space-between; font: 700 10px ui-monospace, Menlo, monospace; opacity: .8; }
+  .lcd7 .dig { font: 700 46px/1.05 "DS-Digital", "Courier New", ui-monospace, monospace; letter-spacing: .08em; text-align: right; font-style: italic; }
+  .lcd7 .tc { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; margin-top: 12px; }
+  .lcd7 .tc b { height: 20px; border-radius: 4px; background: #444; box-shadow: 0 2px 0 #111; color: #ddd; font: 700 10px ui-monospace, Menlo, monospace; display: grid; place-items: center; } .lcd7 .tc b.o { background: #e2582b; color: #fff; }
+
+  /* 14 Web de los 90 */
+  .w90 { width: 330px; height: 190px; padding: 10px; border: 3px ridge #c0c0c0; text-align: center; font: 13px/1.35 "Times New Roman", serif; color: #ff0;
+    background: #000080 radial-gradient(#fff 1px, transparent 1.5px) 0 0/18px 18px; box-shadow: 0 10px 22px rgba(0,0,0,.35); }
+  .w90 h3 { margin: 4px 0; font: 700 22px/1 "Comic Sans MS", "Comic Neue", cursive; color: #0f0; text-shadow: 2px 2px 0 #f0f; }
+  .w90 .mq { overflow: hidden; white-space: nowrap; color: #0ff; } .w90 .mq span { display: inline-block; animation: correr 8s linear infinite; }
+  .w90 a { color: #0ff; } .w90 .obras { display: inline-block; margin: 6px 0; padding: 2px 6px; background: repeating-linear-gradient(-45deg,#fc0 0 8px,#000 8px 16px); color: #000; font-weight: 700; }
+  .w90 .cont { display: inline-block; background: #000; color: #0f0; border: 2px inset #888; padding: 0 6px; font: 12px ui-monospace, Menlo, monospace; letter-spacing: .2em; }
+
+  /* 15 Casete */
+  .cs { width: 330px; height: 200px; border-radius: 12px; padding: 14px; background: #2a2a2e; box-shadow: 0 10px 22px rgba(0,0,0,.35), inset 0 0 0 2px #3a3a40; position: relative; }
+  .cs .et { background: #f3e9d2; border-radius: 6px; height: 120px; padding: 8px 12px; position: relative; font: 600 16px/1.2 "Marker Felt", "Comic Neue", "Comic Sans MS", cursive; color: #1f2a6b;
+    background-image: linear-gradient(#f3e9d2 0 30px, #e8513a 30px 36px, #f3e9d2 36px 40px, #f2a33a 40px 46px, #f3e9d2 46px); }
+  .cs .et small { position: absolute; right: 12px; top: 8px; font: 700 12px ui-monospace, Menlo, monospace; color: #e8513a; }
+  .cs .vent { position: absolute; left: 50%; top: 66px; transform: translateX(-50%); width: 170px; height: 44px; border-radius: 22px; background: #1b1b1e; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; }
+  .cs .vent i { width: 30px; height: 30px; border-radius: 50%; background: repeating-conic-gradient(#f3e9d2 0 30deg,#1b1b1e 30deg 60deg); border: 4px solid #f3e9d2; animation: girar 3s linear infinite; }
+  @keyframes girar { to { transform: rotate(360deg); } }
+  .cs .pie { position: absolute; left: 60px; right: 60px; bottom: 12px; height: 26px; background: #3a3a40; clip-path: polygon(8% 0,92% 0,100% 100%,0 100%); }
+
+  /* 16 Fanzine fotocopiado */
+  .fz { width: 300px; height: 200px; position: relative; background: #f2f0ea; box-shadow: 0 10px 22px rgba(0,0,0,.25); overflow: hidden; filter: grayscale(1) contrast(1.4);
+    background-image: radial-gradient(#0002 1px, transparent 1.4px); background-size: 4px 4px; }
+  .fz h3 { position: absolute; left: 14px; top: 14px; margin: 0; padding: 2px 8px; background: #000; color: #fff; font: 900 30px/1 Impact, "Arial Black", sans-serif; transform: rotate(-3deg); }
+  .fz .rec { position: absolute; right: 16px; top: 22px; width: 110px; height: 110px; background: repeating-linear-gradient(45deg,#000 0 3px,#fff 3px 7px); transform: rotate(4deg); border: 3px solid #000; }
+  .fz .cinta { position: absolute; right: 50px; top: 12px; width: 60px; height: 18px; background: #ffffffb0; transform: rotate(-12deg); border: 1px solid #0003; }
+  .fz p { position: absolute; left: 16px; bottom: 16px; margin: 0; width: 150px; font: 700 12px/1.3 "Courier New", monospace; background: #fff; padding: 4px 6px; transform: rotate(1.5deg); }
+
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } }
 </style>
 </head>
 <body>
 <header>
   <h1>Estilo retro para interfaces</h1>
-  <p>Cuatro variantes con estética de los 2000. Elige una, una mezcla de dos o «Sin retro». La variante se entrega como brief a la skill que construye; el comportamiento (teclado, foco, lectores de pantalla) se mantiene actual.</p>
+  <p>Dieciséis estilos retro, cada uno dibujado en vivo. Elige uno, una mezcla de dos o «Sin retro». El estilo elegido se entrega como brief a la skill que construye; el comportamiento (teclado, foco, lectores de pantalla) se mantiene actual.</p>
 </header>
+
+<div class="grupo">Aparatos y programas de los 2000</div>
 <main>
-  <article>
-    <div class="media">
-      <div class="y2k" aria-label="Maqueta de reproductor con skin Y2K">
-        <div class="barra">NIGHT DRIVE · PLAYER</div>
-        <div class="lcd">
-          <div class="tiempo">02:47</div>
-          <div class="titulo"><span>03. Neon Circuit · 128 kbps · 44 kHz · estéreo</span></div>
-          <div class="eq"><i style="animation-delay:-.1s"></i><i style="animation-delay:-.5s"></i><i style="animation-delay:-.3s"></i><i style="animation-delay:-.8s"></i><i style="animation-delay:-.2s"></i><i style="animation-delay:-.6s"></i><i style="animation-delay:-.9s"></i><i style="animation-delay:-.4s"></i><i style="animation-delay:-.7s"></i><i style="animation-delay:-.15s"></i><i style="animation-delay:-.55s"></i><i style="animation-delay:-.35s"></i></div>
-        </div>
-        <div class="botones"><b>⏮</b><b>▶</b><b>⏸</b><b>⏹</b><b>⏭</b></div>
-      </div>
-    </div>
-    <div class="cuerpo">
-      <span class="num">Variante 1</span>
-      <h2>Skin Y2K</h2>
-      <p class="produce">Carcasa metálica con biseles, LCD azul con texto que corre, ecualizador y botones con relieve.</p>
-      <p class="ideal">Ideal para reproductores, herramientas creativas y páginas de producto con guiño nostálgico.</p>
-      <p class="pedido">Construye: <code>impeccable</code> con el brief retro.</p>
-    </div>
-  </article>
+  <article><div class="media"><div class="y2k"><div class="barra">NIGHT DRIVE · PLAYER</div><div class="lcd"><div class="t">02:47</div><div class="tit"><span>03. Neon Circuit · 128 kbps · 44 kHz · estéreo</span></div><div class="eq"><i style="animation-delay:-.1s"></i><i style="animation-delay:-.5s"></i><i style="animation-delay:-.3s"></i><i style="animation-delay:-.8s"></i><i style="animation-delay:-.2s"></i><i style="animation-delay:-.6s"></i><i style="animation-delay:-.9s"></i><i style="animation-delay:-.4s"></i><i style="animation-delay:-.7s"></i><i style="animation-delay:-.15s"></i><i style="animation-delay:-.55s"></i><i style="animation-delay:-.35s"></i></div></div><div class="bt"><b>⏮</b><b>▶</b><b>⏸</b><b>⏹</b><b>⏭</b></div></div></div>
+    <div class="cuerpo"><span class="num">01</span><h2>Skin Y2K</h2><p class="produce">Carcasa metálica con biseles, LCD azul con texto que corre, ecualizador y botones con relieve.</p><p class="ideal">Reproductores, herramientas creativas, páginas de producto con guiño nostálgico.</p><p class="pedido">Construye: <code>impeccable</code> con el brief retro.</p></div></article>
 
-  <article>
-    <div class="media">
-      <div class="aparato" aria-label="Maqueta de aparato con pantalla LCD y perilla">
-        <div class="pantalla">
-          <div class="rotulo"><span>SET DATE</span><span>FRI</span></div>
-          <div class="fecha"><span class="rojo">2026</span> · 11 · 27</div>
-          <div class="puntos"><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        </div>
-        <div class="perilla"><b>SET</b></div>
-      </div>
-    </div>
-    <div class="cuerpo">
-      <span class="num">Variante 2</span>
-      <h2>Aparato</h2>
-      <p class="produce">Carcasa clara mate, LCD negra con cifras en rojo, perillas y botones físicos, rótulos mono pequeños.</p>
-      <p class="ideal">Ideal para paneles, configuradores, apps de audio o domótica y landings de hardware o SaaS con carácter.</p>
-      <p class="pedido">Construye: <code>impeccable</code> con el brief retro. La perilla es un slider accesible (UI SDK).</p>
-    </div>
-  </article>
+  <article><div class="media"><div class="ap"><div class="p"><div class="r"><span>SET DATE</span><span>FRI</span></div><div class="f"><span>2026</span> · 11 · 27</div><div class="pt"><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="k"><b>SET</b></div></div></div>
+    <div class="cuerpo"><span class="num">02</span><h2>Aparato</h2><p class="produce">Carcasa clara mate, LCD negra con cifras en rojo, perillas y botones físicos, rótulos mono pequeños.</p><p class="ideal">Paneles, configuradores, apps de audio o domótica, landings de hardware o SaaS con carácter.</p><p class="pedido">Construye: <code>impeccable</code>. La perilla es un slider accesible (UI SDK).</p></div></article>
 
-  <article>
-    <div class="media">
-      <div class="crt" aria-label="Maqueta de terminal de fósforo verde">
-        <div>&gt; deploy checkout-api --prod</div>
-        <div class="ok">✓ build 1.284 módulos · 8,2 s</div>
-        <div class="ok">✓ pruebas 214 de 214</div>
-        <div class="err">! latencia p95 182 ms</div>
-        <div>&gt; listo en producción</div>
-        <div>&gt; <span class="cursor"></span></div>
-      </div>
-    </div>
-    <div class="cuerpo">
-      <span class="num">Variante 3</span>
-      <h2>Terminal de fósforo</h2>
-      <p class="produce">Fondo casi negro, texto verde o ámbar con brillo, líneas de barrido, todo en mono.</p>
-      <p class="ideal">Ideal para herramientas de desarrollo, registros, paneles de despliegue y consolas de comandos.</p>
-      <p class="pedido">Construye: <code>impeccable</code> con el brief retro. Barrido y parpadeo se apagan con movimiento reducido.</p>
-    </div>
-  </article>
+  <article><div class="media"><div class="cp"><div class="cruz"></div><div class="pan">DX-1 · DEPLOY<br>checkout-api<div class="bar"><i style="height:40%"></i><i style="height:65%"></i><i style="height:50%"></i><i style="height:80%"></i><i style="height:60%"></i><i style="height:90%"></i><i style="height:70%"></i><i style="height:100%"></i></div></div><div class="btn"></div></div></div>
+    <div class="cuerpo"><span class="num">03</span><h2>Consola portátil</h2><p class="produce">Cuerpo de consola de bolsillo con cruceta, botón rojo y pantalla oscura con gráficas y registros.</p><p class="ideal">Paneles de control, despliegues, juegos de mando, herramientas internas con humor.</p><p class="pedido">Construye: <code>impeccable</code>. La cruceta mueve el foco con flechas.</p></div></article>
 
-  <article>
-    <div class="media">
-      <div class="arcade" aria-label="Maqueta de pantalla arcade">
-        <div class="marcador">HI-SCORE 098 450</div>
-        <h3>Demo<br>Night</h3>
-        <span class="boton">INSERT COIN</span>
-        <div class="pix"></div>
-      </div>
-    </div>
-    <div class="cuerpo">
-      <span class="num">Variante 4</span>
-      <h2>Arcade</h2>
-      <p class="produce">Fondo oscuro, títulos con desfase RGB, sombras duras y colores de neón.</p>
-      <p class="ideal">Ideal para juegos, eventos, hackatones y lanzamientos ruidosos.</p>
-      <p class="pedido">Construye: <code>hallmark</code> con su tema «Arcade».</p>
-    </div>
-  </article>
+  <article><div class="media"><div class="lcd7"><div class="pan"><div class="tp"><span>M+</span><span>DEG</span><span>8 DÍGITOS</span></div><div class="dig">1.284,50</div></div><div class="tc"><b>MC</b><b>MR</b><b>%</b><b class="o">÷</b><b>7</b><b>8</b><b>9</b><b class="o">×</b></div></div></div>
+    <div class="cuerpo"><span class="num">04</span><h2>LCD de 7 segmentos</h2><p class="produce">Pantalla verde grisácea de calculadora o reloj digital, cifras inclinadas y teclas de goma.</p><p class="ideal">Calculadoras, cotizadores, contadores, temporizadores, métricas grandes.</p><p class="pedido">Construye: <code>impeccable</code>. Las cifras llevan texto real para lectores.</p></div></article>
 </main>
+
+<div class="grupo">Sistemas operativos de época</div>
+<main>
+  <article><div class="media"><div class="w95"><div class="tb"><span>Guardar cambios</span><b>×</b></div><div class="cu"><span class="ic">💾</span><span>¿Quieres guardar los cambios en «Propuesta.doc»?</span></div><div class="ba"><span>Sí</span><span>No</span><span>Cancelar</span></div></div></div>
+    <div class="cuerpo"><span class="num">05</span><h2>Escritorio clásico</h2><p class="produce">Ventanas grises con biseles, barra de título azul, botones con relieve y foco punteado.</p><p class="ideal">Portafolios lúdicos, herramientas internas, sitios de campaña con humor.</p><p class="pedido">Construye: <code>impeccable</code> con el brief retro.</p></div></article>
+
+  <article><div class="media"><div class="mac"><div class="tb"><span>Proyectos</span></div><div class="cu">3 elementos · 12 MB libres<div class="fi"><div><i></i>Guiones</div><div><i></i>Logos</div><div><i></i>Videos</div></div></div></div></div>
+    <div class="cuerpo"><span class="num">06</span><h2>Mac clásico 1 bit</h2><p class="produce">Blanco y negro puro, barra de título rayada, sombras duras y tramas de puntos.</p><p class="ideal">Blogs personales, portafolios de diseño, herramientas de escritura minimalistas.</p><p class="pedido">Construye: <code>impeccable</code> con el brief retro.</p></div></article>
+
+  <article><div class="media"><div class="aq"><div class="tb"><i></i><i></i><i></i></div><div class="cu"><span>Sincronizando biblioteca…</span><div class="prog"><b></b></div><span class="gel">Continuar</span></div></div></div>
+    <div class="cuerpo"><span class="num">07</span><h2>Aqua</h2><p class="produce">Botones de gel brillante, fondo de rayas finas, semáforos con reflejo y barras de progreso animadas.</p><p class="ideal">Apps de escritorio, instaladores, flujos de configuración, productos para creativos.</p><p class="pedido">Construye: <code>impeccable</code> con el brief retro.</p></div></article>
+
+  <article><div class="media"><div class="fa"><div class="bur" style="width:60px;height:60px;left:20px;top:18px"></div><div class="bur" style="width:34px;height:34px;left:270px;top:30px"></div><div class="bur" style="width:24px;height:24px;left:240px;top:130px"></div><div class="vid">Bienvenido a tu nube<small>Todo sincronizado · 2,4 GB</small></div></div></div>
+    <div class="cuerpo"><span class="num">08</span><h2>Frutiger Aero</h2><p class="produce">Cielo azul, pasto verde, burbujas y paneles de vidrio brillante con reflejos.</p><p class="ideal">Apps de bienestar, ecología, nube, servicios con tono optimista.</p><p class="pedido">Construye: <code>impeccable</code> con el brief retro.</p></div></article>
+</main>
+
+<div class="grupo">Pantallas y juegos</div>
+<main>
+  <article><div class="media"><div class="crt">&gt; deploy checkout-api --prod<br>✓ build 1.284 módulos · 8,2 s<br>✓ pruebas 214 de 214<br><span class="a">! latencia p95 182 ms</span><br>&gt; listo en producción<br>&gt; <span class="c"></span></div></div>
+    <div class="cuerpo"><span class="num">09</span><h2>Terminal de fósforo</h2><p class="produce">Fondo casi negro, texto verde o ámbar con brillo, líneas de barrido, todo en mono.</p><p class="ideal">Herramientas de desarrollo, registros, paneles de despliegue, consolas de comandos.</p><p class="pedido">Construye: <code>impeccable</code>. Barrido y parpadeo se apagan con movimiento reducido.</p></div></article>
+
+  <article><div class="media"><div class="ar"><div class="hs">HI-SCORE 098 450</div><h3>Demo<br>Night</h3><span class="b">INSERT COIN</span></div></div>
+    <div class="cuerpo"><span class="num">10</span><h2>Arcade</h2><p class="produce">Fondo oscuro, títulos con desfase RGB, sombras duras y colores de neón.</p><p class="ideal">Juegos, eventos, hackatones, lanzamientos ruidosos.</p><p class="pedido">Construye: <code>hallmark</code> con su tema «Arcade».</p></div></article>
+
+  <article><div class="media"><div class="rpg"><div class="vida"><i></i><i></i><i></i></div><div class="dlg"><span><em>GUÍA:</em> ¡Encontraste 3 cupones!</span><span>▶ Canjear ahora</span><span>&nbsp;&nbsp;Guardar para luego</span></div></div></div>
+    <div class="cuerpo"><span class="num">11</span><h2>RPG de 8 bits</h2><p class="produce">Escenario de cuadritos, corazones de vida y caja de diálogo azul con menú de flecha.</p><p class="ideal">Onboarding, gamificación, logros, tutoriales, comunidades.</p><p class="pedido">Construye: <code>impeccable</code>. El menú del diálogo es un listbox con flechas.</p></div></article>
+
+  <article><div class="media"><div class="vw"><div class="sol"></div><div class="suelo"></div><h3>AESTHETIC</h3></div></div>
+    <div class="cuerpo"><span class="num">12</span><h2>Vaporwave</h2><p class="produce">Atardecer magenta, sol rayado, cuadrícula de neón en perspectiva y tipografía espaciada.</p><p class="ideal">Música, moda, eventos nocturnos, portadas y landings de campaña.</p><p class="pedido">Construye: <code>impeccable</code> con el brief retro.</p></div></article>
+</main>
+
+<div class="grupo">Impresos y web temprana</div>
+<main>
+  <article><div class="media"><div class="mu"><div style="background:#e8452c">Tomato<small>N.º 02</small></div><div style="background:#f08a24">Marmalade<small>N.º 11</small></div><div style="background:#f6b73c">Apricot<small>N.º 14</small></div><div style="background:#f3dd5b">Lemon<small>N.º 20</small></div></div></div>
+    <div class="cuerpo"><span class="num">13</span><h2>Muestrario de papelería</h2><p class="produce">Bloques de color sólido con nombre en serif y número de catálogo, como una carta de colores impresa.</p><p class="ideal">Selectores de color o variante, menús de catálogo, tiendas, marcas editoriales.</p><p class="pedido">Construye: <code>impeccable</code>. Cada muestra es una opción de radio.</p></div></article>
+
+  <article><div class="media"><div class="w90"><h3>¡Bienvenidos a mi web!</h3><div class="mq"><span>★ Nuevo: galería de fotos ★ Firma mi libro de visitas ★</span></div><div class="obras">EN CONSTRUCCIÓN</div><br><a href="#">Entrar</a> · <a href="#">Enlaces</a> · <a href="#">Contacto</a><br><span class="cont">004521</span></div></div>
+    <div class="cuerpo"><span class="num">14</span><h2>Web de los 90</h2><p class="produce">Fondo con estrellas, títulos de colores, texto que corre, cinta de «en construcción» y contador de visitas.</p><p class="ideal">Páginas de humor, fan sites, eventos temáticos, portafolios irreverentes.</p><p class="pedido">Construye: <code>impeccable</code> con el brief retro.</p></div></article>
+
+  <article><div class="media"><div class="cs"><div class="et">Mix para la oficina<small>A · 60</small></div><div class="vent"><i></i><i></i></div><div class="pie"></div></div></div>
+    <div class="cuerpo"><span class="num">15</span><h2>Casete</h2><p class="produce">Etiqueta de papel escrita a mano con franjas de color, carretes que giran y cuerpo de plástico oscuro.</p><p class="ideal">Listas de reproducción, podcasts, reproductores, apps de notas de voz.</p><p class="pedido">Construye: <code>impeccable</code>. Los carretes giran solo durante la reproducción.</p></div></article>
+
+  <article><div class="media"><div class="fz"><h3>RUIDO #7</h3><div class="rec"></div><div class="cinta"></div><p>Concierto sábado 9 PM · entrada libre · trae amigos</p></div></div>
+    <div class="cuerpo"><span class="num">16</span><h2>Fanzine fotocopiado</h2><p class="produce">Blanco y negro de fotocopia, recortes pegados con cinta, titulares torcidos y textos de máquina de escribir.</p><p class="ideal">Música independiente, eventos, colectivos, portafolios con actitud.</p><p class="pedido">Construye: <code>impeccable</code> con el brief retro.</p></div></article>
+</main>
+
 <footer>Maquetas propias dibujadas con CSS. Fuente de la idea: reel de Instagram guardado el 2026-11-25 sobre interfaces retro hechas con UI SDK de Vercel Labs.</footer>
 </body>
 </html>
