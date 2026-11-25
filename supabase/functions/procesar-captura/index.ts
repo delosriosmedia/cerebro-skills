@@ -15,14 +15,16 @@
 //   POST {"captura_id": "…", "solo": "interpretar"} → repite solo la interpretación.
 //   POST {"captura_id": "…", "solo": "video"} → relee el video guardado en `medios`, actualiza su fila
 //        de `contenidos` y repite la interpretación, sin cambiar el estado de la captura.
-//   GET  ?estado=1             → diagnóstico sin secretos.
+//   GET  ?estado=1             → diagnóstico sin secretos (con &probar=1 prueba cada modelo configurado).
 // Autenticación: cabecera x-cerebro-clave = ajustes.cron_clave.
-// Secretos: GEMINI_API_KEY (obligatorio), APIFY_TOKEN (posts por enlace), ANTHROPIC_API_KEY (si interprete = claude).
+// Secretos: GOOGLE_VERTEX_SA (cuenta de servicio de Vertex AI, pagada con créditos de Google Cloud) y/o
+// GEMINI_API_KEY (AI Studio, respaldo); APIFY_TOKEN (posts por enlace); ANTHROPIC_API_KEY (si interprete = claude).
+// Proveedor de Gemini: ajuste gemini_proveedor ('vertex' por defecto; si Vertex no autentica, sigue AI Studio).
 
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
 import { type Captura, type Contenido, extraer, releerVideoGuardado } from "./extraer.ts";
 import { armarEntrada, interpretar } from "./interpretar.ts";
-import { fijarPlazo } from "./gemini.ts";
+import { fijarPlazo, fijarProveedor, hayCredencial, probarModelos } from "./gemini.ts";
 
 const db = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -195,14 +197,29 @@ Deno.serve(async (req) => {
   const url = new URL(req.url);
   const claveEsperada = await ajuste("cron_clave");
   if (!claveEsperada || req.headers.get("x-cerebro-clave") !== claveEsperada) return json({ error: "no autorizado" }, 401);
+  const proveedor = await fijarProveedor({
+    preferido: await ajuste("gemini_proveedor", "vertex"),
+    bucket: await ajuste("vertex_bucket"),
+    region: await ajuste("vertex_region", "global"),
+    alias: await ajuste("vertex_modelos"),
+  });
 
   if (req.method === "GET" && url.searchParams.get("estado")) {
+    const modelos = [...new Set([
+      await ajuste("gemini_modelo_video", "gemini-flash-latest"),
+      await ajuste("gemini_modelo_interprete", "gemini-flash-latest"),
+      ...(await ajuste("gemini_modelo_respaldo")).split(",").map((m) => m.trim()),
+    ].filter(Boolean))];
     return json({
+      proveedor,
+      vertex: Boolean(Deno.env.get("GOOGLE_VERTEX_SA")),
+      vertex_bucket: await ajuste("vertex_bucket"),
       gemini: Boolean(Deno.env.get("GEMINI_API_KEY")),
       apify: Boolean(Deno.env.get("APIFY_TOKEN")),
       claude: Boolean(Deno.env.get("ANTHROPIC_API_KEY")),
       interprete: await ajuste("interprete", "gemini"),
       modelo_video: await ajuste("gemini_modelo_video", "gemini-flash-latest"),
+      ...(url.searchParams.get("probar") ? { prueba_modelos: await probarModelos(modelos) } : {}),
     });
   }
 
@@ -218,12 +235,13 @@ Deno.serve(async (req) => {
     return json(await procesar(captura as Captura, cuerpo.solo));
   }
 
-  if (!Deno.env.get("GEMINI_API_KEY")) return json({ procesadas: 0, aviso: "falta el secreto GEMINI_API_KEY" });
+  if (!hayCredencial()) return json({ procesadas: 0, aviso: "faltan los secretos GOOGLE_VERTEX_SA y GEMINI_API_KEY" });
   const lote = Number(await ajuste("procesar_lote", "3")) || 3;
   const { data: capturas, error } = await db.rpc("tomar_capturas", { lote });
   if (error) return json({ error: error.message }, 500);
   const resultados = await Promise.allSettled((capturas ?? []).map((c: Captura) => procesar(c)));
   return json({
+    proveedor,
     procesadas: resultados.length,
     resultados: resultados.map((r) => (r.status === "fulfilled" ? r.value : { error: cortar(r.reason) })),
   });
