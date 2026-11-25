@@ -5,12 +5,12 @@ description: Úsala cada vez que Angel pida una animación o un video animado (r
 
 # Selector de estilos de animación
 
-Angel elige el estilo mirando el resultado. Esta skill abre una galería con dos familias: diez estilos hechos con código (01 a 10) y ocho estilos generados con IA de video desde una imagen fija (IA-01 a IA-08). Le pregunta cuál quiere y aplica el recurso listo o el prompt base del estilo elegido.
+Angel elige el estilo mirando el resultado. Esta skill abre una galería con dos familias: doce estilos hechos con código (01 a 12) y ocho estilos generados con IA de video desde una imagen fija (IA-01 a IA-08). Le pregunta cuál quiere y aplica el recurso listo o el prompt base del estilo elegido.
 
 ## Cuándo se activa
 
 - Angel pide una animación, un video animado, un reel explicativo o una promo hecha con código.
-- El hook `hooks/selector-animacion.sh` del plugin detecta «animación» o «animation» en el mensaje, abre la galería una vez por sesión y le recuerda a Claude seguir esta skill.
+- El hook `hooks/selector-animacion.sh` del plugin detecta «animación», «animation», «documental» o «Vox» en el mensaje, abre la galería una vez por sesión y le recuerda a Claude seguir esta skill.
 
 ## Pasos
 
@@ -20,7 +20,7 @@ Angel elige el estilo mirando el resultado. Esta skill abre una galería con dos
 4. **Vista previa.** Renderizar una versión corta y mostrarla antes del render final.
 5. **Aprendizaje.** Si Angel cuenta por qué eligió o descartó un estilo, ofrecer guardarlo como criterio en `produccion-video`.
 
-## Los diez estilos
+## Los estilos con código
 
 | # | Estilo | Qué se ve | Uso posible |
 | --- | --- | --- | --- |
@@ -34,10 +34,12 @@ Angel elige el estilo mirando el resultado. Esta skill abre una galería con dos
 | 08 | Glow world | Cristal facetado que brilla en un mundo low poly espacial; aparece una cara y una etiqueta | Mascota o concepto de IA |
 | 09 | 3D teardown | Teclado que se despieza capa por capa con etiquetas técnicas | Anatomía de producto |
 | 10 | Iceberg dive | La cámara baja bajo el agua y revela capas etiquetadas de un iceberg | Lo visible y lo oculto de un proceso |
+| 11 | Documental de archivo | Fotos de archivo generadas, personas de espaldas, zoom lento, grano y subtítulo serif sincronizado con la voz | Historias reales: origen de un producto, un personaje, un momento de la historia |
+| 12 | Collage documental | Mesa de edición con fotos reales rasgadas, papel, marcador y cifras en acento lima, a 12 cuadros | Explicar cualquier tema con material real y producción completa |
 
 ## Cómo conseguir cada estilo
 
-Investigación del 2026-11-25. Claude Code produce estas animaciones escribiendo código que dibuja cada cuadro (three.js para 3D, GSAP o Remotion para 2D) y grabándolo a MP4 con un navegador sin ventana. Siete de los diez estilos ya tienen una skill o un estilo listo en repositorios públicos; los otros tres se arman con el prompt base de más abajo.
+Investigación del 2026-11-25. Claude Code produce estas animaciones escribiendo código que dibuja cada cuadro (three.js para 3D, GSAP o Remotion para 2D) y grabándolo a MP4 con un navegador sin ventana. Siete de los diez primeros estilos ya tienen una skill o un estilo listo en repositorios públicos; los otros tres se arman con el prompt base de más abajo. El estilo 11 sigue su sub-skill en produccion-video y el 12 la skill local `videos-alfonso-vox`.
 
 | # | Estilo | Recurso listo | Cómo pedirlo |
 | --- | --- | --- | --- |
@@ -51,6 +53,8 @@ Investigación del 2026-11-25. Claude Code produce estas animaciones escribiendo
 | 08 | Glow world | Lemo-Opuscar · «Low-poly Isometric Island» (base low poly para adaptar) | Prompt base 08 |
 | 09 | 3D teardown | claude-animation-skills · `/breakdown`; Lemo-Opuscar · «Exploded Teardown: 21 Keys» (el mismo teclado) | `/breakdown mi teclado, cada capa con su etiqueta` |
 | 10 | Iceberg dive | Sin recurso exacto | Prompt base 10 |
+| 11 | Documental de archivo | Sub-skill `produccion-video/sub-skills/reel-documental-vox.md` (siete prompts); en Claude Code, la skill `vox-explainer` de skills-angel renderiza el MP4 | «Reel documental de archivo sobre…» |
+| 12 | Collage documental | Skill `videos-alfonso-vox`, local del Mac (HyperFrames) | «Video collage estilo Vox sobre…» |
 
 ### Repositorios encontrados
 
@@ -125,5 +129,9 @@ Se generan con Seedance 2.5 en modo imagen a video (el autor original usa Picsar
 ## Fuente
 
 [viashaan · 10 Claude Animation styles](https://www.instagram.com/p/DgGaMp_DCp4/) · Instagram · guardado el 2026-11-25. Las muestras de `muestras/` son fragmentos de 1,25 s de ese reel, con crédito a su autor. Selector pedido por Angel el 2026-11-25.
+
+Estilo 11: [reel de Beethoven de @naometzger, publicado por @godofprompt](https://www.instagram.com/p/DfTJ6ixCFTe/) · Instagram · guardado el 2026-11-25. La muestra `muestras/11.gif` es un fragmento de 1,25 s, con crédito a su autora.
+
+Estilo 12: la muestra `muestras/12.gif` sale del storyboard de ejemplo de la skill `videos-alfonso-vox` (tema: precio del chocolate). Angel eligió el 2026-11-25 mostrar los dos estilos documentales lado a lado.
 
 Estilos IA: [ai.withphil · 8 hand-animated cartoon styles](https://www.instagram.com/p/Df68uJLCHBX/) · Instagram · guardado el 2026-11-25. Las muestras `muestras/ia-0N.gif` son fragmentos de 1,25 s de ese carrusel, con crédito a su autor. Angel pidió sumarlos como sección aparte el 2026-11-25.

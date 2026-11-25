@@ -32,6 +32,7 @@ Aquí se listan los procedimientos completos de este dominio a medida que se apr
 
 - Videos con HyperFrames: seguir la skill `selector-hyperframes`, que muestra las extensiones instaladas y pregunta cuáles usar.
 - Animaciones hechas con código (reels, explicativos, promos): seguir la skill `selector-animacion`, que muestra el resultado de cada estilo y pregunta cuál usar.
+- Reel documental estilo Vox con IA: seguir `sub-skills/reel-documental-vox.md` (siete pasos: estilo, hechos, escenas, imágenes en Gemini, voz, reproductor HTML y arreglo final).
 
 ## Reglas de mantenimiento
 
