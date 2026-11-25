@@ -7,6 +7,7 @@ Uso:
   python3 medir_color.py --hex "#0E1116:55,#E6EDF3:25,#A3E635:8,#FF5A1F:7,#3B82F6:5"
   python3 medir_color.py --hex "#0E1116,#E6EDF3,#A3E635"   # sin áreas: solo roles y contraste
   python3 medir_color.py pieza.png --json          # salida para otros programas
+  python3 medir_color.py pieza.png --desenfoque d.png   # además guarda la pieza desenfocada (test de tres zonas)
 
 Entrega: los colores agrupados con su área, el rol propuesto para cada uno
 (60, 30, 10 o sobrante), qué hacer con los sobrantes, la distancia a la regla,
@@ -329,6 +330,7 @@ def main():
     ap.add_argument('--recorte', help='x,y,ancho,alto')
     ap.add_argument('--k', type=int, default=10, help='colores a buscar en la imagen (por defecto 10)')
     ap.add_argument('--json', action='store_true')
+    ap.add_argument('--desenfoque', help='guarda la imagen desenfocada (equivale a gblur=sigma=12) en esta ruta')
     a = ap.parse_args()
     if a.hex:
         colores = []
@@ -351,6 +353,10 @@ def main():
     elif a.imagen:
         rec = tuple(int(x) for x in a.recorte.split(',')) if a.recorte else None
         colores = medir_imagen(a.imagen, rec, a.k)
+        if a.desenfoque:
+            from PIL import Image, ImageFilter
+            Image.open(a.imagen).convert('RGB').filter(ImageFilter.GaussianBlur(12)).save(a.desenfoque)
+            print(f'Desenfocada en {a.desenfoque}: deben verse tres zonas planas (60, 30 y 10).\n', file=sys.stderr)
     else:
         ap.error('Pasa una imagen o --hex')
     if len(colores) < 2:
