@@ -13,12 +13,14 @@
 //   POST {}                    → procesa un lote (lo hace pg_cron cada 5 minutos).
 //   POST {"captura_id": "…"}   → procesa esa captura aunque esté en otro estado (pruebas).
 //   POST {"captura_id": "…", "solo": "interpretar"} → repite solo la interpretación.
+//   POST {"captura_id": "…", "solo": "video"} → relee el video guardado en `medios`, actualiza su fila
+//        de `contenidos` y repite la interpretación, sin cambiar el estado de la captura.
 //   GET  ?estado=1             → diagnóstico sin secretos.
 // Autenticación: cabecera x-cerebro-clave = ajustes.cron_clave.
 // Secretos: GEMINI_API_KEY (obligatorio), APIFY_TOKEN (posts por enlace), ANTHROPIC_API_KEY (si interprete = claude).
 
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
-import { type Captura, type Contenido, extraer } from "./extraer.ts";
+import { type Captura, type Contenido, extraer, releerVideoGuardado } from "./extraer.ts";
 import { armarEntrada, interpretar } from "./interpretar.ts";
 
 const db = createClient(
@@ -121,6 +123,26 @@ async function procesar(captura: Captura, solo?: string): Promise<Record<string,
   const t0 = Date.now();
   const resultado: Record<string, unknown> = { captura_id: captura.id, plataforma: captura.plataforma };
 
+  if (solo === "video") {
+    const { data: filas } = await db.from("contenidos").select("id, medio_ruta")
+      .eq("captura_id", captura.id).eq("fuente_extraccion", "gemini").not("medio_ruta", "is", null).order("creado_en");
+    const fila = (filas ?? []).find((f) => !/\.(jpe?g|png|webp)$/.test(f.medio_ruta as string));
+    if (!fila) return { ...resultado, error: "sin video guardado en medios" };
+    const textoPost = (await contenidosDe(captura.id)).find((c) => c.texto_post)?.texto_post ?? null;
+    try {
+      const nuevo = await releerVideoGuardado(db, captura, fila.medio_ruta as string, textoPost, ajuste);
+      const { error } = await db.from("contenidos").update(nuevo).eq("id", fila.id);
+      if (error) throw new Error(`guardar contenido: ${error.message}`);
+      await evento(captura.id, "extraccion", "info", { relectura: fila.medio_ruta, ms: Date.now() - t0 });
+      resultado.extraccion = { relectura: fila.medio_ruta };
+    } catch (e) {
+      return { ...resultado, error: cortar(e) };
+    }
+    await paso_interpretar_y_cerrar(captura, resultado, false);
+    resultado.ms = Date.now() - t0;
+    return resultado;
+  }
+
   if (solo === "interpretar" || captura.estado === "interpretando") {
     await paso_interpretar_y_cerrar(captura, resultado, captura.estado === "interpretando");
     resultado.ms = Date.now() - t0;
@@ -183,7 +205,7 @@ Deno.serve(async (req) => {
   if (cuerpo.captura_id) {
     const { data: captura } = await db.from("capturas").select("*").eq("id", cuerpo.captura_id).maybeSingle();
     if (!captura) return json({ error: "captura inexistente" }, 404);
-    if (cuerpo.solo !== "interpretar" && captura.estado !== "interpretando") {
+    if (!cuerpo.solo && captura.estado !== "interpretando") {
       await db.from("capturas").update({ estado: "extrayendo", intentos: captura.intentos + 1 }).eq("id", captura.id);
       captura.intentos += 1;
     }

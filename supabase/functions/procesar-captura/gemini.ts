@@ -6,7 +6,7 @@ const BASE = "https://generativelanguage.googleapis.com";
 export type Parte =
   | { text: string }
   | { inlineData: { mimeType: string; data: string } }
-  | { fileData: { fileUri: string; mimeType?: string }; videoMetadata?: { startOffset?: string; endOffset?: string } };
+  | { fileData: { fileUri: string; mimeType?: string }; videoMetadata?: { startOffset?: string; endOffset?: string; fps?: number } };
 
 function clave(): string {
   const k = Deno.env.get("GEMINI_API_KEY");

@@ -26,6 +26,8 @@ Si la extracción falla, la captura vuelve a `recibida` con el motivo en `ultimo
 
 **Momentos:** cada lectura de Gemini guarda en `bruto.momentos` de 3 a 6 instantes clave (`segundo`, `que_se_ve`) contados desde el inicio del video. En imágenes, `segundo` es el número de imagen. La revisión los usa para señalar dónde se ve cada pieza.
 
+**Animaciones:** cada lectura de video guarda en `bruto.animaciones` las animaciones, transiciones y microinteracciones visibles (`segundo`, `elemento`, `disparador`, `movimiento`, `duracion_ms`, `ritmo`, `efectos`). Los videos descargados se leen a 4 cuadros por segundo (ajuste `gemini_fps_archivo`) para captar movimientos cortos.
+
 **Demanda alta:** ante una respuesta 429 o 503, Gemini se reintenta dos veces (esperas de 4 y 8 s) y luego usa el modelo de respaldo.
 
 ## Interpretación
@@ -44,6 +46,7 @@ Si la extracción falla, la captura vuelve a `recibida` con el motivo en `ultimo
 | Secreto de Edge Functions | `ANTHROPIC_API_KEY` | Interpretación con Claude (opcional) |
 | Tabla `ajustes` | `gemini_modelo_video`, `gemini_modelo_interprete` | Modelo de Gemini (por defecto `gemini-flash-latest`) |
 | Tabla `ajustes` | `gemini_modelo_respaldo` | Modelo para demanda alta (por defecto `gemini-flash-lite-latest`) |
+| Tabla `ajustes` | `gemini_fps_archivo` | Cuadros por segundo al leer videos descargados (por defecto 4) |
 | Tabla `ajustes` | `youtube_tramo_s` | Duración de cada tramo de video largo (por defecto 180 s) |
 | Tabla `ajustes` | `claude_modelo_interprete` | Modelo de Claude (por defecto `claude-opus-5-5`) |
 | Tabla `ajustes` | `apify_actor_<plataforma>`, `apify_entrada_<plataforma>` | Actor de Apify y su entrada (`{url}` se reemplaza) |
@@ -56,6 +59,7 @@ Todas llevan la cabecera `x-cerebro-clave` con el valor de `ajustes.cron_clave`.
 - `POST {}`: procesa un lote. `pg_cron` la llama cada 5 minutos cuando hay capturas pendientes.
 - `POST {"captura_id": "…"}`: procesa esa captura (pruebas y reprocesos).
 - `POST {"captura_id": "…", "solo": "interpretar"}`: repite solo la interpretación.
+- `POST {"captura_id": "…", "solo": "video"}`: relee el video guardado en `medios`, actualiza su fila de `contenidos` y repite la interpretación, sin cambiar el estado de la captura.
 - `GET ?estado=1`: muestra qué secretos están configurados, sin revelarlos.
 
 Esquema y tarea programada: [`supabase/migrations/0005_procesar_captura.sql`](../../migrations/0005_procesar_captura.sql).

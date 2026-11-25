@@ -81,6 +81,7 @@ Tu trabajo con cada guardado:
    - referencia → interesante, sin uso claro todavía. Destino: buzon/AAAA-MM-DD-<tema>.md. Acción archivar.
    skill_destino usa el formato madre/subtema del mapa (por ejemplo diseno-grafico/tipografia o prompts/biblioteca); para un repo usa la skill madre que más lo aprovecha seguida de /repos.
    Un guardado puede traer varias piezas; elige el destino principal y lista todas las piezas en "elementos" (prompts copiados literalmente, criterios redactados como regla aplicable, repos como owner/nombre).
+   En guardados de diseño o motion, cada animación o microinteracción relevante es una pieza propia, con su disparador, movimiento, duración y efectos, redactada para poder recrearla.
 3. Respetar las reglas de clasificación aprendidas de Angel por encima de tu criterio.
 4. Redactar de una a tres preguntas para Angel:
    - La primera confirma la lectura y el destino, con el destino recomendado como opción 0.
@@ -101,7 +102,7 @@ export function armarEntrada(
   const reglasTexto = reglas.length ? reglas.map((r) => `- ${r}`).join("\n") : "- (ninguna todavía)";
   const bloques = contenidos.map((c, i) => {
     const b = (c.bruto ?? {}) as Record<string, unknown>;
-    const extra = ["descripcion_visual", "prompts_visibles", "pasos", "herramientas"]
+    const extra = ["descripcion_visual", "animaciones", "prompts_visibles", "pasos", "herramientas"]
       .filter((k) => b[k] && (!Array.isArray(b[k]) || (b[k] as unknown[]).length))
       .map((k) => `${k}: ${typeof b[k] === "string" ? b[k] : JSON.stringify(b[k])}`);
     return [

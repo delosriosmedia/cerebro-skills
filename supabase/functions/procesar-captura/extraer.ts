@@ -52,7 +52,24 @@ const ESQUEMA_VIDEO = {
     duracion_s: { type: "integer" },
     transcripcion: { type: "string", description: "Transcripción fiel de todo lo que se dice, en el idioma original" },
     texto_pantalla: { type: "string", description: "Todo el texto visible en pantalla: títulos, subtítulos quemados, código, comandos, URLs, nombres de herramientas" },
-    descripcion_visual: { type: "string", description: "Qué se ve: interfaz, herramienta, demostración, pasos mostrados" },
+    descripcion_visual: { type: "string", description: "Qué se ve: interfaz, herramienta, demostración, pasos mostrados, estilo visual (colores, tipografía, composición)" },
+    animaciones: {
+      type: "array",
+      description: "Cada animación, transición o microinteracción visible: qué elemento se mueve, qué lo dispara (clic, hover, scroll, carga), cómo se mueve (desliza, escala, se desvanece, rebota, se reordena, morph), duración aproximada, curva o ritmo y efectos asociados (desenfoque, sombra, brillo, cambio de color). Lista vacía si el video carece de movimiento de interfaz o gráfico",
+      items: {
+        type: "object",
+        properties: {
+          segundo: { type: "integer" },
+          elemento: { type: "string" },
+          disparador: { type: "string" },
+          movimiento: { type: "string" },
+          duracion_ms: { type: "integer" },
+          ritmo: { type: "string", description: "Curva o sensación: ease-out, resorte, lineal, escalonado" },
+          efectos: { type: "string" },
+        },
+        required: ["segundo", "elemento", "movimiento"],
+      },
+    },
     prompts_visibles: { type: "array", items: { type: "string" }, description: "Prompts completos que aparecen o se dictan, copiados literalmente" },
     pasos: { type: "array", items: { type: "string" }, description: "Procedimiento paso a paso si el video enseña uno" },
     herramientas: { type: "array", items: { type: "string" }, description: "Apps, modelos, repos, MCP, plugins o servicios mencionados" },
@@ -68,19 +85,22 @@ const ESQUEMA_VIDEO = {
       },
     },
   },
-  required: ["titulo", "transcripcion", "texto_pantalla", "descripcion_visual", "prompts_visibles", "pasos", "herramientas", "enlaces", "repos", "momentos"],
+  required: ["titulo", "transcripcion", "texto_pantalla", "descripcion_visual", "prompts_visibles", "pasos", "herramientas", "enlaces", "repos", "momentos", "animaciones"],
 };
 
 const SISTEMA_VIDEO =
   "Eres el extractor del cerebro de skills de Angel. Recibes un video corto o largo sobre inteligencia artificial, " +
   "diseño, video o automatización. Devuelve el contenido completo y literal: transcripción íntegra, todo el texto en pantalla, " +
-  "prompts copiados palabra por palabra y cada herramienta o repositorio mencionado. Conserva el idioma original del video.";
+  "prompts copiados palabra por palabra y cada herramienta o repositorio mencionado. Conserva el idioma original del video. " +
+  "En videos de diseño, interfaz o motion, describe con precisión cada animación, transición y microinteracción: " +
+  "qué se mueve, qué la dispara, cómo se mueve, cuánto dura y qué efectos la acompañan, como para poder recrearla.";
 
 type DatosVideo = {
   titulo?: string; autor?: string; idioma?: string; duracion_s?: number;
   transcripcion?: string; texto_pantalla?: string; descripcion_visual?: string;
   prompts_visibles?: string[]; pasos?: string[]; herramientas?: string[]; enlaces?: string[]; repos?: string[];
   momentos?: { segundo: number; que_se_ve: string }[];
+  animaciones?: Record<string, unknown>[];
 };
 
 function contenidoDesdeVideo(d: DatosVideo, extra: Partial<Contenido>, uso: unknown, modelo: string): Contenido {
@@ -97,7 +117,7 @@ function contenidoDesdeVideo(d: DatosVideo, extra: Partial<Contenido>, uso: unkn
     bruto: {
       modelo, uso,
       descripcion_visual: d.descripcion_visual, prompts_visibles: d.prompts_visibles,
-      pasos: d.pasos, herramientas: d.herramientas, momentos: d.momentos ?? [],
+      pasos: d.pasos, herramientas: d.herramientas, momentos: d.momentos ?? [], animaciones: d.animaciones ?? [],
     },
     ...extra,
   };
@@ -198,6 +218,7 @@ async function videoYoutube(
     herramientas: unir(d.map((x) => x.herramientas)),
     enlaces: unir(d.map((x) => x.enlaces)),
     repos: unir(d.map((x) => x.repos)),
+    animaciones: d.flatMap((x) => x.animaciones ?? []),
     // Si el modelo contó desde el inicio del tramo, se corrige sumando el inicio.
     momentos: d.flatMap((x, i) => (x.momentos ?? []).map((m) => ({
       ...m, segundo: m.segundo < cortes[i][0] ? m.segundo + cortes[i][0] : m.segundo,
@@ -229,8 +250,17 @@ async function videoDesdeArchivo(
   const { error } = await db.storage.from("medios").upload(ruta, bytes, { contentType: mime, upsert: true });
   if (error) throw new Error(`storage: ${error.message}`);
 
+  return await leerVideo(captura, bytes, mime, ruta, textoPost, ajuste);
+}
+
+// Lee con Gemini un video ya descargado. Usa varios cuadros por segundo (ajuste gemini_fps_archivo,
+// 4 por defecto) para que las animaciones cortas queden visibles.
+async function leerVideo(
+  captura: Captura, bytes: Uint8Array<ArrayBuffer>, mime: string, ruta: string, textoPost: string | null, ajuste: Ajustes,
+): Promise<Contenido> {
   const modelo = await ajuste("gemini_modelo_video", "gemini-flash-latest");
   const respaldo = await ajuste("gemini_modelo_respaldo", "gemini-flash-lite-latest");
+  const fps = Number(await ajuste("gemini_fps_archivo", "4")) || 4;
   const archivo = await subirArchivo(bytes, mime, `captura-${captura.id}`);
   try {
     const { datos, uso } = await geminiJSON<DatosVideo>({
@@ -239,7 +269,7 @@ async function videoDesdeArchivo(
       esquema: ESQUEMA_VIDEO,
       respaldo,
       partes: [
-        { fileData: { fileUri: archivo.uri, mimeType: mime } },
+        { fileData: { fileUri: archivo.uri, mimeType: mime }, videoMetadata: { fps } },
         { text: `Extrae el contenido de este video.${textoPost ? `\n\nTexto que acompaña la publicación:\n${textoPost}` : ""}` },
       ],
     });
@@ -247,6 +277,16 @@ async function videoDesdeArchivo(
   } finally {
     await borrarArchivo(archivo.name);
   }
+}
+
+// Vuelve a leer el video ya guardado en `medios` (por ejemplo tras mejorar el extractor).
+export async function releerVideoGuardado(
+  db: SupabaseClient, captura: Captura, ruta: string, textoPost: string | null, ajuste: Ajustes,
+): Promise<Contenido> {
+  const { data, error } = await db.storage.from("medios").download(ruta);
+  if (error || !data) throw new Error(`storage: ${error?.message ?? "sin archivo"}`);
+  const mime = data.type || "video/mp4";
+  return await leerVideo(captura, new Uint8Array(await data.arrayBuffer()), mime, ruta, textoPost, ajuste);
 }
 
 // Guarda imágenes de la publicación (carrusel, portada) en `medios` como capturas/<id>-<n>.<ext>.
