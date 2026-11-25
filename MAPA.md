@@ -12,7 +12,7 @@
 | Automatización y agentes con IA | `plugins/cerebro/skills/automatizacion-ia/` | flujos-agentes, integraciones-mcp, herramientas-no-code, apis-modelos |
 | Claude, sus skills, plugins, MCP y configuración | `plugins/cerebro/skills/claude-mods/` | skills-plugins, claude-code-config, servidores-mcp, flujos-claude |
 | Producción de video para redes con y sin IA | `plugins/cerebro/skills/produccion-video/` | guion-gancho, edicion-ritmo, ia-video, audio-subtitulos |
-| Desarrollo backend | `plugins/cerebro/skills/desarrollo-backend/` | diseno-apis |
+| Desarrollo backend | `plugins/cerebro/skills/desarrollo-backend/` | diseno-apis (lo sugiere el hook `plugins/cerebro/hooks/sugerir-diseno-apis.sh`) |
 
 ## Skills de apoyo
 

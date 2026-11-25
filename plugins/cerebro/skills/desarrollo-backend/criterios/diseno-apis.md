@@ -31,7 +31,7 @@
 
 ### C-006 · Rate limiting con 429 y Retry-After
 - **Regla:** Fija una cuota de peticiones por cliente (por ejemplo, 100 por minuto). Al superarla, responde `429 Too Many Requests` con la cabecera `Retry-After` para que el cliente sepa cuándo reintentar.
-- **Cuándo aplica:** Toda API expuesta a clientes externos o a usuarios finales. Para fijar topes de tokens y de gasto en apps con IA, ver también la regla LLM06 de la sub-skill de seguridad de `automatizacion-ia`.
+- **Cuándo aplica:** Toda API expuesta a clientes externos o a usuarios finales. Para fijar topes de tokens y de gasto en apps con IA, ver también LLM06 en `automatizacion-ia/sub-skills/auditar-seguridad-ia.md`.
 - **Fuente:** [Carrusel de @chanti.dev](https://www.instagram.com/p/DgIOHbujntN/) · 2026-11-24
 
 ### C-007 · Versión en la ruta
