@@ -6,7 +6,7 @@
 
 | Skill | Ruta | Criterios |
 | --- | --- | --- |
-| Diseño gráfico | `plugins/cerebro/skills/diseno-grafico/` | tipografia, color, composicion, identidad-visual, piezas-redes |
+| Diseño gráfico | `plugins/cerebro/skills/diseno-grafico/` | tipografia, color, composicion, identidad-visual, piezas-redes, visualizacion-datos |
 | Experiencia e interfaz de usuario | `plugins/cerebro/skills/ux-ui/` | principios-ux, interfaz-visual, accesibilidad, patrones-componentes, microcopy |
 | Ingeniería de prompts y biblioteca de prompts | `plugins/cerebro/skills/prompts/` | estructura-prompts, prompts-texto, prompts-imagen, prompts-video |
 | Automatización y agentes con IA | `plugins/cerebro/skills/automatizacion-ia/` | flujos-agentes, integraciones-mcp, herramientas-no-code, apis-modelos |
@@ -41,4 +41,5 @@
 
 Cada corrección de Angel se guarda aquí como regla y guía las interpretaciones siguientes.
 
+- Las gráficas de datos (qué resaltar, anotaciones, storytelling con datos) van a `diseno-grafico/visualizacion-datos`. La regla 60-30-10 de color (C-001) aplica a la interfaz o pieza completa y queda fuera de las gráficas (Angel, 2026-11-25).
 - Diseñar APIs propias, servicios de servidor, funciones en la nube y webhooks va a `desarrollo-backend`. `automatizacion-ia/apis-modelos` queda para consumir APIs de modelos de IA (Angel, 2026-11-25).

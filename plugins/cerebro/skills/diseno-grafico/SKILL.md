@@ -1,13 +1,13 @@
 ---
 name: diseno-grafico
-description: Usa esta skill cuando diseñes piezas visuales, elijas tipografías, definas paletas de color, armes composiciones o construyas identidad visual y gráficos para redes sociales (branding, typography, layout, color palette, social media design).
+description: Usa esta skill cuando diseñes piezas visuales, elijas tipografías, definas paletas de color, armes composiciones o construyas identidad visual, gráficos para redes sociales y gráficas de datos (branding, typography, layout, color palette, social media design, data visualization, charts).
 ---
 
 # Diseño gráfico
 
 ## Propósito
 
-Esta skill reúne los criterios de diseño gráfico guardados y aprobados por el usuario. Sirve como punto de entrada para aplicar reglas de tipografía, color, composición, identidad visual y piezas para redes sociales en proyectos reales.
+Esta skill reúne los criterios de diseño gráfico guardados y aprobados por el usuario. Sirve como punto de entrada para aplicar reglas de tipografía, color, composición, identidad visual, piezas para redes sociales y visualización de datos en proyectos reales.
 
 ## Cómo trabajar con esta skill
 
@@ -26,6 +26,7 @@ Esta skill reúne los criterios de diseño gráfico guardados y aprobados por el
 | `criterios/composicion.md` | Retículas, equilibrio visual, espaciado y dirección de lectura. |
 | `criterios/identidad-visual.md` | Sistemas de marca, logotipos, coherencia gráfica y aplicaciones. |
 | `criterios/piezas-redes.md` | Formatos, proporciones y adaptaciones visuales para redes sociales. |
+| `criterios/visualizacion-datos.md` | Gráficas de datos: qué resaltar, anotaciones y lectura de cifras. |
 
 ## Sub-skills
 
