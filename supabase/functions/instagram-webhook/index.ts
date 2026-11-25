@@ -6,7 +6,8 @@
 // - GET ?estado=1 : diagnóstico sin secretos (qué está configurado).
 // - GET ?accion=suscribir : suscribe la cuenta conectada al campo "messages".
 // - GET ?accion=diagnostico : prueba el token contra Meta y busca la cuenta y el chat destino.
-//   Estas tres rutas de administración exigen la cabecera x-cerebro-clave = ajuste cron_clave.
+// - GET ?accion=recuperar&horas=6 : lee el chat de captura por API y registra lo que falte.
+//   Estas rutas de administración exigen la cabecera x-cerebro-clave = ajuste cron_clave.
 // - POST : eventos de Meta. Se valida la firma X-Hub-Signature-256 con META_APP_SECRET
 //   (o con el ajuste "firma_prueba" para pruebas internas).
 //   Solo se guardan los mensajes ENVIADOS por la cuenta conectada (is_echo) al chat destino.
@@ -153,6 +154,10 @@ function normalizar(url: string): string {
   return u.toString().replace(/\/$/, "");
 }
 
+function normalizarSeguro(url: string): string | null {
+  try { return normalizar(url); } catch { return null; }
+}
+
 const enlacesDe = (texto: string): string[] => texto.match(/https?:\/\/[^\s<>"']+/g) ?? [];
 
 type Adjunto = { type?: string; payload?: Record<string, unknown> };
@@ -190,7 +195,7 @@ async function procesarMensaje(m: Record<string, any>) {
         canal: "dm_instagram",
         plataforma,
         url,
-        url_normalizada: mediaId ? `instagram:media:${mediaId}` : null,
+        url_normalizada: mediaId ? `instagram:media:${mediaId}` : url && a.type === "share" ? normalizarSeguro(url) : null,
         nota_angel: texto || null,
         ruta_extraccion: "dm_instagram",
         mensaje_origen_id: `${mid}#${i}`,
@@ -250,6 +255,56 @@ async function suscribir(cuentaParam: string | null) {
   return { ok: r.ok, status: r.status, cuenta, respuesta: cuerpo };
 }
 
+// Recupera mensajes del chat de captura con la API de conversaciones de Meta. Sirve para
+// rescatar lo que Angel envió mientras el webhook estaba caído y como respaldo por sondeo.
+// Convierte cada mensaje enviado por la cuenta al formato del webhook y usa procesarMensaje
+// (los duplicados se descartan por mensaje_origen_id).
+// Límite verificado el 2026-11-25: Meta entrega por esta vía el texto y los enlaces; los posts y
+// reels compartidos llegan vacíos (sin attachments ni shares), así que esos solo entran por webhook.
+async function recuperar(horas: number) {
+  if (!IG_TOKEN) return { ok: false, motivo: "falta IG_ACCESS_TOKEN" };
+  const cuenta = await ajuste("instagram_cuenta_id");
+  const destino = (await ajuste("instagram_destino_igsid")) || (await resolverDestinoPorConversaciones());
+  if (!cuenta || !destino) return { ok: false, motivo: "falta cuenta o destino" };
+  const convs = await graph(`${cuenta}/conversations`, { platform: "instagram", user_id: destino, fields: "id" });
+  let conv: string | undefined = convs.cuerpo.data?.[0]?.id;
+  if (!conv) {
+    const todas = await graph(`${cuenta}/conversations`, { platform: "instagram", fields: "participants", limit: "100" });
+    conv = (todas.cuerpo.data ?? []).find((c: any) =>
+      (c.participants?.data ?? []).some((p: any) => String(p.id) === destino)
+    )?.id;
+  }
+  if (!conv) return { ok: false, paso: "conversacion", status: convs.status, error: convs.cuerpo?.error?.message };
+  const campos = "id,created_time,from,to,message,attachments,shares,story,is_unsupported";
+  const r = await graph(conv, { fields: `messages.limit(25){${campos}}` });
+  if (!r.ok) return { ok: false, paso: "mensajes", status: r.status, error: r.cuerpo?.error?.message };
+  const desde = Date.now() - horas * 3600 * 1000;
+  const resumen: unknown[] = [];
+  for (const msj of (r.cuerpo.messages?.data ?? []).slice().reverse()) {
+    const cuando = Date.parse(msj.created_time ?? "");
+    const propio = String(msj.from?.id ?? "") === cuenta;
+    const adjuntos: Adjunto[] = [];
+    for (const a of msj.attachments?.data ?? []) {
+      const url = a.video_data?.url ?? a.image_data?.url ?? a.file_url ?? null;
+      adjuntos.push({ type: a.video_data ? "video" : a.image_data ? "image" : "file", payload: { url, ...a } });
+    }
+    for (const sh of msj.shares?.data ?? []) {
+      adjuntos.push({ type: "share", payload: { url: sh.link ?? null, title: sh.name ?? sh.description ?? null, ...sh } });
+    }
+    resumen.push({
+      cuando: msj.created_time, propio, texto: Boolean(msj.message),
+      adjuntos: adjuntos.map((a) => a.type), claves: Object.keys(msj),
+    });
+    if (!propio || !(cuando >= desde)) continue;
+    await procesarMensaje({
+      sender: { id: cuenta }, recipient: { id: destino }, timestamp: cuando,
+      message: { mid: msj.id, text: msj.message ?? "", is_echo: true, attachments: adjuntos },
+    });
+  }
+  await evento("recuperar", "info", { horas, revisados: resumen.length });
+  return { ok: true, revisados: resumen.length, resumen };
+}
+
 // Diagnóstico: qué ve el token. Solo devuelve ids, nombres de usuario y errores de Meta.
 async function diagnostico() {
   if (!IG_TOKEN) return { ok: false, motivo: "falta IG_ACCESS_TOKEN" };
@@ -279,6 +334,9 @@ Deno.serve(async (req) => {
     }
     if (url.searchParams.get("accion") === "suscribir") return json(await suscribir(url.searchParams.get("cuenta")));
     if (url.searchParams.get("accion") === "diagnostico") return json(await diagnostico());
+    if (url.searchParams.get("accion") === "recuperar") {
+      return json(await recuperar(Number(url.searchParams.get("horas") ?? "6") || 6));
+    }
     if (url.searchParams.get("estado")) {
       return json({
         firma_configurada: Boolean(APP_SECRET),
