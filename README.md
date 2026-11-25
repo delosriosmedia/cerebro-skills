@@ -15,6 +15,7 @@
 | `plugins/cerebro/skills/prompts/biblioteca/` | Prompts listos para usar, un archivo por prompt | Personas y Claude |
 | `repos/` | Fichas de evaluación de repositorios, servidores MCP, plugins y mods | Angel, antes de instalar algo |
 | `buzon/` | Guardados de referencia que esperan un uso claro | La rutina nocturna de consolidación |
+| `.claude/skills/revisar-guardados/` | Procedimiento del hilo que hace las preguntas y pide las aprobaciones | Claude, en cada revisión |
 | `supabase/migrations/` | Esquema de la base de datos del motor que procesa los guardados | Quien monte o mantenga el motor |
 | `.claude-plugin/marketplace.json` | Catálogo que permite instalar el plugin | Claude Code y la app de Claude |
 
@@ -34,9 +35,11 @@
 1. **Captura.** Angel comparte el enlace a un bot de Telegram o guarda el video en su lista «Cerebro» de YouTube.
 2. **Extracción.** El motor obtiene el texto del post, la transcripción, el texto que aparece en pantalla y los repositorios enlazados.
 3. **Interpretación.** Claude lee ese contenido junto con `MAPA.md` y propone un tipo (criterio, prompt, sub-skill, skill nueva, herramienta o referencia) y un destino.
-4. **Preguntas.** El bot le envía a Angel lo que Claude entendió y de una a tres preguntas para confirmar cómo tomarlo.
+4. **Preguntas.** En el hilo «Revisar guardados nuevos» del proyecto de Claude, Claude le muestra a Angel lo que entendió y de una a tres preguntas en tarjetas de un toque.
 5. **Propuesta.** Claude redacta el cambio y abre un pull request en este repositorio.
-6. **Aprobación.** Angel aprueba; al fusionar el pull request, el cambio queda instalado.
+6. **Aprobación.** Angel toca «Aprobar e instalar» en la tarjeta; Claude fusiona el pull request y el cambio queda instalado.
+
+Una tarea programada despierta el hilo de revisión y revisa la cola en Supabase. El procedimiento completo está en [`.claude/skills/revisar-guardados/SKILL.md`](.claude/skills/revisar-guardados/SKILL.md).
 
 El motor corre en la nube (Supabase, Telegram, Apify, la API de Gemini y la API de Claude). Sus datos y credenciales viven en servicios privados; este repositorio guarda solo el conocimiento aprobado y el esquema de la base de datos.
 
