@@ -5,20 +5,26 @@
 // - GET con hub.* : verificación del webhook que hace Meta al configurarlo.
 // - GET ?estado=1 : diagnóstico sin secretos (qué está configurado).
 // - GET ?accion=suscribir : suscribe la cuenta conectada al campo "messages".
+// - GET ?accion=diagnostico : prueba el token contra Meta y busca la cuenta y el chat destino.
+//   Estas tres rutas de administración exigen la cabecera x-cerebro-clave = ajuste cron_clave.
 // - POST : eventos de Meta. Se valida la firma X-Hub-Signature-256 con META_APP_SECRET
 //   (o con el ajuste "firma_prueba" para pruebas internas).
 //   Solo se guardan los mensajes ENVIADOS por la cuenta conectada (is_echo) al chat destino.
 //   Todo lo demás (mensajes recibidos, otros chats) se descarta sin guardarse.
 //
 // Secretos (Supabase > Edge Functions > Secrets): META_APP_SECRET, IG_ACCESS_TOKEN.
-// Ajustes no secretos (tabla public.ajustes): instagram_destino_usuario, instagram_destino_igsid.
+// Ajustes no secretos (tabla public.ajustes): instagram_destino_usuario, instagram_destino_igsid,
+// instagram_cuenta_id (id de la cuenta conectada; se guarda solo con el primer evento o el diagnóstico).
+//
+// Tokens: las apps nuevas de Meta usan "Unified login" (token de usuario de sistema, host
+// graph.facebook.com). Un token de Instagram Login (empieza con "IG") usa graph.instagram.com.
 
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
 
 const VERIFY_TOKEN = Deno.env.get("META_VERIFY_TOKEN") ?? "cerebro-skills";
 const APP_SECRET = Deno.env.get("META_APP_SECRET") ?? "";
 const IG_TOKEN = Deno.env.get("IG_ACCESS_TOKEN") ?? "";
-const GRAPH = "https://graph.instagram.com";
+const GRAPH = IG_TOKEN.startsWith("IG") ? "https://graph.instagram.com" : "https://graph.facebook.com";
 
 const db = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -62,6 +68,41 @@ async function firmaValida(cuerpo: string, cabecera: string | null): Promise<boo
   return Boolean(prueba) && await firmaCon(prueba!, cuerpo, recibida);
 }
 
+async function guardarAjuste(clave: string, valor: string) {
+  await db.from("ajustes").upsert({ clave, valor });
+}
+
+// Llamada GET a la API de Meta. Devuelve estado y cuerpo; el token nunca sale en la respuesta.
+async function graph(ruta: string, params: Record<string, string> = {}) {
+  const u = new URL(`${GRAPH}/${ruta}`);
+  for (const [k, v] of Object.entries(params)) u.searchParams.set(k, v);
+  u.searchParams.set("access_token", IG_TOKEN);
+  const r = await fetch(u);
+  return { ok: r.ok, status: r.status, cuerpo: await r.json().catch(() => ({})) as Record<string, any> };
+}
+
+// Busca en las conversaciones de la cuenta el chat con el usuario destino y guarda su id.
+async function resolverDestinoPorConversaciones(): Promise<string | null> {
+  const usuario = (await ajuste("instagram_destino_usuario"))?.toLowerCase();
+  const cuenta = (await ajuste("instagram_cuenta_id")) || "me";
+  if (!usuario || !IG_TOKEN) return null;
+  const r = await graph(`${cuenta}/conversations`, { platform: "instagram", fields: "participants", limit: "100" });
+  if (!r.ok) {
+    await evento("resolver_destino", "aviso", { via: "conversaciones", status: r.status, error: r.cuerpo?.error?.message });
+    return null;
+  }
+  for (const conv of r.cuerpo.data ?? []) {
+    for (const p of conv.participants?.data ?? []) {
+      if (String(p.username ?? "").toLowerCase() === usuario && p.id) {
+        await guardarAjuste("instagram_destino_igsid", String(p.id));
+        await evento("resolver_destino", "info", { via: "conversaciones", resuelto: true });
+        return String(p.id);
+      }
+    }
+  }
+  return null;
+}
+
 // ¿El destinatario del mensaje es el chat de captura (ajuste instagram_destino_usuario)?
 async function esDestino(idDestinatario: string): Promise<boolean> {
   const fijo = await ajuste("instagram_destino_igsid");
@@ -69,16 +110,15 @@ async function esDestino(idDestinatario: string): Promise<boolean> {
   if (descartados.has(idDestinatario) || !IG_TOKEN) return false;
   const usuario = (await ajuste("instagram_destino_usuario"))?.toLowerCase();
   if (!usuario) return false;
-  const r = await fetch(`${GRAPH}/${idDestinatario}?fields=username&access_token=${IG_TOKEN}`);
-  if (!r.ok) {
-    await evento("resolver_destino", "aviso", { status: r.status });
-    return false;
-  }
-  const perfil = await r.json();
-  if (String(perfil.username ?? "").toLowerCase() === usuario) {
-    await db.from("ajustes").upsert({ clave: "instagram_destino_igsid", valor: idDestinatario });
-    await evento("resolver_destino", "info", { resuelto: true });
+  const perfil = await graph(idDestinatario, { fields: "username" });
+  if (perfil.ok && String(perfil.cuerpo.username ?? "").toLowerCase() === usuario) {
+    await guardarAjuste("instagram_destino_igsid", idDestinatario);
+    await evento("resolver_destino", "info", { via: "perfil", resuelto: true });
     return true;
+  }
+  if (!perfil.ok) {
+    await evento("resolver_destino", "aviso", { via: "perfil", status: perfil.status, error: perfil.cuerpo?.error?.message });
+    if ((await resolverDestinoPorConversaciones()) === idDestinatario) return true;
   }
   descartados.add(idDestinatario);
   return false;
@@ -195,12 +235,32 @@ async function procesarMensaje(m: Record<string, any>) {
   );
 }
 
-async function suscribir() {
+// Suscribe la cuenta al campo "messages". Unified login suscribe por id de cuenta;
+// Instagram Login usa /me.
+async function suscribir(cuentaParam: string | null) {
   if (!IG_TOKEN) return { ok: false, motivo: "falta IG_ACCESS_TOKEN" };
-  const r = await fetch(`${GRAPH}/me/subscribed_apps?subscribed_fields=messages&access_token=${IG_TOKEN}`, { method: "POST" });
+  const cuenta = cuentaParam || (await ajuste("instagram_cuenta_id")) || "me";
+  if (cuentaParam) await guardarAjuste("instagram_cuenta_id", cuentaParam);
+  const u = new URL(`${GRAPH}/${cuenta}/subscribed_apps`);
+  u.searchParams.set("subscribed_fields", "messages");
+  u.searchParams.set("access_token", IG_TOKEN);
+  const r = await fetch(u, { method: "POST" });
   const cuerpo = await r.json().catch(() => ({}));
-  await evento("suscribir_webhook", r.ok ? "info" : "error", { status: r.status, respuesta: cuerpo });
-  return { ok: r.ok, status: r.status, respuesta: cuerpo };
+  await evento("suscribir_webhook", r.ok ? "info" : "error", { cuenta, status: r.status, respuesta: cuerpo });
+  return { ok: r.ok, status: r.status, cuenta, respuesta: cuerpo };
+}
+
+// Diagnóstico: qué ve el token. Solo devuelve ids, nombres de usuario y errores de Meta.
+async function diagnostico() {
+  if (!IG_TOKEN) return { ok: false, motivo: "falta IG_ACCESS_TOKEN" };
+  const yo = await graph("me", { fields: GRAPH.includes("instagram") ? "user_id,username" : "id,name" });
+  const cuentas = GRAPH.includes("instagram")
+    ? null
+    : await graph("me/accounts", { fields: "id,name,instagram_business_account{id,username}" });
+  const cuenta = await ajuste("instagram_cuenta_id");
+  const suscripciones = cuenta ? await graph(`${cuenta}/subscribed_apps`) : null;
+  const destino = (await ajuste("instagram_destino_igsid")) || (await resolverDestinoPorConversaciones());
+  return { host: GRAPH, yo, cuentas, cuenta_id: cuenta, suscripciones, destino_resuelto: Boolean(destino) };
 }
 
 Deno.serve(async (req) => {
@@ -212,11 +272,19 @@ Deno.serve(async (req) => {
       await evento("verificacion_meta", "info", {});
       return new Response(url.searchParams.get("hub.challenge") ?? "", { status: 200 });
     }
-    if (url.searchParams.get("accion") === "suscribir") return json(await suscribir());
+    const esAdmin = url.searchParams.has("accion") || url.searchParams.has("estado");
+    if (esAdmin) {
+      const clave = await ajuste("cron_clave");
+      if (!clave || req.headers.get("x-cerebro-clave") !== clave) return new Response("no autorizado", { status: 401 });
+    }
+    if (url.searchParams.get("accion") === "suscribir") return json(await suscribir(url.searchParams.get("cuenta")));
+    if (url.searchParams.get("accion") === "diagnostico") return json(await diagnostico());
     if (url.searchParams.get("estado")) {
       return json({
         firma_configurada: Boolean(APP_SECRET),
         token_configurado: Boolean(IG_TOKEN),
+        host: GRAPH,
+        cuenta_id: await ajuste("instagram_cuenta_id"),
         destino_usuario: await ajuste("instagram_destino_usuario"),
         destino_resuelto: Boolean(await ajuste("instagram_destino_igsid")),
       });
@@ -235,6 +303,9 @@ Deno.serve(async (req) => {
   try {
     const datos = JSON.parse(cuerpo);
     for (const entrada of datos.entry ?? []) {
+      if (entrada.id && !(await ajuste("instagram_cuenta_id")) && (entrada.messaging ?? []).length) {
+        await guardarAjuste("instagram_cuenta_id", String(entrada.id));
+      }
       for (const m of entrada.messaging ?? []) await procesarMensaje(m);
     }
   } catch (e) {
