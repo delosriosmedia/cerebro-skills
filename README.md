@@ -16,6 +16,7 @@
 | `repos/` | Fichas de evaluación de repositorios, servidores MCP, plugins y mods | Angel, antes de instalar algo |
 | `buzon/` | Guardados de referencia que esperan un uso claro | La rutina nocturna de consolidación |
 | `supabase/migrations/` | Esquema de la base de datos del motor que procesa los guardados | Quien monte o mantenga el motor |
+| `supabase/functions/` | Funciones del motor; cada una trae su `LEEME.md` (por ejemplo `youtube-lista`, que lee la lista «Cerebro» de YouTube cada 30 minutos) | Quien monte o mantenga el motor |
 | `.claude-plugin/marketplace.json` | Catálogo que permite instalar el plugin | Claude Code y la app de Claude |
 
 ## Las seis skills madre
