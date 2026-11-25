@@ -1,6 +1,7 @@
 // Cliente mínimo de Gemini con dos proveedores:
-//   - Vertex AI (Gemini platform de Google Cloud), con la cuenta de servicio del secreto GOOGLE_VERTEX_SA.
-//     Lo pagan los créditos de Google Cloud; los videos se suben a un bucket temporal de Cloud Storage.
+//   - Vertex AI (Gemini platform de Google Cloud), pagado con los créditos de Google Cloud. Supabase se
+//     identifica con federación de identidad: firma un JWT con su llave privada (Vault de Supabase), Google lo
+//     cambia por un token de la cuenta de servicio. Los videos se suben a un bucket temporal de Cloud Storage.
 //   - Google AI Studio (API de Gemini), con el secreto GEMINI_API_KEY; los videos van por la Files API.
 // index.ts elige el proveedor en cada llamada con fijarProveedor(); si Vertex falla al autenticar,
 // la llamada sigue con AI Studio.
@@ -25,30 +26,28 @@ export const quedaMs = (): number => plazoFuncion - Date.now();
 // ── Proveedor ──────────────────────────────────────────────────────────────────────────────────────
 type Proveedor = "vertex" | "aistudio";
 let proveedor: Proveedor = "aistudio";
-let vertexBucket = "";
-let vertexRegion = "global";
+
+// Configuración de Vertex (ajustes de la tabla `ajustes` y llave del Vault, leídos por index.ts).
+export interface ConfigVertex {
+  preferido: string; // ajuste gemini_proveedor: 'vertex' | 'aistudio'
+  proyecto: string; // vertex_proyecto: ID del proyecto de Google Cloud
+  bucket: string; // vertex_bucket: bucket privado para videos temporales
+  region?: string; // vertex_region (por defecto global)
+  alias?: string; // vertex_modelos: "nombre=nombre_en_vertex", separados por comas
+  cuenta: string; // vertex_cuenta: correo de la cuenta de servicio
+  emisor: string; // wif_emisor: URL del emisor OIDC (función wif-emisor)
+  audiencia: string; // wif_audiencia: https://iam.googleapis.com/projects/<n>/locations/global/workloadIdentityPools/<pool>/providers/<prov>
+  kid: string; // id de la llave pública publicada
+  privada: string | null; // llave privada PKCS8 en base64 (Vault: wif_vertex_llave)
+}
+let cfgVertex: ConfigVertex | null = null;
 let vertexAlias = new Map<string, string>();
 
-interface CuentaServicio { client_email: string; private_key: string; project_id: string; token_uri?: string }
-function cuentaServicio(): CuentaServicio | null {
-  const crudo = Deno.env.get("GOOGLE_VERTEX_SA");
-  if (!crudo) return null;
-  try {
-    const c = JSON.parse(crudo.trim());
-    return c.client_email && c.private_key && c.project_id ? c : null;
-  } catch {
-    return null;
-  }
-}
-
-// preferido: ajuste gemini_proveedor ('vertex' o 'aistudio'). bucket: ajuste vertex_bucket.
-// alias: ajuste vertex_modelos, pares "nombre=nombre_en_vertex" separados por comas, para modelos con otro nombre en Vertex.
-export async function fijarProveedor(cfg: { preferido: string; bucket: string; region?: string; alias?: string }): Promise<Proveedor> {
-  vertexBucket = cfg.bucket;
-  vertexRegion = cfg.region || "global";
+export async function fijarProveedor(cfg: ConfigVertex): Promise<Proveedor> {
+  cfgVertex = { ...cfg, region: cfg.region || "global" };
   vertexAlias = new Map((cfg.alias ?? "").split(",").map((x) => x.split("=").map((y) => y.trim())).filter((x) => x.length === 2 && x[0] && x[1]) as [string, string][]);
   proveedor = "aistudio";
-  if (cfg.preferido === "vertex" && cuentaServicio()) {
+  if (cfg.preferido === "vertex" && vertexListo()) {
     try {
       await tokenVertex();
       proveedor = "vertex";
@@ -58,42 +57,60 @@ export async function fijarProveedor(cfg: { preferido: string; bucket: string; r
   }
   return proveedor;
 }
+const vertexListo = () => Boolean(cfgVertex?.privada && cfgVertex.proyecto && cfgVertex.cuenta && cfgVertex.emisor && cfgVertex.audiencia);
 export const proveedorActual = (): Proveedor => proveedor;
-export const hayCredencial = (): boolean => Boolean(Deno.env.get("GEMINI_API_KEY")) || Boolean(cuentaServicio());
+export const hayCredencial = (): boolean => Boolean(Deno.env.get("GEMINI_API_KEY")) || vertexListo();
 
-// Token OAuth de la cuenta de servicio (JWT RS256 firmado aquí), guardado hasta 5 minutos antes de vencer.
+// Token de acceso de la cuenta de servicio, guardado hasta 5 minutos antes de vencer:
+//   1. JWT RS256 firmado aquí (iss = emisor, sub = procesar-captura, aud = proveedor de identidad).
+//   2. STS lo cambia por un token federado.
+//   3. IAM Credentials entrega un token de la cuenta de servicio (rol Usuario de Workload Identity).
 let tokenCache: { valor: string; vence: number } | null = null;
 async function tokenVertex(): Promise<string> {
   if (tokenCache && tokenCache.vence > Date.now() + 300_000) return tokenCache.valor;
-  const cs = cuentaServicio();
-  if (!cs) throw new Error("falta el secreto GOOGLE_VERTEX_SA");
+  const c = cfgVertex;
+  if (!c?.privada) throw new Error("falta la llave de federación (Vault wif_vertex_llave)");
   const ahora = Math.floor(Date.now() / 1000);
-  const aud = cs.token_uri ?? "https://oauth2.googleapis.com/token";
   const enc = (o: unknown) => encodeBase64Url(new TextEncoder().encode(JSON.stringify(o)));
-  const sinFirma = `${enc({ alg: "RS256", typ: "JWT" })}.${enc({
-    iss: cs.client_email, scope: "https://www.googleapis.com/auth/cloud-platform", aud, iat: ahora, exp: ahora + 3600,
+  const sinFirma = `${enc({ alg: "RS256", typ: "JWT", kid: c.kid })}.${enc({
+    iss: c.emisor, sub: "procesar-captura", aud: c.audiencia, iat: ahora, exp: ahora + 600,
   })}`;
-  const pem = cs.private_key.replace(/\\n/g, "\n").replace(/-----[^-]+-----/g, "").replace(/\s+/g, "");
-  const der = Uint8Array.from(atob(pem), (c) => c.charCodeAt(0));
+  const der = Uint8Array.from(atob(c.privada), (x) => x.charCodeAt(0));
   const llave = await crypto.subtle.importKey("pkcs8", der, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["sign"]);
   const firma = new Uint8Array(await crypto.subtle.sign("RSASSA-PKCS1-v1_5", llave, new TextEncoder().encode(sinFirma)));
-  const r = await fetch(aud, {
+
+  const sts = await fetch("https://sts.googleapis.com/v1/token", {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: `${sinFirma}.${encodeBase64Url(firma)}` }),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      grantType: "urn:ietf:params:oauth:grant-type:token-exchange",
+      audience: c.audiencia.replace(/^https:/, ""),
+      scope: "https://www.googleapis.com/auth/cloud-platform",
+      requestedTokenType: "urn:ietf:params:oauth:token-type:access_token",
+      subjectTokenType: "urn:ietf:params:oauth:token-type:jwt",
+      subjectToken: `${sinFirma}.${encodeBase64Url(firma)}`,
+    }),
+  });
+  const federado = await sts.json().catch(() => ({}));
+  if (!sts.ok || !federado.access_token) throw new Error(`sts ${sts.status}: ${JSON.stringify(federado).slice(0, 200)}`);
+
+  const r = await fetch(`https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${c.cuenta}:generateAccessToken`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${federado.access_token}` },
+    body: JSON.stringify({ scope: ["https://www.googleapis.com/auth/cloud-platform"], lifetime: "3600s" }),
   });
   const res = await r.json().catch(() => ({}));
-  if (!r.ok || !res.access_token) throw new Error(`token vertex ${r.status}: ${JSON.stringify(res).slice(0, 200)}`);
-  tokenCache = { valor: res.access_token, vence: Date.now() + (Number(res.expires_in) || 3600) * 1000 };
+  if (!r.ok || !res.accessToken) throw new Error(`iamcredentials ${r.status}: ${JSON.stringify(res?.error?.message ?? res).slice(0, 200)}`);
+  tokenCache = { valor: res.accessToken, vence: Date.parse(res.expireTime) || Date.now() + 3_600_000 };
   return tokenCache.valor;
 }
 
 async function pedirGenerate(modelo: string, cuerpo: Record<string, unknown>, signal?: AbortSignal): Promise<Response> {
   if (proveedor === "vertex") {
-    const cs = cuentaServicio()!;
+    const { proyecto, region } = cfgVertex!;
     const m = vertexAlias.get(modelo) ?? modelo;
-    const host = vertexRegion === "global" ? "aiplatform.googleapis.com" : `${vertexRegion}-aiplatform.googleapis.com`;
-    return await fetch(`https://${host}/v1/projects/${cs.project_id}/locations/${vertexRegion}/publishers/google/models/${m}:generateContent`, {
+    const host = region === "global" ? "aiplatform.googleapis.com" : `${region}-aiplatform.googleapis.com`;
+    return await fetch(`https://${host}/v1/projects/${proyecto}/locations/${region}/publishers/google/models/${m}:generateContent`, {
       method: "POST", signal,
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${await tokenVertex()}` },
       body: JSON.stringify(paraVertex(cuerpo)),
@@ -194,6 +211,7 @@ export async function geminiJSON<T>(opciones: {
 // Files API, y espera a que quede ACTIVE.
 export async function subirArchivo(bytes: Uint8Array<ArrayBuffer>, mime: string, nombre: string): Promise<{ uri: string; name: string }> {
   if (proveedor === "vertex") {
+    const vertexBucket = cfgVertex?.bucket;
     if (!vertexBucket) throw new Error("falta el ajuste vertex_bucket");
     const objeto = `temporal/${nombre}-${Date.now()}`;
     const r = await fetch(`https://storage.googleapis.com/upload/storage/v1/b/${vertexBucket}/o?uploadType=media&name=${encodeURIComponent(objeto)}`, {
@@ -246,7 +264,7 @@ export async function subirArchivo(bytes: Uint8Array<ArrayBuffer>, mime: string,
 export async function borrarArchivo(name: string): Promise<void> {
   if (name.startsWith("gcs:")) {
     const objeto = encodeURIComponent(name.slice(4));
-    await fetch(`https://storage.googleapis.com/storage/v1/b/${vertexBucket}/o/${objeto}`, {
+    await fetch(`https://storage.googleapis.com/storage/v1/b/${cfgVertex?.bucket}/o/${objeto}`, {
       method: "DELETE", headers: { Authorization: `Bearer ${await tokenVertex()}` },
     }).then((r) => r.body?.cancel()).catch(() => {});
     return;
