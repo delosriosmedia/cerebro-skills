@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Extensiones de HyperFrames</title>
+<style>
+  :root {
+    --fondo: #f6f5f2; --tarjeta: #ffffff; --texto: #1c1b19; --suave: #5f5d58;
+    --borde: #e3e0d9; --acento: #2563eb; --etiqueta: #eef2ff; --media: #111;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fondo: #141414; --tarjeta: #1e1e1e; --texto: #f1f0ec; --suave: #a9a7a1;
+      --borde: #2e2e2e; --acento: #7aa2ff; --etiqueta: #1f2a44; --media: #000;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--texto);
+    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  header { max-width: 1200px; margin: 0 auto; padding: 32px 16px 8px; }
+  h1 { margin: 0 0 6px; font-size: 28px; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--suave); max-width: 70ch; }
+  main { max-width: 1200px; margin: 0 auto; padding: 16px; display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+  article { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 14px;
+    overflow: hidden; display: flex; flex-direction: column; }
+  .media { height: 200px; overflow: hidden; background: var(--media); display: flex; align-items: center; justify-content: center; }
+  .media img { width: 100%; height: 100%; object-fit: contain; }
+  .media.claro { background: #fff; }
+  .cuerpo { padding: 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .num { font-size: 12px; font-weight: 600; color: var(--acento); letter-spacing: .06em; text-transform: uppercase; }
+  h2 { margin: 0; font-size: 19px; }
+  .produce { margin: 0; }
+  .ideal { margin: 0; color: var(--suave); font-size: 14px; }
+  .pedido { margin: 4px 0 0; padding: 8px 10px; background: var(--etiqueta); border-radius: 8px; font-size: 14px; }
+  .enlaces { margin-top: auto; padding-top: 8px; font-size: 14px; display: flex; gap: 14px; flex-wrap: wrap; }
+  a { color: var(--acento); }
+  footer { max-width: 1200px; margin: 0 auto; padding: 8px 16px 40px; color: var(--suave); font-size: 14px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Extensiones de HyperFrames</h1>
+  <p>Cada tarjeta muestra lo que produce la extensión. Elige una o varias y díselas a Claude por su nombre; también puedes pedir «solo HyperFrames base».</p>
+</header>
+<main>
+
+<article>
+  <div class="media"><img loading="lazy" src="https://github.com/alchaincyf/huashu-design/releases/download/v3.0.0/launch-3.0.gif" alt="Película de lanzamiento hecha con huashu-design"></div>
+  <div class="cuerpo">
+    <span class="num">1 · Cámara y diseño</span>
+    <h2>huashu-design</h2>
+    <p class="produce">Diseños completos y videos con cámara virtual GSAP: paneos, zoom y travelling suaves.</p>
+    <p class="ideal">Ideal para piezas con estética editorial y presentaciones animadas.</p>
+    <p class="pedido">Pídelo así: «HyperFrames con huashu-design, cámara que recorre la escena».</p>
+    <div class="enlaces"><a href="https://github.com/alchaincyf/huashu-design">Repositorio</a><a href="https://github.com/alchaincyf/huashu-design/releases/download/v3.0.0/launch-3.0.mp4">Video con sonido</a></div>
+  </div>
+</article>
+
+<article>
+  <div class="media claro"><img loading="lazy" src="https://raw.githubusercontent.com/gkurt/tegaki/HEAD/media/hello-world.svg" alt="Texto que se escribe a mano con tegaki"></div>
+  <div class="cuerpo">
+    <span class="num">2 · Escritura a mano</span>
+    <h2>tegaki</h2>
+    <p class="produce">Texto que se escribe solo, trazo por trazo, con cualquier fuente.</p>
+    <p class="ideal">Ideal para títulos, firmas y frases destacadas.</p>
+    <p class="pedido">Pídelo así: «el título aparece escrito a mano con tegaki».</p>
+    <div class="enlaces"><a href="https://github.com/gkurt/tegaki">Repositorio</a><a href="https://tegaki.ink/studio/">Probar en el estudio</a></div>
+  </div>
+</article>
+
+<article>
+  <div class="media"><img loading="lazy" src="https://raw.githubusercontent.com/AbubakrChan/product-launch-motion/HEAD/examples/one-shape-loop.webp" alt="Una forma que cambia por 11 estados de interfaz"></div>
+  <div class="cuerpo">
+    <span class="num">3 · Lanzamientos</span>
+    <h2>product-launch-motion</h2>
+    <p class="produce">Video de lanzamiento de 30 s a 60 fps: una forma que nunca corta, cursor que guía cada cambio, grano y efectos al ritmo.</p>
+    <p class="ideal">Ideal para lanzar un producto, servicio o página web a partir de su URL.</p>
+    <p class="pedido">Pídelo así: «video de lanzamiento de esta página con product-launch-motion».</p>
+    <div class="enlaces"><a href="https://github.com/AbubakrChan/product-launch-motion">Repositorio</a><a href="https://github.com/AbubakrChan/product-launch-motion/releases/download/v2.0.0/launch-film-1080p60.mp4">Película completa</a></div>
+  </div>
+</article>
+
+<article>
+  <div class="media"><img loading="lazy" src="https://i.ytimg.com/vi/Dx6c5isxnN0/hq2.jpg" alt="Plantilla de gráfica de barras animada"></div>
+  <div class="cuerpo">
+    <span class="num">4 · Plantillas y gráficas</span>
+    <h2>hyperframes-motion-library</h2>
+    <p class="produce">Plantillas de gráficas, cifras y explicativos que llenas con tus datos, exportables con fondo transparente.</p>
+    <p class="ideal">Ideal para datos animados que luego insertas en otro video.</p>
+    <p class="pedido">Pídelo así: «gráfica animada de estas cifras con la motion library, fondo transparente».</p>
+    <div class="enlaces"><a href="https://github.com/nutllwhy/hyperframes-motion-library">Repositorio</a><a href="https://nutllwhy.github.io/hyperframes-motion-library/">Galería de plantillas</a></div>
+  </div>
+</article>
+
+<article>
+  <div class="media"><img loading="lazy" src="https://raw.githubusercontent.com/tugrawork-creator/saas-motion-kit/HEAD/docs/six-films.gif" alt="El mismo guion en seis estilos"></div>
+  <div class="cuerpo">
+    <span class="num">5 · Estilos y variedad</span>
+    <h2>saas-motion-kit</h2>
+    <p class="produce">101 temas visuales y 24 transiciones; el mismo guion sale en estilos muy distintos, con una auditoría que evita repetir fórmulas.</p>
+    <p class="ideal">Ideal para promos de software o apps con un estilo propio en cada video.</p>
+    <p class="pedido">Pídelo así: «promo de mi app con saas-motion-kit, muéstrame tres temas».</p>
+    <div class="enlaces"><a href="https://github.com/tugrawork-creator/saas-motion-kit">Repositorio</a><a href="https://tugrawork-creator.github.io/saas-motion-kit/">Galería de 101 temas</a><a href="https://tugrawork-creator.github.io/saas-motion-kit/transitions/">Transiciones</a></div>
+  </div>
+</article>
+
+<article>
+  <div class="media"><img loading="lazy" src="https://raw.githubusercontent.com/gongnyang/reelforge/HEAD/docs/assets/hero.gif" alt="Película de muestra de reelforge"></div>
+  <div class="cuerpo">
+    <span class="num">6 · Reels desde una idea</span>
+    <h2>reelforge</h2>
+    <p class="produce">Shorts narrados y subtitulados, armados con fragmentos de movimiento y transiciones ya probados en render.</p>
+    <p class="ideal">Ideal para reels a partir de una idea en una línea.</p>
+    <p class="pedido">Pídelo así: «un reel de 30 s sobre esta idea con reelforge».</p>
+    <div class="enlaces"><a href="https://github.com/gongnyang/reelforge">Repositorio</a></div>
+  </div>
+</article>
+
+<article>
+  <div class="media claro"><img loading="lazy" src="https://raw.githubusercontent.com/omkamal/animated-diagrams-skill/HEAD/docs/media/hero.gif" alt="Diagrama de arquitectura que se anima"></div>
+  <div class="cuerpo">
+    <span class="num">7 · Diagramas</span>
+    <h2>animated-diagrams-skill</h2>
+    <p class="produce">Diagramas, flujos y código que se dibujan solos, en MP4, GIF o SVG.</p>
+    <p class="ideal">Ideal para explicar procesos, arquitecturas o pasos.</p>
+    <p class="pedido">Pídelo así: «anima este flujo como diagrama con animated-svg».</p>
+    <div class="enlaces"><a href="https://github.com/omkamal/animated-diagrams-skill">Repositorio</a><a href="https://raw.githubusercontent.com/omkamal/animated-diagrams-skill/HEAD/docs/media/sequence.gif">Otro ejemplo</a></div>
+  </div>
+</article>
+
+<article>
+  <div class="media"><img loading="lazy" src="https://raw.githubusercontent.com/AgentsORG/design-engineering/HEAD/docs/demo/design-engineering-demo.gif" alt="Película hecha con design-engineering"></div>
+  <div class="cuerpo">
+    <span class="num">8 · Pulido y sonido</span>
+    <h2>design-engineering</h2>
+    <p class="produce">Revisión de calidad visual con antes y después, y efectos de sonido derivados del propio movimiento.</p>
+    <p class="ideal">Ideal para pulir el resultado antes del render final.</p>
+    <p class="pedido">Pídelo así: «revisa el video con design-engineering y súmale sonido».</p>
+    <div class="enlaces"><a href="https://github.com/AgentsORG/design-engineering">Repositorio</a><a href="https://raw.githubusercontent.com/AgentsORG/design-engineering/HEAD/docs/readme/img/de-review.png">Ejemplo de revisión</a></div>
+  </div>
+</article>
+
+</main>
+<footer>Imágenes cargadas desde cada repositorio original. Fuente: video «10 GitHub Repos That Level Up HyperFrames Videos» (CookstarCode), guardado el 2026-11-25.</footer>
+</body>
+</html>
