@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paletas 60-30-10</title>
+<style>
+:root{--fondo:#F6F5F2;--tinta:#1A1A1A;--suave:#5F5E5A;--borde:#E2E0DA;--tarjeta:#FFFFFF}
+@media (prefers-color-scheme:dark){:root{--fondo:#141414;--tinta:#EDEDED;--suave:#A3A3A3;--borde:#2C2C2C;--tarjeta:#1E1E1E}}
+*{box-sizing:border-box}body{margin:0;background:var(--fondo);color:var(--tinta);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
+header{padding:28px 16px 8px;max-width:1200px;margin:auto}h1{margin:0 0 6px;font-size:26px}header p{margin:0;color:var(--suave);max-width:70ch}
+nav{display:flex;flex-wrap:wrap;gap:6px;padding:14px 16px;max-width:1200px;margin:auto}
+nav button{border:1px solid var(--borde);background:var(--tarjeta);color:var(--tinta);border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer}
+nav button.on{background:var(--tinta);color:var(--fondo)}
+main{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;padding:8px 16px 40px;max-width:1200px;margin:auto}
+.pal{background:var(--tarjeta);border:1px solid var(--borde);border-radius:14px;overflow:hidden}
+.maq{padding:14px;height:200px;justify-content:space-between;display:flex;flex-direction:column;gap:10px}
+.maq-barra{display:flex;align-items:center;gap:8px;font-size:12px}.logo{width:14px;height:14px;border-radius:4px}
+.maq-tit{font-size:20px;font-weight:700;line-height:1.1}
+.maq-tarjetas{display:grid;grid-template-columns:1fr 1fr;gap:8px;height:46px}.maq-tarjetas div{border-radius:8px;opacity:.9}
+.maq-btn{align-self:flex-start;font-size:12px;font-weight:600;padding:7px 12px;border-radius:999px}
+.barra{display:flex;height:10px}.barra i{display:block}
+.info{padding:12px 14px 14px}h3{margin:0;font-size:16px}h3 small{font-weight:400;color:var(--suave);font-size:12px}
+.sec,.cr{margin:2px 0 8px;color:var(--suave);font-size:12px}ul{list-style:none;margin:0;padding:0;font-size:13px}li{display:flex;align-items:center;gap:8px;margin:3px 0}
+.sw{width:16px;height:16px;border-radius:4px;border:1px solid var(--borde)}code{font-size:12px;color:var(--suave)}.emo{font-size:13px;margin:8px 0 4px}
+</style></head><body>
+<header><h1>Paletas 60-30-10</h1><p>Biblioteca de la skill experto-color. Cada maqueta usa el 60 de fondo, el 30 en texto y tarjetas, y el 10 solo en el llamado a la acción. Filtra por sector.</p></header>
+<nav><button class="on" data-f="*">Todas</button><button data-f="claro">Modo claro</button><button data-f="oscuro">Modo oscuro</button><button data-f="Tecnología y software">Tecnología y software</button><button data-f="Finanzas">Finanzas</button><button data-f="Salud">Salud</button><button data-f="Bienestar">Bienestar</button><button data-f="Alimentos">Alimentos</button><button data-f="Lujo y moda">Lujo y moda</button><button data-f="Ecología">Ecología</button><button data-f="Educación">Educación</button><button data-f="Infantil">Infantil</button><button data-f="Entretenimiento y gaming">Entretenimiento y gaming</button><button data-f="Belleza">Belleza</button><button data-f="Inmobiliaria y construcción">Inmobiliaria y construcción</button><button data-f="Periodismo y denuncia">Periodismo y denuncia</button><button data-f="Deportes">Deportes</button><button data-f="Café y artesanal">Café y artesanal</button><button data-f="Música y eventos">Música y eventos</button><button data-f="Producto premium">Producto premium</button></nav>
+<main><article class="pal" data-sector="Tecnología y software" data-modo="claro">
+  <div class="maq" style="background:#F5F5FA">
+    <div class="maq-barra" style="color:#1E1B4B"><span class="logo" style="background:#5B5BF0"></span><b>Índigo eléctrico</b></div>
+    <div class="maq-tit" style="color:#1E1B4B">Confianza moderna</div>
+    <div class="maq-tarjetas"><div style="background:#1E1B4B"></div><div style="background:#1E1B4B"></div></div>
+    <div class="maq-btn" style="background:#5B5BF0;color:#FFFFFF">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#F5F5FA;flex:60"></i><i style="background:#1E1B4B;flex:30"></i><i style="background:#5B5BF0;flex:10"></i></div>
+  <div class="info">
+    <h3>Índigo eléctrico <small>claro</small></h3>
+    <p class="sec">Tecnología y software · Monocromática</p>
+    <ul>
+      <li><span class="sw" style="background:#F5F5FA"></span>60 · Niebla <code>#F5F5FA</code></li>
+      <li><span class="sw" style="background:#1E1B4B"></span>30 · Índigo noche <code>#1E1B4B</code></li>
+      <li><span class="sw" style="background:#5B5BF0"></span>10 · Índigo vivo <code>#5B5BF0</code></li>
+    </ul>
+    <p class="emo">Confianza moderna, precisión. Landing de software, panel de producto, presentación técnica.</p>
+    <p class="cr">Contraste 30/60 14.7 · 10/60 4.6</p>
+  </div>
+</article><article class="pal" data-sector="Tecnología y software" data-modo="oscuro">
+  <div class="maq" style="background:#0E1116">
+    <div class="maq-barra" style="color:#E6EDF3"><span class="logo" style="background:#A3E635"></span><b>Terminal lima</b></div>
+    <div class="maq-tit" style="color:#E6EDF3">Energía técnica</div>
+    <div class="maq-tarjetas"><div style="background:#E6EDF3"></div><div style="background:#E6EDF3"></div></div>
+    <div class="maq-btn" style="background:#A3E635;color:#000000">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#0E1116;flex:60"></i><i style="background:#E6EDF3;flex:30"></i><i style="background:#A3E635;flex:10"></i></div>
+  <div class="info">
+    <h3>Terminal lima <small>oscuro</small></h3>
+    <p class="sec">Tecnología y software · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#0E1116"></span>60 · Grafito <code>#0E1116</code></li>
+      <li><span class="sw" style="background:#E6EDF3"></span>30 · Hielo <code>#E6EDF3</code></li>
+      <li><span class="sw" style="background:#A3E635"></span>10 · Lima <code>#A3E635</code></li>
+    </ul>
+    <p class="emo">Energía técnica, velocidad. Herramientas para desarrolladores, demos de código, miniaturas tech.</p>
+    <p class="cr">Contraste 30/60 16.0 · 10/60 12.5</p>
+  </div>
+</article><article class="pal" data-sector="Tecnología y software" data-modo="oscuro">
+  <div class="maq" style="background:#0B1E2D">
+    <div class="maq-barra" style="color:#DCE7F0"><span class="logo" style="background:#22D3EE"></span><b>Cian frío</b></div>
+    <div class="maq-tit" style="color:#DCE7F0">Futuro</div>
+    <div class="maq-tarjetas"><div style="background:#DCE7F0"></div><div style="background:#DCE7F0"></div></div>
+    <div class="maq-btn" style="background:#22D3EE;color:#000000">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#0B1E2D;flex:60"></i><i style="background:#DCE7F0;flex:30"></i><i style="background:#22D3EE;flex:10"></i></div>
+  <div class="info">
+    <h3>Cian frío <small>oscuro</small></h3>
+    <p class="sec">Tecnología y software · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#0B1E2D"></span>60 · Marino profundo <code>#0B1E2D</code></li>
+      <li><span class="sw" style="background:#DCE7F0"></span>30 · Bruma <code>#DCE7F0</code></li>
+      <li><span class="sw" style="background:#22D3EE"></span>10 · Cian <code>#22D3EE</code></li>
+    </ul>
+    <p class="emo">Futuro, claridad, calma tecnológica. IA, datos, ciberseguridad, tableros.</p>
+    <p class="cr">Contraste 30/60 13.5 · 10/60 9.4</p>
+  </div>
+</article><article class="pal" data-sector="Finanzas" data-modo="claro">
+  <div class="maq" style="background:#F4F6F8">
+    <div class="maq-barra" style="color:#0F2A4A"><span class="logo" style="background:#15803D"></span><b>Banca serena</b></div>
+    <div class="maq-tit" style="color:#0F2A4A">Seguridad</div>
+    <div class="maq-tarjetas"><div style="background:#0F2A4A"></div><div style="background:#0F2A4A"></div></div>
+    <div class="maq-btn" style="background:#15803D;color:#FFFFFF">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#F4F6F8;flex:60"></i><i style="background:#0F2A4A;flex:30"></i><i style="background:#15803D;flex:10"></i></div>
+  <div class="info">
+    <h3>Banca serena <small>claro</small></h3>
+    <p class="sec">Finanzas · Tríada o compuesta</p>
+    <ul>
+      <li><span class="sw" style="background:#F4F6F8"></span>60 · Perla <code>#F4F6F8</code></li>
+      <li><span class="sw" style="background:#0F2A4A"></span>30 · Azul banca <code>#0F2A4A</code></li>
+      <li><span class="sw" style="background:#15803D"></span>10 · Verde crecimiento <code>#15803D</code></li>
+    </ul>
+    <p class="emo">Seguridad, orden, crecimiento. Bancos, seguros, apps de ahorro, informes financieros.</p>
+    <p class="cr">Contraste 30/60 13.4 · 10/60 4.6</p>
+  </div>
+</article><article class="pal" data-sector="Finanzas" data-modo="oscuro">
+  <div class="maq" style="background:#0F1B2D">
+    <div class="maq-barra" style="color:#E9E4D8"><span class="logo" style="background:#C9A227"></span><b>Oro sobrio</b></div>
+    <div class="maq-tit" style="color:#E9E4D8">Solidez</div>
+    <div class="maq-tarjetas"><div style="background:#E9E4D8"></div><div style="background:#E9E4D8"></div></div>
+    <div class="maq-btn" style="background:#C9A227;color:#000000">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#0F1B2D;flex:60"></i><i style="background:#E9E4D8;flex:30"></i><i style="background:#C9A227;flex:10"></i></div>
+  <div class="info">
+    <h3>Oro sobrio <small>oscuro</small></h3>
+    <p class="sec">Finanzas · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#0F1B2D"></span>60 · Marino <code>#0F1B2D</code></li>
+      <li><span class="sw" style="background:#E9E4D8"></span>30 · Marfil <code>#E9E4D8</code></li>
+      <li><span class="sw" style="background:#C9A227"></span>10 · Oro viejo <code>#C9A227</code></li>
+    </ul>
+    <p class="emo">Solidez, patrimonio, exclusividad. Inversión, banca privada, consultoría.</p>
+    <p class="cr">Contraste 30/60 13.6 · 10/60 7.1</p>
+  </div>
+</article><article class="pal" data-sector="Finanzas" data-modo="claro">
+  <div class="maq" style="background:#FFFFFF">
+    <div class="maq-barra" style="color:#111827"><span class="logo" style="background:#7C3AED"></span><b>Fintech joven</b></div>
+    <div class="maq-tit" style="color:#111827">Novedad</div>
+    <div class="maq-tarjetas"><div style="background:#111827"></div><div style="background:#111827"></div></div>
+    <div class="maq-btn" style="background:#7C3AED;color:#FFFFFF">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#FFFFFF;flex:60"></i><i style="background:#111827;flex:30"></i><i style="background:#7C3AED;flex:10"></i></div>
+  <div class="info">
+    <h3>Fintech joven <small>claro</small></h3>
+    <p class="sec">Finanzas · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#FFFFFF"></span>60 · Blanco <code>#FFFFFF</code></li>
+      <li><span class="sw" style="background:#111827"></span>30 · Tinta <code>#111827</code></li>
+      <li><span class="sw" style="background:#7C3AED"></span>10 · Violeta <code>#7C3AED</code></li>
+    </ul>
+    <p class="emo">Novedad, cercanía, ambición. Billeteras digitales, cripto, apps para jóvenes.</p>
+    <p class="cr">Contraste 30/60 17.7 · 10/60 5.7</p>
+  </div>
+</article><article class="pal" data-sector="Salud" data-modo="claro">
+  <div class="maq" style="background:#F2F7F6">
+    <div class="maq-barra" style="color:#134E4A"><span class="logo" style="background:#C8553D"></span><b>Clínica calma</b></div>
+    <div class="maq-tit" style="color:#134E4A">Calma</div>
+    <div class="maq-tarjetas"><div style="background:#134E4A"></div><div style="background:#134E4A"></div></div>
+    <div class="maq-btn" style="background:#C8553D;color:#000000">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#F2F7F6;flex:60"></i><i style="background:#134E4A;flex:30"></i><i style="background:#C8553D;flex:10"></i></div>
+  <div class="info">
+    <h3>Clínica calma <small>claro</small></h3>
+    <p class="sec">Salud · Complementaria</p>
+    <ul>
+      <li><span class="sw" style="background:#F2F7F6"></span>60 · Agua <code>#F2F7F6</code></li>
+      <li><span class="sw" style="background:#134E4A"></span>30 · Verde azulado <code>#134E4A</code></li>
+      <li><span class="sw" style="background:#C8553D"></span>10 · Coral <code>#C8553D</code></li>
+    </ul>
+    <p class="emo">Calma, cuidado, limpieza. Clínicas, odontología, telemedicina.</p>
+    <p class="cr">Contraste 30/60 8.8 · 10/60 4.0</p>
+  </div>
+</article><article class="pal" data-sector="Bienestar" data-modo="claro">
+  <div class="maq" style="background:#F6F1EA">
+    <div class="maq-barra" style="color:#5E6B5A"><span class="logo" style="background:#A65A3F"></span><b>Spa</b></div>
+    <div class="maq-tit" style="color:#5E6B5A">Descanso</div>
+    <div class="maq-tarjetas"><div style="background:#5E6B5A"></div><div style="background:#5E6B5A"></div></div>
+    <div class="maq-btn" style="background:#A65A3F;color:#FFFFFF">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#F6F1EA;flex:60"></i><i style="background:#5E6B5A;flex:30"></i><i style="background:#A65A3F;flex:10"></i></div>
+  <div class="info">
+    <h3>Spa <small>claro</small></h3>
+    <p class="sec">Bienestar · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#F6F1EA"></span>60 · Lino <code>#F6F1EA</code></li>
+      <li><span class="sw" style="background:#5E6B5A"></span>30 · Salvia <code>#5E6B5A</code></li>
+      <li><span class="sw" style="background:#A65A3F"></span>10 · Terracota <code>#A65A3F</code></li>
+    </ul>
+    <p class="emo">Descanso, naturalidad, tibieza. Spa, yoga, cosmética natural, retiros.</p>
+    <p class="cr">Contraste 30/60 5.0 · 10/60 4.5</p>
+  </div>
+</article><article class="pal" data-sector="Salud" data-modo="claro">
+  <div class="maq" style="background:#F7FAF9">
+    <div class="maq-barra" style="color:#0B3D2E"><span class="logo" style="background:#B45309"></span><b>Farmacia</b></div>
+    <div class="maq-tit" style="color:#0B3D2E">Confianza clínica</div>
+    <div class="maq-tarjetas"><div style="background:#0B3D2E"></div><div style="background:#0B3D2E"></div></div>
+    <div class="maq-btn" style="background:#B45309;color:#FFFFFF">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#F7FAF9;flex:60"></i><i style="background:#0B3D2E;flex:30"></i><i style="background:#B45309;flex:10"></i></div>
+  <div class="info">
+    <h3>Farmacia <small>claro</small></h3>
+    <p class="sec">Salud · Tríada o compuesta</p>
+    <ul>
+      <li><span class="sw" style="background:#F7FAF9"></span>60 · Blanco clínico <code>#F7FAF9</code></li>
+      <li><span class="sw" style="background:#0B3D2E"></span>30 · Verde botica <code>#0B3D2E</code></li>
+      <li><span class="sw" style="background:#B45309"></span>10 · Ámbar <code>#B45309</code></li>
+    </ul>
+    <p class="emo">Confianza clínica, acción rápida. Droguerías, suplementos, laboratorios.</p>
+    <p class="cr">Contraste 30/60 11.6 · 10/60 4.8</p>
+  </div>
+</article><article class="pal" data-sector="Alimentos" data-modo="claro">
+  <div class="maq" style="background:#FFF8EE">
+    <div class="maq-barra" style="color:#3B2416"><span class="logo" style="background:#D9480F"></span><b>Cocina cálida</b></div>
+    <div class="maq-tit" style="color:#3B2416">Apetito</div>
+    <div class="maq-tarjetas"><div style="background:#3B2416"></div><div style="background:#3B2416"></div></div>
+    <div class="maq-btn" style="background:#D9480F;color:#000000">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#FFF8EE;flex:60"></i><i style="background:#3B2416;flex:30"></i><i style="background:#D9480F;flex:10"></i></div>
+  <div class="info">
+    <h3>Cocina cálida <small>claro</small></h3>
+    <p class="sec">Alimentos · Monocromática</p>
+    <ul>
+      <li><span class="sw" style="background:#FFF8EE"></span>60 · Crema <code>#FFF8EE</code></li>
+      <li><span class="sw" style="background:#3B2416"></span>30 · Chocolate <code>#3B2416</code></li>
+      <li><span class="sw" style="background:#D9480F"></span>10 · Tomate <code>#D9480F</code></li>
+    </ul>
+    <p class="emo">Apetito, hogar, calidez. Restaurantes, recetas, domicilios.</p>
+    <p class="cr">Contraste 30/60 13.7 · 10/60 4.1</p>
+  </div>
+</article><article class="pal" data-sector="Alimentos" data-modo="claro">
+  <div class="maq" style="background:#F7FBF2">
+    <div class="maq-barra" style="color:#1F3D2B"><span class="logo" style="background:#C2410C"></span><b>Fresco</b></div>
+    <div class="maq-tit" style="color:#1F3D2B">Frescura</div>
+    <div class="maq-tarjetas"><div style="background:#1F3D2B"></div><div style="background:#1F3D2B"></div></div>
+    <div class="maq-btn" style="background:#C2410C;color:#FFFFFF">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#F7FBF2;flex:60"></i><i style="background:#1F3D2B;flex:30"></i><i style="background:#C2410C;flex:10"></i></div>
+  <div class="info">
+    <h3>Fresco <small>claro</small></h3>
+    <p class="sec">Alimentos · Tríada o compuesta</p>
+    <ul>
+      <li><span class="sw" style="background:#F7FBF2"></span>60 · Hoja clara <code>#F7FBF2</code></li>
+      <li><span class="sw" style="background:#1F3D2B"></span>30 · Verde huerta <code>#1F3D2B</code></li>
+      <li><span class="sw" style="background:#C2410C"></span>10 · Mandarina <code>#C2410C</code></li>
+    </ul>
+    <p class="emo">Frescura, salud, origen. Comida saludable, mercados, jugos.</p>
+    <p class="cr">Contraste 30/60 11.4 · 10/60 4.9</p>
+  </div>
+</article><article class="pal" data-sector="Alimentos" data-modo="oscuro">
+  <div class="maq" style="background:#1A1A1A">
+    <div class="maq-barra" style="color:#FFF4E0"><span class="logo" style="background:#FFC233"></span><b>Comida rápida</b></div>
+    <div class="maq-tit" style="color:#FFF4E0">Antojo</div>
+    <div class="maq-tarjetas"><div style="background:#FFF4E0"></div><div style="background:#FFF4E0"></div></div>
+    <div class="maq-btn" style="background:#FFC233;color:#000000">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#1A1A1A;flex:60"></i><i style="background:#FFF4E0;flex:30"></i><i style="background:#FFC233;flex:10"></i></div>
+  <div class="info">
+    <h3>Comida rápida <small>oscuro</small></h3>
+    <p class="sec">Alimentos · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#1A1A1A"></span>60 · Carbón <code>#1A1A1A</code></li>
+      <li><span class="sw" style="background:#FFF4E0"></span>30 · Pan <code>#FFF4E0</code></li>
+      <li><span class="sw" style="background:#FFC233"></span>10 · Mostaza <code>#FFC233</code></li>
+    </ul>
+    <p class="emo">Antojo, energía, urgencia. Hamburguesas, pizza, promociones nocturnas.</p>
+    <p class="cr">Contraste 30/60 16.0 · 10/60 10.8</p>
+  </div>
+</article><article class="pal" data-sector="Lujo y moda" data-modo="oscuro">
+  <div class="maq" style="background:#0D0D0D">
+    <div class="maq-barra" style="color:#F2EDE4"><span class="logo" style="background:#B8934A"></span><b>Noir dorado</b></div>
+    <div class="maq-tit" style="color:#F2EDE4">Elegancia</div>
+    <div class="maq-tarjetas"><div style="background:#F2EDE4"></div><div style="background:#F2EDE4"></div></div>
+    <div class="maq-btn" style="background:#B8934A;color:#000000">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#0D0D0D;flex:60"></i><i style="background:#F2EDE4;flex:30"></i><i style="background:#B8934A;flex:10"></i></div>
+  <div class="info">
+    <h3>Noir dorado <small>oscuro</small></h3>
+    <p class="sec">Lujo y moda · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#0D0D0D"></span>60 · Negro tinta <code>#0D0D0D</code></li>
+      <li><span class="sw" style="background:#F2EDE4"></span>30 · Seda <code>#F2EDE4</code></li>
+      <li><span class="sw" style="background:#B8934A"></span>10 · Oro <code>#B8934A</code></li>
+    </ul>
+    <p class="emo">Elegancia, misterio, exclusividad. Joyería, perfumes, hoteles, licores.</p>
+    <p class="cr">Contraste 30/60 16.7 · 10/60 6.8</p>
+  </div>
+</article><article class="pal" data-sector="Lujo y moda" data-modo="claro">
+  <div class="maq" style="background:#F3EEE7">
+    <div class="maq-barra" style="color:#2B2A28"><span class="logo" style="background:#8C1C2B"></span><b>Champaña</b></div>
+    <div class="maq-tit" style="color:#2B2A28">Refinamiento</div>
+    <div class="maq-tarjetas"><div style="background:#2B2A28"></div><div style="background:#2B2A28"></div></div>
+    <div class="maq-btn" style="background:#8C1C2B;color:#FFFFFF">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#F3EEE7;flex:60"></i><i style="background:#2B2A28;flex:30"></i><i style="background:#8C1C2B;flex:10"></i></div>
+  <div class="info">
+    <h3>Champaña <small>claro</small></h3>
+    <p class="sec">Lujo y moda · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#F3EEE7"></span>60 · Champaña <code>#F3EEE7</code></li>
+      <li><span class="sw" style="background:#2B2A28"></span>30 · Grafito cálido <code>#2B2A28</code></li>
+      <li><span class="sw" style="background:#8C1C2B"></span>10 · Borgoña <code>#8C1C2B</code></li>
+    </ul>
+    <p class="emo">Refinamiento, calma, deseo. Moda, bodas, vinos, editorial.</p>
+    <p class="cr">Contraste 30/60 12.4 · 10/60 7.9</p>
+  </div>
+</article><article class="pal" data-sector="Lujo y moda" data-modo="oscuro">
+  <div class="maq" style="background:#0E2A22">
+    <div class="maq-barra" style="color:#EDE6D6"><span class="logo" style="background:#D4AF37"></span><b>Esmeralda</b></div>
+    <div class="maq-tit" style="color:#EDE6D6">Riqueza</div>
+    <div class="maq-tarjetas"><div style="background:#EDE6D6"></div><div style="background:#EDE6D6"></div></div>
+    <div class="maq-btn" style="background:#D4AF37;color:#000000">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#0E2A22;flex:60"></i><i style="background:#EDE6D6;flex:30"></i><i style="background:#D4AF37;flex:10"></i></div>
+  <div class="info">
+    <h3>Esmeralda <small>oscuro</small></h3>
+    <p class="sec">Lujo y moda · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#0E2A22"></span>60 · Esmeralda noche <code>#0E2A22</code></li>
+      <li><span class="sw" style="background:#EDE6D6"></span>30 · Hueso <code>#EDE6D6</code></li>
+      <li><span class="sw" style="background:#D4AF37"></span>10 · Oro brillante <code>#D4AF37</code></li>
+    </ul>
+    <p class="emo">Riqueza, tradición, naturaleza noble. Lujo clásico, golf, té, marcas heredadas.</p>
+    <p class="cr">Contraste 30/60 12.3 · 10/60 7.3</p>
+  </div>
+</article><article class="pal" data-sector="Ecología" data-modo="claro">
+  <div class="maq" style="background:#F1F4EC">
+    <div class="maq-barra" style="color:#2F4A33"><span class="logo" style="background:#B45309"></span><b>Bosque</b></div>
+    <div class="maq-tit" style="color:#2F4A33">Naturaleza</div>
+    <div class="maq-tarjetas"><div style="background:#2F4A33"></div><div style="background:#2F4A33"></div></div>
+    <div class="maq-btn" style="background:#B45309;color:#FFFFFF">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#F1F4EC;flex:60"></i><i style="background:#2F4A33;flex:30"></i><i style="background:#B45309;flex:10"></i></div>
+  <div class="info">
+    <h3>Bosque <small>claro</small></h3>
+    <p class="sec">Ecología · Tríada o compuesta</p>
+    <ul>
+      <li><span class="sw" style="background:#F1F4EC"></span>60 · Musgo claro <code>#F1F4EC</code></li>
+      <li><span class="sw" style="background:#2F4A33"></span>30 · Pino <code>#2F4A33</code></li>
+      <li><span class="sw" style="background:#B45309"></span>10 · Calabaza <code>#B45309</code></li>
+    </ul>
+    <p class="emo">Naturaleza, equilibrio, compromiso. ONG ambientales, turismo rural, productos orgánicos.</p>
+    <p class="cr">Contraste 30/60 8.8 · 10/60 4.5</p>
+  </div>
+</article><article class="pal" data-sector="Ecología" data-modo="claro">
+  <div class="maq" style="background:#EEF5F7">
+    <div class="maq-barra" style="color:#0D3B4F"><span class="logo" style="background:#D9452B"></span><b>Océano</b></div>
+    <div class="maq-tit" style="color:#0D3B4F">Frescura</div>
+    <div class="maq-tarjetas"><div style="background:#0D3B4F"></div><div style="background:#0D3B4F"></div></div>
+    <div class="maq-btn" style="background:#D9452B;color:#000000">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#EEF5F7;flex:60"></i><i style="background:#0D3B4F;flex:30"></i><i style="background:#D9452B;flex:10"></i></div>
+  <div class="info">
+    <h3>Océano <small>claro</small></h3>
+    <p class="sec">Ecología · Complementaria</p>
+    <ul>
+      <li><span class="sw" style="background:#EEF5F7"></span>60 · Espuma <code>#EEF5F7</code></li>
+      <li><span class="sw" style="background:#0D3B4F"></span>30 · Abismo <code>#0D3B4F</code></li>
+      <li><span class="sw" style="background:#D9452B"></span>10 · Coral vivo <code>#D9452B</code></li>
+    </ul>
+    <p class="emo">Frescura, amplitud, cuidado del agua. Turismo de playa, conservación marina, agua.</p>
+    <p class="cr">Contraste 30/60 10.8 · 10/60 3.9</p>
+  </div>
+</article><article class="pal" data-sector="Educación" data-modo="claro">
+  <div class="maq" style="background:#FFFDF6">
+    <div class="maq-barra" style="color:#24346B"><span class="logo" style="background:#E03E2F"></span><b>Pizarra feliz</b></div>
+    <div class="maq-tit" style="color:#24346B">Curiosidad</div>
+    <div class="maq-tarjetas"><div style="background:#24346B"></div><div style="background:#24346B"></div></div>
+    <div class="maq-btn" style="background:#E03E2F;color:#000000">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#FFFDF6;flex:60"></i><i style="background:#24346B;flex:30"></i><i style="background:#E03E2F;flex:10"></i></div>
+  <div class="info">
+    <h3>Pizarra feliz <small>claro</small></h3>
+    <p class="sec">Educación · Tríada o compuesta</p>
+    <ul>
+      <li><span class="sw" style="background:#FFFDF6"></span>60 · Papel <code>#FFFDF6</code></li>
+      <li><span class="sw" style="background:#24346B"></span>30 · Azul pizarra <code>#24346B</code></li>
+      <li><span class="sw" style="background:#E03E2F"></span>10 · Rojo lápiz <code>#E03E2F</code></li>
+    </ul>
+    <p class="emo">Curiosidad, confianza, alegría. Cursos, colegios, contenido educativo.</p>
+    <p class="cr">Contraste 30/60 11.6 · 10/60 4.2</p>
+  </div>
+</article><article class="pal" data-sector="Infantil" data-modo="claro">
+  <div class="maq" style="background:#F4F7FF">
+    <div class="maq-barra" style="color:#2D2A6E"><span class="logo" style="background:#E8590C"></span><b>Juego</b></div>
+    <div class="maq-tit" style="color:#2D2A6E">Diversión</div>
+    <div class="maq-tarjetas"><div style="background:#2D2A6E"></div><div style="background:#2D2A6E"></div></div>
+    <div class="maq-btn" style="background:#E8590C;color:#000000">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#F4F7FF;flex:60"></i><i style="background:#2D2A6E;flex:30"></i><i style="background:#E8590C;flex:10"></i></div>
+  <div class="info">
+    <h3>Juego <small>claro</small></h3>
+    <p class="sec">Infantil · Tríada o compuesta</p>
+    <ul>
+      <li><span class="sw" style="background:#F4F7FF"></span>60 · Cielo claro <code>#F4F7FF</code></li>
+      <li><span class="sw" style="background:#2D2A6E"></span>30 · Morado tinta <code>#2D2A6E</code></li>
+      <li><span class="sw" style="background:#E8590C"></span>10 · Naranja juego <code>#E8590C</code></li>
+    </ul>
+    <p class="emo">Diversión, energía, seguridad. Juguetes, apps infantiles, eventos familiares.</p>
+    <p class="cr">Contraste 30/60 11.7 · 10/60 3.3</p>
+  </div>
+</article><article class="pal" data-sector="Entretenimiento y gaming" data-modo="oscuro">
+  <div class="maq" style="background:#0A0A12">
+    <div class="maq-barra" style="color:#E5E7F0"><span class="logo" style="background:#FF2E88"></span><b>Neón</b></div>
+    <div class="maq-tit" style="color:#E5E7F0">Adrenalina</div>
+    <div class="maq-tarjetas"><div style="background:#E5E7F0"></div><div style="background:#E5E7F0"></div></div>
+    <div class="maq-btn" style="background:#FF2E88;color:#000000">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#0A0A12;flex:60"></i><i style="background:#E5E7F0;flex:30"></i><i style="background:#FF2E88;flex:10"></i></div>
+  <div class="info">
+    <h3>Neón <small>oscuro</small></h3>
+    <p class="sec">Entretenimiento y gaming · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#0A0A12"></span>60 · Negro azulado <code>#0A0A12</code></li>
+      <li><span class="sw" style="background:#E5E7F0"></span>30 · Plata <code>#E5E7F0</code></li>
+      <li><span class="sw" style="background:#FF2E88"></span>10 · Fucsia neón <code>#FF2E88</code></li>
+    </ul>
+    <p class="emo">Adrenalina, noche, rebeldía. Gaming, streaming, fiestas, música electrónica.</p>
+    <p class="cr">Contraste 30/60 16.0 · 10/60 5.6</p>
+  </div>
+</article><article class="pal" data-sector="Entretenimiento y gaming" data-modo="oscuro">
+  <div class="maq" style="background:#14102A">
+    <div class="maq-barra" style="color:#EAE6FF"><span class="logo" style="background:#00E5A0"></span><b>Arcade</b></div>
+    <div class="maq-tit" style="color:#EAE6FF">Juego</div>
+    <div class="maq-tarjetas"><div style="background:#EAE6FF"></div><div style="background:#EAE6FF"></div></div>
+    <div class="maq-btn" style="background:#00E5A0;color:#000000">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#14102A;flex:60"></i><i style="background:#EAE6FF;flex:30"></i><i style="background:#00E5A0;flex:10"></i></div>
+  <div class="info">
+    <h3>Arcade <small>oscuro</small></h3>
+    <p class="sec">Entretenimiento y gaming · Tríada o compuesta</p>
+    <ul>
+      <li><span class="sw" style="background:#14102A"></span>60 · Violeta noche <code>#14102A</code></li>
+      <li><span class="sw" style="background:#EAE6FF"></span>30 · Lavanda <code>#EAE6FF</code></li>
+      <li><span class="sw" style="background:#00E5A0"></span>10 · Menta eléctrica <code>#00E5A0</code></li>
+    </ul>
+    <p class="emo">Juego, recompensa, futuro. Videojuegos, apps de recompensas, esports.</p>
+    <p class="cr">Contraste 30/60 15.2 · 10/60 11.2</p>
+  </div>
+</article><article class="pal" data-sector="Belleza" data-modo="claro">
+  <div class="maq" style="background:#FBF1EF">
+    <div class="maq-barra" style="color:#4A2E35"><span class="logo" style="background:#C2185B"></span><b>Rosa empolvado</b></div>
+    <div class="maq-tit" style="color:#4A2E35">Delicadeza</div>
+    <div class="maq-tarjetas"><div style="background:#4A2E35"></div><div style="background:#4A2E35"></div></div>
+    <div class="maq-btn" style="background:#C2185B;color:#FFFFFF">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#FBF1EF;flex:60"></i><i style="background:#4A2E35;flex:30"></i><i style="background:#C2185B;flex:10"></i></div>
+  <div class="info">
+    <h3>Rosa empolvado <small>claro</small></h3>
+    <p class="sec">Belleza · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#FBF1EF"></span>60 · Polvo <code>#FBF1EF</code></li>
+      <li><span class="sw" style="background:#4A2E35"></span>30 · Ciruela <code>#4A2E35</code></li>
+      <li><span class="sw" style="background:#C2185B"></span>10 · Frambuesa <code>#C2185B</code></li>
+    </ul>
+    <p class="emo">Delicadeza, cuidado, cercanía. Maquillaje, cuidado de la piel, salones.</p>
+    <p class="cr">Contraste 30/60 10.9 · 10/60 5.3</p>
+  </div>
+</article><article class="pal" data-sector="Belleza" data-modo="claro">
+  <div class="maq" style="background:#F4EFF6">
+    <div class="maq-barra" style="color:#3D2C4A"><span class="logo" style="background:#C0395A"></span><b>Malva</b></div>
+    <div class="maq-tit" style="color:#3D2C4A">Sensibilidad</div>
+    <div class="maq-tarjetas"><div style="background:#3D2C4A"></div><div style="background:#3D2C4A"></div></div>
+    <div class="maq-btn" style="background:#C0395A;color:#FFFFFF">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#F4EFF6;flex:60"></i><i style="background:#3D2C4A;flex:30"></i><i style="background:#C0395A;flex:10"></i></div>
+  <div class="info">
+    <h3>Malva <small>claro</small></h3>
+    <p class="sec">Belleza · Análoga</p>
+    <ul>
+      <li><span class="sw" style="background:#F4EFF6"></span>60 · Malva claro <code>#F4EFF6</code></li>
+      <li><span class="sw" style="background:#3D2C4A"></span>30 · Uva <code>#3D2C4A</code></li>
+      <li><span class="sw" style="background:#C0395A"></span>10 · Rosa intenso <code>#C0395A</code></li>
+    </ul>
+    <p class="emo">Sensibilidad, creatividad, calma. Bienestar femenino, fragancias, florerías.</p>
+    <p class="cr">Contraste 30/60 11.2 · 10/60 4.7</p>
+  </div>
+</article><article class="pal" data-sector="Inmobiliaria y construcción" data-modo="claro">
+  <div class="maq" style="background:#EEEDEA">
+    <div class="maq-barra" style="color:#2E3236"><span class="logo" style="background:#C2510F"></span><b>Concreto</b></div>
+    <div class="maq-tit" style="color:#2E3236">Solidez</div>
+    <div class="maq-tarjetas"><div style="background:#2E3236"></div><div style="background:#2E3236"></div></div>
+    <div class="maq-btn" style="background:#C2510F;color:#FFFFFF">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#EEEDEA;flex:60"></i><i style="background:#2E3236;flex:30"></i><i style="background:#C2510F;flex:10"></i></div>
+  <div class="info">
+    <h3>Concreto <small>claro</small></h3>
+    <p class="sec">Inmobiliaria y construcción · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#EEEDEA"></span>60 · Cemento <code>#EEEDEA</code></li>
+      <li><span class="sw" style="background:#2E3236"></span>30 · Acero <code>#2E3236</code></li>
+      <li><span class="sw" style="background:#C2510F"></span>10 · Naranja obra <code>#C2510F</code></li>
+    </ul>
+    <p class="emo">Solidez, seguridad, avance. Constructoras, ferreterías, ingeniería.</p>
+    <p class="cr">Contraste 30/60 11.0 · 10/60 4.0</p>
+  </div>
+</article><article class="pal" data-sector="Inmobiliaria y construcción" data-modo="oscuro">
+  <div class="maq" style="background:#1C1F22">
+    <div class="maq-barra" style="color:#E7E2DA"><span class="logo" style="background:#C8A97E"></span><b>Arquitectura</b></div>
+    <div class="maq-tit" style="color:#E7E2DA">Diseño</div>
+    <div class="maq-tarjetas"><div style="background:#E7E2DA"></div><div style="background:#E7E2DA"></div></div>
+    <div class="maq-btn" style="background:#C8A97E;color:#000000">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#1C1F22;flex:60"></i><i style="background:#E7E2DA;flex:30"></i><i style="background:#C8A97E;flex:10"></i></div>
+  <div class="info">
+    <h3>Arquitectura <small>oscuro</small></h3>
+    <p class="sec">Inmobiliaria y construcción · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#1C1F22"></span>60 · Pizarra <code>#1C1F22</code></li>
+      <li><span class="sw" style="background:#E7E2DA"></span>30 · Arena <code>#E7E2DA</code></li>
+      <li><span class="sw" style="background:#C8A97E"></span>10 · Madera clara <code>#C8A97E</code></li>
+    </ul>
+    <p class="emo">Diseño, calidez, inversión segura. Proyectos de vivienda, estudios de arquitectura, interiorismo.</p>
+    <p class="cr">Contraste 30/60 12.8 · 10/60 7.4</p>
+  </div>
+</article><article class="pal" data-sector="Periodismo y denuncia" data-modo="claro">
+  <div class="maq" style="background:#FAFAF7">
+    <div class="maq-barra" style="color:#121212"><span class="logo" style="background:#D7261E"></span><b>Titular</b></div>
+    <div class="maq-tit" style="color:#121212">Urgencia</div>
+    <div class="maq-tarjetas"><div style="background:#121212"></div><div style="background:#121212"></div></div>
+    <div class="maq-btn" style="background:#D7261E;color:#FFFFFF">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#FAFAF7;flex:60"></i><i style="background:#121212;flex:30"></i><i style="background:#D7261E;flex:10"></i></div>
+  <div class="info">
+    <h3>Titular <small>claro</small></h3>
+    <p class="sec">Periodismo y denuncia · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#FAFAF7"></span>60 · Papel prensa <code>#FAFAF7</code></li>
+      <li><span class="sw" style="background:#121212"></span>30 · Negro <code>#121212</code></li>
+      <li><span class="sw" style="background:#D7261E"></span>10 · Rojo alerta <code>#D7261E</code></li>
+    </ul>
+    <p class="emo">Urgencia, verdad, autoridad. Noticias, denuncias, piezas de opinión.</p>
+    <p class="cr">Contraste 30/60 17.9 · 10/60 4.8</p>
+  </div>
+</article><article class="pal" data-sector="Periodismo y denuncia" data-modo="oscuro">
+  <div class="maq" style="background:#101418">
+    <div class="maq-barra" style="color:#E8E6E1"><span class="logo" style="background:#F2C14E"></span><b>Investigación</b></div>
+    <div class="maq-tit" style="color:#E8E6E1">Seriedad</div>
+    <div class="maq-tarjetas"><div style="background:#E8E6E1"></div><div style="background:#E8E6E1"></div></div>
+    <div class="maq-btn" style="background:#F2C14E;color:#000000">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#101418;flex:60"></i><i style="background:#E8E6E1;flex:30"></i><i style="background:#F2C14E;flex:10"></i></div>
+  <div class="info">
+    <h3>Investigación <small>oscuro</small></h3>
+    <p class="sec">Periodismo y denuncia · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#101418"></span>60 · Noche <code>#101418</code></li>
+      <li><span class="sw" style="background:#E8E6E1"></span>30 · Hueso <code>#E8E6E1</code></li>
+      <li><span class="sw" style="background:#F2C14E"></span>10 · Amarillo evidencia <code>#F2C14E</code></li>
+    </ul>
+    <p class="emo">Seriedad, revelación, tensión. Reportajes, documentales, hilos de investigación.</p>
+    <p class="cr">Contraste 30/60 14.8 · 10/60 11.0</p>
+  </div>
+</article><article class="pal" data-sector="Deportes" data-modo="oscuro">
+  <div class="maq" style="background:#0B0B0B">
+    <div class="maq-barra" style="color:#F5F5F5"><span class="logo" style="background:#FF5A1F"></span><b>Energía</b></div>
+    <div class="maq-tit" style="color:#F5F5F5">Fuerza</div>
+    <div class="maq-tarjetas"><div style="background:#F5F5F5"></div><div style="background:#F5F5F5"></div></div>
+    <div class="maq-btn" style="background:#FF5A1F;color:#000000">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#0B0B0B;flex:60"></i><i style="background:#F5F5F5;flex:30"></i><i style="background:#FF5A1F;flex:10"></i></div>
+  <div class="info">
+    <h3>Energía <small>oscuro</small></h3>
+    <p class="sec">Deportes · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#0B0B0B"></span>60 · Negro <code>#0B0B0B</code></li>
+      <li><span class="sw" style="background:#F5F5F5"></span>30 · Blanco hielo <code>#F5F5F5</code></li>
+      <li><span class="sw" style="background:#FF5A1F"></span>10 · Naranja fuego <code>#FF5A1F</code></li>
+    </ul>
+    <p class="emo">Fuerza, velocidad, competencia. Gimnasios, ropa deportiva, torneos.</p>
+    <p class="cr">Contraste 30/60 18.1 · 10/60 6.3</p>
+  </div>
+</article><article class="pal" data-sector="Deportes" data-modo="claro">
+  <div class="maq" style="background:#F3F6F2">
+    <div class="maq-barra" style="color:#12372A"><span class="logo" style="background:#2563EB"></span><b>Cancha</b></div>
+    <div class="maq-tit" style="color:#12372A">Equipo</div>
+    <div class="maq-tarjetas"><div style="background:#12372A"></div><div style="background:#12372A"></div></div>
+    <div class="maq-btn" style="background:#2563EB;color:#FFFFFF">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#F3F6F2;flex:60"></i><i style="background:#12372A;flex:30"></i><i style="background:#2563EB;flex:10"></i></div>
+  <div class="info">
+    <h3>Cancha <small>claro</small></h3>
+    <p class="sec">Deportes · Tríada o compuesta</p>
+    <ul>
+      <li><span class="sw" style="background:#F3F6F2"></span>60 · Cal <code>#F3F6F2</code></li>
+      <li><span class="sw" style="background:#12372A"></span>30 · Verde cancha <code>#12372A</code></li>
+      <li><span class="sw" style="background:#2563EB"></span>10 · Azul camiseta <code>#2563EB</code></li>
+    </ul>
+    <p class="emo">Equipo, aire libre, confianza. Clubes, escuelas deportivas, apuestas responsables.</p>
+    <p class="cr">Contraste 30/60 12.0 · 10/60 4.7</p>
+  </div>
+</article><article class="pal" data-sector="Café y artesanal" data-modo="claro">
+  <div class="maq" style="background:#F5EFE6">
+    <div class="maq-barra" style="color:#3E2C23"><span class="logo" style="background:#B5502E"></span><b>Tostado</b></div>
+    <div class="maq-tit" style="color:#3E2C23">Calidez</div>
+    <div class="maq-tarjetas"><div style="background:#3E2C23"></div><div style="background:#3E2C23"></div></div>
+    <div class="maq-btn" style="background:#B5502E;color:#FFFFFF">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#F5EFE6;flex:60"></i><i style="background:#3E2C23;flex:30"></i><i style="background:#B5502E;flex:10"></i></div>
+  <div class="info">
+    <h3>Tostado <small>claro</small></h3>
+    <p class="sec">Café y artesanal · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#F5EFE6"></span>60 · Pergamino <code>#F5EFE6</code></li>
+      <li><span class="sw" style="background:#3E2C23"></span>30 · Café tostado <code>#3E2C23</code></li>
+      <li><span class="sw" style="background:#B5502E"></span>10 · Arcilla <code>#B5502E</code></li>
+    </ul>
+    <p class="emo">Calidez, oficio, origen. Cafeterías, panaderías, productos artesanales.</p>
+    <p class="cr">Contraste 30/60 11.6 · 10/60 4.4</p>
+  </div>
+</article><article class="pal" data-sector="Música y eventos" data-modo="oscuro">
+  <div class="maq" style="background:#120B1F">
+    <div class="maq-barra" style="color:#F1E9FF"><span class="logo" style="background:#FF4D6D"></span><b>Noche de concierto</b></div>
+    <div class="maq-tit" style="color:#F1E9FF">Emoción</div>
+    <div class="maq-tarjetas"><div style="background:#F1E9FF"></div><div style="background:#F1E9FF"></div></div>
+    <div class="maq-btn" style="background:#FF4D6D;color:#000000">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#120B1F;flex:60"></i><i style="background:#F1E9FF;flex:30"></i><i style="background:#FF4D6D;flex:10"></i></div>
+  <div class="info">
+    <h3>Noche de concierto <small>oscuro</small></h3>
+    <p class="sec">Música y eventos · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#120B1F"></span>60 · Púrpura noche <code>#120B1F</code></li>
+      <li><span class="sw" style="background:#F1E9FF"></span>30 · Lila claro <code>#F1E9FF</code></li>
+      <li><span class="sw" style="background:#FF4D6D"></span>10 · Rosa fuego <code>#FF4D6D</code></li>
+    </ul>
+    <p class="emo">Emoción, euforia, noche. Conciertos, festivales, lanzamientos musicales.</p>
+    <p class="cr">Contraste 30/60 16.3 · 10/60 6.0</p>
+  </div>
+</article><article class="pal" data-sector="Producto premium" data-modo="claro">
+  <div class="maq" style="background:#E4E3DE">
+    <div class="maq-barra" style="color:#8B7E71"><span class="logo" style="background:#6B2BFF"></span><b>Kronos H1</b></div>
+    <div class="maq-tit" style="color:#8B7E71">Ingeniería</div>
+    <div class="maq-tarjetas"><div style="background:#8B7E71"></div><div style="background:#8B7E71"></div></div>
+    <div class="maq-btn" style="background:#6B2BFF;color:#FFFFFF">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#E4E3DE;flex:60"></i><i style="background:#8B7E71;flex:30"></i><i style="background:#6B2BFF;flex:10"></i></div>
+  <div class="info">
+    <h3>Kronos H1 <small>claro</small></h3>
+    <p class="sec">Producto premium · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#E4E3DE"></span>60 · Gris Porcelana <code>#E4E3DE</code></li>
+      <li><span class="sw" style="background:#8B7E71"></span>30 · Taupe Seta <code>#8B7E71</code></li>
+      <li><span class="sw" style="background:#6B2BFF"></span>10 · Ultra Violeta <code>#6B2BFF</code></li>
+    </ul>
+    <p class="emo">Ingeniería, precisión, valor. Vista explotada o despiece técnico de un producto.</p>
+    <p class="cr">Contraste 30/60 3.1 · 10/60 4.8</p>
+  </div>
+</article><article class="pal" data-sector="Producto premium" data-modo="oscuro">
+  <div class="maq" style="background:#2B1D2F">
+    <div class="maq-barra" style="color:#E8DCC6"><span class="logo" style="background:#B6F500"></span><b>Vortex T1</b></div>
+    <div class="maq-tit" style="color:#E8DCC6">Rendimiento</div>
+    <div class="maq-tarjetas"><div style="background:#E8DCC6"></div><div style="background:#E8DCC6"></div></div>
+    <div class="maq-btn" style="background:#B6F500;color:#000000">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#2B1D2F;flex:60"></i><i style="background:#E8DCC6;flex:30"></i><i style="background:#B6F500;flex:10"></i></div>
+  <div class="info">
+    <h3>Vortex T1 <small>oscuro</small></h3>
+    <p class="sec">Producto premium · Base neutra + acento</p>
+    <ul>
+      <li><span class="sw" style="background:#2B1D2F"></span>60 · Noche Berenjena <code>#2B1D2F</code></li>
+      <li><span class="sw" style="background:#E8DCC6"></span>30 · Crema Almendra <code>#E8DCC6</code></li>
+      <li><span class="sw" style="background:#B6F500"></span>10 · Verde Voltio <code>#B6F500</code></li>
+    </ul>
+    <p class="emo">Rendimiento, energía contenida. Bento grid de especificaciones y métricas.</p>
+    <p class="cr">Contraste 30/60 11.7 · 10/60 12.2</p>
+  </div>
+</article><article class="pal" data-sector="Producto premium" data-modo="color">
+  <div class="maq" style="background:#0033B0">
+    <div class="maq-barra" style="color:#EEEDE8"><span class="logo" style="background:#FF7B2C"></span><b>Lumina M1</b></div>
+    <div class="maq-tit" style="color:#EEEDE8">Impacto</div>
+    <div class="maq-tarjetas"><div style="background:#EEEDE8"></div><div style="background:#EEEDE8"></div></div>
+    <div class="maq-btn" style="background:#FF7B2C;color:#000000">Llamado a la acción</div>
+  </div>
+  <div class="barra"><i style="background:#0033B0;flex:60"></i><i style="background:#EEEDE8;flex:30"></i><i style="background:#FF7B2C;flex:10"></i></div>
+  <div class="info">
+    <h3>Lumina M1 <small>color</small></h3>
+    <p class="sec">Producto premium · Tríada o compuesta</p>
+    <ul>
+      <li><span class="sw" style="background:#0033B0"></span>60 · Azul Klein <code>#0033B0</code></li>
+      <li><span class="sw" style="background:#EEEDE8"></span>30 · Blanco Tiza <code>#EEEDE8</code></li>
+      <li><span class="sw" style="background:#FF7B2C"></span>10 · Naranja Papaya <code>#FF7B2C</code></li>
+    </ul>
+    <p class="emo">Impacto, confianza, energía. Hero de una landing, primer impacto.</p>
+    <p class="cr">Contraste 30/60 8.5 · 10/60 3.9</p>
+  </div>
+</article></main>
+<script>
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
+  const f=b.dataset.f;
+  document.querySelectorAll('.pal').forEach(p=>{p.style.display=(f==='*'||p.dataset.sector===f||p.dataset.modo===f)?'':'none'});
+});
+</script></body></html>

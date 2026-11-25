@@ -22,6 +22,7 @@
 | Selector de estilos de animación | `plugins/cerebro/skills/selector-animacion/` | Galería con la muestra animada de 10 estilos, recursos y prompts base; la activa el hook `plugins/cerebro/hooks/selector-animacion.sh` al mencionar una animación |
 | Selector de herramientas para apps con IA | `plugins/cerebro/skills/selector-herramientas-ia/` | Galería con maquetas de lo que produce pdfme, Unstract, DocETL y assistant-ui, y pregunta cuál usar; la activa el hook `plugins/cerebro/hooks/sugerir-herramientas-ia.sh` al hablar de PDF en serie, extraer datos de documentos, análisis en lote o chats con IA |
 | Selector de redacción | `plugins/cerebro/skills/selector-redaccion/` | Galería con el mismo texto pasado por edit-copy y por humanizer, y pregunta si usar una, la otra, las dos o ninguna; la activa el hook `plugins/cerebro/hooks/sugerir-redaccion.sh` al pedir copy, anuncios, posts, guiones, correos, landings o botones |
+| Experto en color | `plugins/cerebro/skills/experto-color/` | Mide los colores de una pieza, interfaz o paleta, deja tres, asigna 60/30/10 (C-001), corrige con psicología del color y propone paletas de su biblioteca (34, con contraste medido y galería); la activa el hook `plugins/cerebro/hooks/sugerir-color.sh` al trabajar colores o paletas |
 
 ## Sub-skills
 

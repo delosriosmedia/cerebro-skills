@@ -33,6 +33,10 @@ Aquí se listan los procedimientos completos de este dominio a medida que se apr
 
 - (ninguna todavía)
 
+## Skills relacionadas
+
+- Color de una interfaz (qué colores quedan, cuál va al 60, al 30 y al 10, contraste y psicología): `experto-color` (`plugins/cerebro/skills/experto-color/`).
+
 ## Reglas de mantenimiento
 
 - Cada criterio guarda su fuente (enlace y fecha) en `fuentes.md`.

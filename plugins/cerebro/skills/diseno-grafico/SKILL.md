@@ -32,7 +32,7 @@ Esta skill reúne los criterios de diseño gráfico guardados y aprobados por el
 
 Aquí se listan los procedimientos completos de este dominio a medida que se aprueben.
 
-- (ninguna todavía)
+- Color de una pieza o paleta completa (medir, reducir a tres colores, repartir 60-30-10 y corregir con psicología del color): skill de apoyo `experto-color` (`plugins/cerebro/skills/experto-color/`).
 
 ## Reglas de mantenimiento
 
