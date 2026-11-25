@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estilo retro</title>
+<style>
+  :root {
+    --fondo: #f6f5f2; --tarjeta: #ffffff; --texto: #1c1b19; --suave: #5f5d58;
+    --borde: #e3e0d9; --acento: #c2410c; --etiqueta: #fff1e8; --lienzo: #eceae5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fondo: #141414; --tarjeta: #1e1e1e; --texto: #f1f0ec; --suave: #a9a7a1;
+      --borde: #2e2e2e; --acento: #fb923c; --etiqueta: #3a2418; --lienzo: #262523;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--texto);
+    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  header { max-width: 1200px; margin: 0 auto; padding: 32px 16px 8px; }
+  h1 { margin: 0 0 6px; font-size: 28px; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--suave); max-width: 72ch; }
+  main { max-width: 1200px; margin: 0 auto; padding: 16px; display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); gap: 20px; }
+  article { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+  .media { height: 280px; background: var(--lienzo); display: flex; align-items: center; justify-content: center; padding: 16px; overflow: hidden; }
+  .cuerpo { padding: 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .num { font-size: 12px; font-weight: 600; color: var(--acento); letter-spacing: .06em; text-transform: uppercase; }
+  h2 { margin: 0; font-size: 19px; }
+  .produce, .ideal { margin: 0; }
+  .ideal { color: var(--suave); font-size: 14px; }
+  .pedido { margin: 4px 0 0; padding: 8px 10px; background: var(--etiqueta); border-radius: 8px; font-size: 14px; }
+  footer { max-width: 1200px; margin: 0 auto; padding: 8px 16px 40px; color: var(--suave); font-size: 14px; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+
+  /* 1 · Skin Y2K */
+  .y2k { width: 340px; max-width: 100%; padding: 8px; border-radius: 6px;
+    background: linear-gradient(180deg, #dfe4ec 0%, #9aa4b5 48%, #c9cfda 52%, #8590a3 100%);
+    border: 1px solid #4b5466; box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #5a6478, 0 8px 20px rgba(0,0,0,.35); }
+  .y2k .barra { height: 14px; border-radius: 3px; margin-bottom: 6px; color: #fff; font: 700 9px/14px Tahoma, Verdana, sans-serif; padding: 0 6px;
+    background: linear-gradient(90deg, #1e3a8a, #3b82f6 60%, #1e3a8a); letter-spacing: .08em; }
+  .y2k .lcd { background: #04122b; border: 2px inset #6b7690; border-radius: 3px; padding: 6px 8px; color: #6ee7ff; }
+  .y2k .tiempo { font: 700 26px/1 ui-monospace, Menlo, monospace; text-shadow: 0 0 6px #22d3ee; }
+  .y2k .titulo { font-size: 10px; white-space: nowrap; overflow: hidden; }
+  .y2k .titulo span { display: inline-block; animation: correr 9s linear infinite; }
+  @keyframes correr { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+  .y2k .eq { display: flex; gap: 3px; align-items: flex-end; height: 34px; margin-top: 6px; }
+  .y2k .eq i { flex: 1; background: linear-gradient(0deg, #22c55e, #facc15 70%, #ef4444); border-radius: 1px; animation: eq 1.1s ease-in-out infinite alternate; }
+  @keyframes eq { from { height: 20%; } to { height: 100%; } }
+  .y2k .botones { display: flex; gap: 4px; margin-top: 8px; }
+  .y2k .botones b { flex: 1; height: 22px; border-radius: 4px; display: grid; place-items: center; font-size: 10px; color: #1f2937;
+    background: linear-gradient(180deg, #f8fafc, #b8c1d1); border: 1px solid #56607a; box-shadow: inset 1px 1px 0 #fff; }
+
+  /* 2 · Aparato */
+  .aparato { width: 400px; max-width: 100%; display: flex; gap: 16px; align-items: center; padding: 18px; border-radius: 18px;
+    background: #f4f3ef; box-shadow: 0 1px 0 #fff inset, 0 10px 24px rgba(0,0,0,.18), 0 0 0 1px #dedbd3; }
+  .aparato .pantalla { flex: 1; background: #0d0d0d; border-radius: 8px; padding: 10px 12px; color: #e5e5e5; box-shadow: inset 0 2px 6px rgba(0,0,0,.6); }
+  .aparato .rotulo { font: 9px/1.2 ui-monospace, Menlo, monospace; color: #8a8a8a; letter-spacing: .1em; display: flex; justify-content: space-between; }
+  .aparato .fecha { font: 400 21px/1.4 ui-monospace, Menlo, monospace; letter-spacing: .02em; white-space: nowrap; }
+  .aparato .fecha .rojo { background: #e11d2a; color: #fff; padding: 0 4px; border-radius: 3px; }
+  .aparato .puntos { display: grid; grid-template-columns: repeat(12, 6px); gap: 3px; margin-top: 4px; }
+  .aparato .puntos i { width: 6px; height: 6px; border-radius: 50%; background: #333; }
+  .aparato .puntos i.on { background: #e11d2a; box-shadow: 0 0 4px #e11d2a; }
+  .aparato .perilla { width: 84px; height: 84px; border-radius: 50%; position: relative;
+    background: repeating-conic-gradient(#e9e7e1 0 4deg, #f7f6f2 4deg 8deg); box-shadow: 0 6px 12px rgba(0,0,0,.2), inset 0 0 0 1px #d6d3cb; }
+  .aparato .perilla b { position: absolute; inset: 22px; border-radius: 50%; background: #1a1a1a; color: #fff; display: grid; place-items: center; font: 700 9px ui-monospace, Menlo, monospace; letter-spacing: .1em; }
+
+  /* 3 · Terminal de fósforo */
+  .crt { width: 380px; max-width: 100%; height: 200px; border-radius: 16px; padding: 16px; position: relative; overflow: hidden;
+    background: radial-gradient(ellipse at center, #0b1a0f 0%, #040805 100%); color: #4ade80; box-shadow: 0 0 0 10px #2b2b27, 0 10px 24px rgba(0,0,0,.45);
+    font: 12px/1.55 ui-monospace, Menlo, monospace; text-shadow: 0 0 5px rgba(74,222,128,.7); }
+  .crt::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 1px, transparent 1px 3px); }
+  .crt .ok { color: #86efac; } .crt .err { color: #fbbf24; text-shadow: 0 0 5px rgba(251,191,36,.7); }
+  .crt .cursor { display: inline-block; width: 8px; height: 13px; background: #4ade80; vertical-align: -2px; animation: parpadeo 1.2s steps(1) infinite; }
+  @keyframes parpadeo { 50% { opacity: 0; } }
+
+  /* 4 · Arcade */
+  .arcade { width: 380px; max-width: 100%; height: 220px; border-radius: 10px; padding: 18px; background: #1b0f24; color: #f1e9ff; position: relative; overflow: hidden;
+    box-shadow: 0 10px 24px rgba(0,0,0,.45); display: flex; flex-direction: column; justify-content: space-between; }
+  .arcade h3 { margin: 0; font: 900 38px/1 Impact, "Arial Black", sans-serif; letter-spacing: .04em; text-transform: uppercase;
+    text-shadow: -3px 0 #ff2e88, 3px 0 #2ee6ff; }
+  .arcade .marcador { font: 700 13px/1.4 ui-monospace, Menlo, monospace; letter-spacing: .2em; color: #ffd23f; }
+  .arcade .boton { align-self: flex-start; padding: 10px 18px; background: #ff5a1f; color: #1b0f24; font: 800 14px ui-monospace, Menlo, monospace;
+    letter-spacing: .12em; box-shadow: 5px 5px 0 #ffd23f; border-radius: 2px; }
+  .arcade .pix { position: absolute; right: 22px; bottom: 24px; width: 72px; height: 72px;
+    background: conic-gradient(from 45deg, #2ee6ff 0 25%, #ff2e88 0 50%, #ffd23f 0 75%, #8b5cf6 0); image-rendering: pixelated;
+    clip-path: polygon(0 25%, 25% 25%, 25% 0, 75% 0, 75% 25%, 100% 25%, 100% 75%, 75% 75%, 75% 100%, 25% 100%, 25% 75%, 0 75%); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .y2k .titulo span, .y2k .eq i, .crt .cursor { animation: none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Estilo retro para interfaces</h1>
+  <p>Cuatro variantes con estética de los 2000. Elige una, una mezcla de dos o «Sin retro». La variante se entrega como brief a la skill que construye; el comportamiento (teclado, foco, lectores de pantalla) se mantiene actual.</p>
+</header>
+<main>
+  <article>
+    <div class="media">
+      <div class="y2k" aria-label="Maqueta de reproductor con skin Y2K">
+        <div class="barra">NIGHT DRIVE · PLAYER</div>
+        <div class="lcd">
+          <div class="tiempo">02:47</div>
+          <div class="titulo"><span>03. Neon Circuit · 128 kbps · 44 kHz · estéreo</span></div>
+          <div class="eq"><i style="animation-delay:-.1s"></i><i style="animation-delay:-.5s"></i><i style="animation-delay:-.3s"></i><i style="animation-delay:-.8s"></i><i style="animation-delay:-.2s"></i><i style="animation-delay:-.6s"></i><i style="animation-delay:-.9s"></i><i style="animation-delay:-.4s"></i><i style="animation-delay:-.7s"></i><i style="animation-delay:-.15s"></i><i style="animation-delay:-.55s"></i><i style="animation-delay:-.35s"></i></div>
+        </div>
+        <div class="botones"><b>⏮</b><b>▶</b><b>⏸</b><b>⏹</b><b>⏭</b></div>
+      </div>
+    </div>
+    <div class="cuerpo">
+      <span class="num">Variante 1</span>
+      <h2>Skin Y2K</h2>
+      <p class="produce">Carcasa metálica con biseles, LCD azul con texto que corre, ecualizador y botones con relieve.</p>
+      <p class="ideal">Ideal para reproductores, herramientas creativas y páginas de producto con guiño nostálgico.</p>
+      <p class="pedido">Construye: <code>impeccable</code> con el brief retro.</p>
+    </div>
+  </article>
+
+  <article>
+    <div class="media">
+      <div class="aparato" aria-label="Maqueta de aparato con pantalla LCD y perilla">
+        <div class="pantalla">
+          <div class="rotulo"><span>SET DATE</span><span>FRI</span></div>
+          <div class="fecha"><span class="rojo">2026</span> · 11 · 27</div>
+          <div class="puntos"><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="perilla"><b>SET</b></div>
+      </div>
+    </div>
+    <div class="cuerpo">
+      <span class="num">Variante 2</span>
+      <h2>Aparato</h2>
+      <p class="produce">Carcasa clara mate, LCD negra con cifras en rojo, perillas y botones físicos, rótulos mono pequeños.</p>
+      <p class="ideal">Ideal para paneles, configuradores, apps de audio o domótica y landings de hardware o SaaS con carácter.</p>
+      <p class="pedido">Construye: <code>impeccable</code> con el brief retro. La perilla es un slider accesible (UI SDK).</p>
+    </div>
+  </article>
+
+  <article>
+    <div class="media">
+      <div class="crt" aria-label="Maqueta de terminal de fósforo verde">
+        <div>&gt; deploy checkout-api --prod</div>
+        <div class="ok">✓ build 1.284 módulos · 8,2 s</div>
+        <div class="ok">✓ pruebas 214 de 214</div>
+        <div class="err">! latencia p95 182 ms</div>
+        <div>&gt; listo en producción</div>
+        <div>&gt; <span class="cursor"></span></div>
+      </div>
+    </div>
+    <div class="cuerpo">
+      <span class="num">Variante 3</span>
+      <h2>Terminal de fósforo</h2>
+      <p class="produce">Fondo casi negro, texto verde o ámbar con brillo, líneas de barrido, todo en mono.</p>
+      <p class="ideal">Ideal para herramientas de desarrollo, registros, paneles de despliegue y consolas de comandos.</p>
+      <p class="pedido">Construye: <code>impeccable</code> con el brief retro. Barrido y parpadeo se apagan con movimiento reducido.</p>
+    </div>
+  </article>
+
+  <article>
+    <div class="media">
+      <div class="arcade" aria-label="Maqueta de pantalla arcade">
+        <div class="marcador">HI-SCORE 098 450</div>
+        <h3>Demo<br>Night</h3>
+        <span class="boton">INSERT COIN</span>
+        <div class="pix"></div>
+      </div>
+    </div>
+    <div class="cuerpo">
+      <span class="num">Variante 4</span>
+      <h2>Arcade</h2>
+      <p class="produce">Fondo oscuro, títulos con desfase RGB, sombras duras y colores de neón.</p>
+      <p class="ideal">Ideal para juegos, eventos, hackatones y lanzamientos ruidosos.</p>
+      <p class="pedido">Construye: <code>hallmark</code> con su tema «Arcade».</p>
+    </div>
+  </article>
+</main>
+<footer>Maquetas propias dibujadas con CSS. Fuente de la idea: reel de Instagram guardado el 2026-11-25 sobre interfaces retro hechas con UI SDK de Vercel Labs.</footer>
+</body>
+</html>
