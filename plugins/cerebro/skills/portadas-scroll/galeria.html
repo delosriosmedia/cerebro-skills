@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portadas que frenan el scroll</title>
+<style>
+  :root {
+    --fondo: #f3f2ef; --tarjeta: #ffffff; --texto: #1c1b19; --suave: #5f5d58;
+    --borde: #e3e0d9; --acento: #4d7c0f; --etiqueta: #eef6e0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fondo: #111210; --tarjeta: #1b1c1a; --texto: #f1f0ec; --suave: #a9a7a1;
+      --borde: #2c2d2a; --acento: #c6f432; --etiqueta: #263011;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--texto);
+    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  header { max-width: 1240px; margin: 0 auto; padding: 32px 16px 8px; }
+  h1 { margin: 0 0 6px; font-size: 28px; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--suave); max-width: 72ch; }
+  main { max-width: 1240px; margin: 0 auto; padding: 16px; display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 20px; }
+  article { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 14px;
+    overflow: hidden; display: flex; flex-direction: column; }
+  .media { background: #2a2b28; padding: 18px; display: flex; justify-content: center; }
+  .cuerpo { padding: 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .num { font-size: 12px; font-weight: 600; color: var(--acento); letter-spacing: .06em; text-transform: uppercase; }
+  h2 { margin: 0; font-size: 19px; }
+  .receta { margin: 0; }
+  .por-que { margin: 0; color: var(--suave); font-size: 14px; }
+  footer { max-width: 1240px; margin: 0 auto; padding: 8px 16px 40px; color: var(--suave); font-size: 14px; }
+  a { color: var(--acento); }
+
+  /* Portadas de muestra: maquetas propias en proporción 4:5 */
+  .p { width: 220px; aspect-ratio: 4 / 5; position: relative; overflow: hidden; border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.35); font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; }
+  .serif { font-family: Georgia, "Times New Roman", serif; }
+  .mano { font-family: "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive; }
+  .grueso { font-family: Impact, "Arial Narrow Bold", "Helvetica Neue", sans-serif; font-weight: 900; }
+
+  /* 01 Foto con trazo */
+  .p1 { background: #f4efe4; color: #1f2a5c; }
+  .p1 .t { position: absolute; top: 18px; left: 0; right: 0; text-align: center; font-size: 21px; line-height: 1.05; }
+  .p1 .vaso { position: absolute; left: 70px; top: 92px; width: 80px; height: 96px; border-radius: 6px 6px 16px 16px;
+    background: linear-gradient(180deg, #e9dcc6 0 18%, #b0825a 18% 100%); box-shadow: inset 6px 0 10px rgba(255,255,255,.5), inset -8px 0 12px rgba(0,0,0,.25); }
+  .p1 svg { position: absolute; inset: 0; }
+
+  /* 02 La mirada */
+  .p2 { background: #141413; color: #f3efe6; }
+  .p2 svg { position: absolute; right: -10px; top: 40px; width: 150px; }
+  .p2 .t { position: absolute; left: 14px; top: 120px; font-size: 25px; line-height: 1.02; }
+  .p2 .t em { color: #e0594a; }
+  .p2 .s { position: absolute; left: 14px; bottom: 16px; font-size: 8px; letter-spacing: .12em; color: #b8b2a6; }
+
+  /* 03 La cifra exacta */
+  .p3 { background: #f26a21; color: #1b120c; padding: 14px; }
+  .p3 .k { font-size: 8px; font-weight: 700; letter-spacing: .1em; }
+  .p3 .n { font-size: 62px; line-height: .95; margin-top: 4px; }
+  .p3 .d { font-size: 11px; font-weight: 700; margin-top: 6px; line-height: 1.2; }
+  .p3 .barras { position: absolute; left: 14px; right: 14px; bottom: 14px; height: 70px;
+    background: repeating-linear-gradient(90deg, #7a2d0c 0 12px, #fbb38a 12px 20px, #a5400f 20px 26px, #fde3d2 26px 34px); }
+
+  /* 04 Tachado en rojo */
+  .p4 { background: repeating-linear-gradient(180deg, #fbf8f1 0 21px, #dfe7f2 21px 22px); color: #151515; }
+  .p4::before { content: ""; position: absolute; left: 26px; top: 0; bottom: 0; width: 1.5px; background: #e58f8f; }
+  .p4 .a { position: absolute; left: 34px; top: 66px; font-size: 23px; font-weight: 800; white-space: nowrap; }
+  .p4 .tach { position: relative; }
+  .p4 .tach::after { content: ""; position: absolute; left: -2px; right: -2px; top: 52%; height: 3px; background: #d7262b; transform: rotate(-4deg); }
+  .p4 .r { position: absolute; color: #d7262b; font-size: 26px; transform: rotate(-8deg); }
+  .p4 .b { position: absolute; left: 36px; top: 150px; font-size: 18px; font-weight: 700; }
+  .p4 .c { position: absolute; left: 36px; bottom: 22px; font-size: 9px; font-weight: 600; }
+
+  /* 05 El disfraz */
+  .p5 { background: linear-gradient(180deg, #f0a36f 0%, #c97a63 40%, #3f6f78 100%); color: #fff; text-align: center; }
+  .p5 .f { font-size: 9px; margin-top: 18px; opacity: .9; }
+  .p5 .h { font-size: 48px; font-weight: 300; line-height: 1; }
+  .p5 .noti { margin: 8px 12px 0; padding: 7px 8px; border-radius: 10px; background: rgba(255,255,255,.82); color: #111;
+    text-align: left; font-size: 8.5px; line-height: 1.25; display: flex; gap: 6px; }
+  .p5 .noti i { flex: none; width: 14px; height: 14px; border-radius: 4px; background: #16a34a; }
+  .p5 .noti.b i { background: #2563eb; } .p5 .noti.c i { background: #b91c1c; }
+  .p5 .noti b { display: block; }
+
+  /* 06 Antes y después */
+  .p6 { background: #191919; color: #fff; }
+  .p6 .lados { position: absolute; inset: 0 0 64px 0; display: flex; }
+  .p6 .lado { flex: 1; display: flex; align-items: center; justify-content: center; }
+  .p6 .plato { flex: none; width: 150px; height: 150px; border-radius: 50%; background:
+    radial-gradient(circle at 35% 35%, #e3b04b 0 14%, transparent 15%), radial-gradient(circle at 65% 40%, #b2452a 0 13%, transparent 14%),
+    radial-gradient(circle at 45% 68%, #e8d9a8 0 15%, transparent 16%), radial-gradient(circle, #c8c8c8 0 60%, #9a9a9a 61% 100%); }
+  .p6 .lado:first-child { overflow: hidden; justify-content: flex-end; }
+  .p6 .lado:first-child .plato { transform: translateX(75px); filter: grayscale(.9) brightness(.7); }
+  .p6 .lado:last-child { overflow: hidden; justify-content: flex-start; }
+  .p6 .lado:last-child .plato { transform: translateX(-75px); filter: saturate(1.5) brightness(1.1); }
+  .p6 .div { position: absolute; left: 50%; top: 0; bottom: 64px; width: 2px; background: #fff; }
+  .p6 .div::after { content: "‹›"; position: absolute; top: 46%; left: -10px; width: 22px; height: 22px; border-radius: 50%;
+    background: #fff; color: #111; font-size: 11px; display: grid; place-items: center; font-weight: 700; }
+  .p6 .et { position: absolute; top: 8px; font-size: 7px; letter-spacing: .1em; background: rgba(0,0,0,.6); padding: 2px 5px; border-radius: 3px; }
+  .p6 .t { position: absolute; left: 12px; bottom: 12px; font-size: 18px; line-height: 1.05; }
+  .p6 .t span { color: #f5c542; }
+
+  /* 07 El corte */
+  .p7 { background: #e23a2e; color: #fff4e6; }
+  .p7 .k { position: absolute; left: 14px; top: 14px; font-size: 8px; }
+  .p7 .t { position: absolute; left: 14px; top: 44px; font-size: 39px; line-height: .92; white-space: nowrap; }
+  .p7 .sw { position: absolute; right: 12px; bottom: 12px; font-size: 9px; border: 1px solid #fff4e6; border-radius: 99px; padding: 2px 8px; }
+  .p7 .k2 { position: absolute; left: 14px; bottom: 14px; font-size: 8px; }
+
+  /* 08 El raro entre iguales */
+  .p8 { background: #efe9dc; color: #1a1a1a; padding: 12px; }
+  .p8 .t { font-size: 15px; font-weight: 800; line-height: 1.1; }
+  .p8 .t span { color: #b8860b; }
+  .p8 .rej { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px 10px; margin-top: 12px; justify-items: center; }
+  .p8 .h { width: 24px; height: 30px; border-radius: 50% 50% 46% 46% / 58% 58% 42% 42%;
+    background: radial-gradient(circle at 35% 30%, #f4d9bd, #c98d5c 75%); }
+  .p8 .h.o { background: radial-gradient(circle at 35% 30%, #fff4a3, #e8b100 70%); box-shadow: 0 0 10px rgba(232,177,0,.7); }
+
+  /* 09 La palabra que actúa */
+  .p9 { background: #0f1a2b; color: #e8eefc; padding: 18px; }
+  .p9 .a { font-size: 22px; font-weight: 300; }
+  .p9 .w { font-size: 54px; font-weight: 800; line-height: 1; display: flex; }
+  .p9 .w span { display: inline-block; }
+  .p9 .w span:nth-child(4) { transform: translateY(26px) rotate(14deg); opacity: .85; }
+  .p9 .w span:nth-child(5) { transform: translateY(70px) rotate(-22deg); opacity: .6; }
+  .p9 .w span:nth-child(6) { transform: translateY(120px) rotate(35deg); opacity: .35; }
+  .p9 .s { position: absolute; left: 18px; bottom: 16px; font-size: 9px; color: #9fb0d0; }
+
+  /* 10 A o B */
+  .p10 { background: #fafafa; color: #111; }
+  .p10 .q { position: absolute; top: 12px; left: 0; right: 0; text-align: center; font-size: 22px; font-weight: 800; }
+  .p10 .op { position: absolute; top: 52px; bottom: 44px; width: 46%; border-radius: 8px; display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-end; padding: 8px; font-size: 26px; font-weight: 800; }
+  .p10 .op.a { left: 3%; background: linear-gradient(160deg, #1f2937, #4b5563); color: #fff; }
+  .p10 .op.b { right: 3%; background: linear-gradient(160deg, #fde68a, #f59e0b); color: #111; }
+  .p10 .s { position: absolute; bottom: 14px; left: 0; right: 0; text-align: center; font-size: 10px; font-weight: 600; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Portadas que frenan el scroll</h1>
+  <p>Diez técnicas de portada para carruseles, posts y miniaturas. Un post tiene cerca de 1,7 segundos en el feed: elige una o dos técnicas y la portada hace el trabajo de detener al lector.</p>
+</header>
+<main>
+
+<article>
+  <div class="media"><div class="p p1">
+    <div class="t serif">Mis mejores ideas<br>cuestan <span class="mano" style="color:#2c4bd8">$10</span></div>
+    <div class="vaso"></div>
+    <svg viewBox="0 0 220 275" fill="none" stroke="#2c4bd8" stroke-width="2" stroke-linecap="round">
+      <path d="M40 240 C70 210, 120 205, 170 220 S 200 240, 180 255 M60 248 C90 230, 140 232, 165 240"/>
+      <path d="M150 52 C162 60, 168 58, 175 50"/>
+      <path d="M55 140 l6 0 M58 137 l0 6 M160 120 l6 0 M163 117 l0 6"/>
+    </svg>
+  </div></div>
+  <div class="cuerpo"><span class="num">01 · Incongruencia</span><h2>Foto con trazo</h2>
+    <p class="receta">Una foto real cruzada por trazos a mano: una línea de lápiz, una cifra escrita, una mano dibujada.</p>
+    <p class="por-que">Ni anuncio ni garabato: el cerebro mira dos veces.</p></div>
+</article>
+
+<article>
+  <div class="media"><div class="p p2">
+    <svg viewBox="0 0 150 200"><path fill="#c7a17a" d="M120 20 C150 30 150 80 140 110 L140 170 L60 200 L80 150 C60 150 45 140 48 125 L40 118 L48 110 C44 100 40 92 46 86 C52 50 80 12 120 20Z"/>
+      <path fill="#2a1d14" d="M120 14 C150 20 160 60 150 100 C140 70 120 60 95 55 C80 40 90 15 120 14Z"/>
+      <circle cx="66" cy="80" r="3" fill="#1a120c"/></svg>
+    <div class="t serif">Las reglas<br>viejas <em>aún</em><br>venden.</div>
+    <div class="s">7 LEYES DEL COPY MÁS VIEJAS QUE INSTAGRAM</div>
+  </div></div>
+  <div class="cuerpo"><span class="num">02 · Mirada</span><h2>La mirada</h2>
+    <p class="receta">Un rostro de perfil cuya mirada apunta al titular.</p>
+    <p class="por-que">Seguimos la mirada ajena. Un rostro que mira al producto subió el recuerdo de 1,06 a 1,50 (Sajjacholapunt y Ball, 2014).</p></div>
+</article>
+
+<article>
+  <div class="media"><div class="p p3">
+    <div class="k">UN AÑO, ANOTADO</div>
+    <div class="n grueso">8.760</div>
+    <div class="d">horas en un año. Anoté cada una. Aquí está a dónde se fueron.</div>
+    <div class="barras"></div>
+  </div></div>
+  <div class="cuerpo"><span class="num">03 · Precisión</span><h2>La cifra exacta</h2>
+    <p class="receta">Un número impar y exacto que ocupa media portada, con su explicación debajo.</p>
+    <p class="por-que">Lo preciso se lee como medido; lo redondo, como cálculo a ojo.</p></div>
+</article>
+
+<article>
+  <div class="media"><div class="p p4">
+    <div class="a">Publica <span class="tach">a diario</span>.</div>
+    <div class="r mano" style="left:118px;top:34px">mejor</div>
+    <div class="b"><span class="tach" style="color:#9a9a9a">Hazte viral</span>.<br>Que te guarden.</div>
+    <div class="c">3 reglas que reescribimos este año</div>
+  </div></div>
+  <div class="cuerpo"><span class="num">04 · Corrección</span><h2>Tachado en rojo</h2>
+    <p class="receta">Una creencia popular tachada y la corrección escrita encima en rojo, sobre papel rayado.</p>
+    <p class="por-que">Una palabra tachada rompe una predicción y el cerebro busca el arreglo.</p></div>
+</article>
+
+<article>
+  <div class="media"><div class="p p5">
+    <div class="f">Lunes, 1 de diciembre</div>
+    <div class="h">9:41</div>
+    <div class="noti"><i></i><div><b>Tú del futuro</b>Lee esto antes de que llegue tu sueldo.</div></div>
+    <div class="noti b"><i></i><div><b>Pagos</b>Pagaste $84.300 en domicilios.</div></div>
+    <div class="noti c"><i></i><div><b>Banco</b>Saldo: $41.206</div></div>
+  </div></div>
+  <div class="cuerpo"><span class="num">05 · Disfraz</span><h2>El disfraz</h2>
+    <p class="receta">La portada imita la pantalla de bloqueo; el gancho llega como notificación, con montos reales.</p>
+    <p class="por-que">Saltamos los anuncios; la pantalla del propio teléfono la miramos.</p></div>
+</article>
+
+<article>
+  <div class="media"><div class="p p6">
+    <div class="lados"><div class="lado"><div class="plato"></div></div><div class="lado"><div class="plato"></div></div></div>
+    <div class="div"></div>
+    <div class="et" style="left:8px">ANTES</div><div class="et" style="right:8px">DESPUÉS</div>
+    <div class="t grueso">MISMO PLATO.<br><span>3 AJUSTES DEL TELÉFONO.</span></div>
+  </div></div>
+  <div class="cuerpo"><span class="num">06 · Contraste</span><h2>Antes y después</h2>
+    <p class="receta">Un mismo sujeto partido por un divisor vertical, con la causa nombrada abajo.</p>
+    <p class="por-que">Lado a lado obliga a comparar; la diferencia es la promesa.</p></div>
+</article>
+
+<article>
+  <div class="media"><div class="p p7">
+    <div class="k">Notas de ventas, parte 1</div>
+    <div class="t grueso">LA PALABRA<br>QUE CIERRA<br>CUALQUIER<br>VENTA DIFÍCIL</div>
+    <div class="k2">Para independientes</div>
+    <div class="sw">Desliza →</div>
+  </div></div>
+  <div class="cuerpo"><span class="num">07 · Bucle abierto</span><h2>El corte</h2>
+    <p class="receta">Tipografía enorme cortada en el borde derecho y una señal de deslizar.</p>
+    <p class="por-que">Tendemos a terminar lo que queda cortado; aquí terminar es deslizar.</p></div>
+</article>
+
+<article>
+  <div class="media"><div class="p p8">
+    <div class="t">19 ideas que todos publican. <span>1 que nadie.</span></div>
+    <div class="rej">
+      <i class="h"></i><i class="h"></i><i class="h"></i><i class="h"></i>
+      <i class="h"></i><i class="h"></i><i class="h"></i><i class="h"></i>
+      <i class="h"></i><i class="h o"></i><i class="h"></i><i class="h"></i>
+      <i class="h"></i><i class="h"></i><i class="h"></i><i class="h"></i>
+      <i class="h"></i><i class="h"></i><i class="h"></i><i class="h"></i>
+    </div>
+  </div></div>
+  <div class="cuerpo"><span class="num">08 · Aislamiento</span><h2>El raro entre iguales</h2>
+    <p class="receta">Una cuadrícula de elementos idénticos y uno distinto; el titular lo nombra.</p>
+    <p class="por-que">Lo distinto se ve primero, sin esfuerzo, y se recuerda mejor (von Restorff, 1933).</p></div>
+</article>
+
+<article>
+  <div class="media"><div class="p p9">
+    <div class="a">Aprende a</div>
+    <div class="w"><span>s</span><span>o</span><span>l</span><span>t</span><span>a</span><span>r</span></div>
+    <div class="s">5 hábitos que ya no te sirven</div>
+  </div></div>
+  <div class="cuerpo"><span class="num">09 · Momento ajá</span><h2>La palabra que actúa</h2>
+    <p class="receta">La palabra clave hace lo que dice: «soltar» con letras que caen, «espacio» con letras separadas.</p>
+    <p class="por-que">Descubrir el juego da un pequeño «ajá» que premia la mirada.</p></div>
+</article>
+
+<article>
+  <div class="media"><div class="p p10">
+    <div class="q">¿A o B?</div>
+    <div class="op a">A</div><div class="op b">B</div>
+    <div class="s">¿Cuál portada guardarías? Responde abajo</div>
+  </div></div>
+  <div class="cuerpo"><span class="num">10 · Pregunta</span><h2>A o B</h2>
+    <p class="receta">Dos opciones lado a lado y una pregunta directa.</p>
+    <p class="por-que">Una pregunta pide respuesta: el lector elige antes de seguir y comenta.</p></div>
+</article>
+
+</main>
+<footer>Maquetas propias inspiradas en el <a href="https://www.instagram.com/p/DfmYi-fj1kv/">carrusel de doagenticly</a>, guardado el 2026-11-25. Dos técnicas combinadas suman; tres compiten.</footer>
+</body>
+</html>
