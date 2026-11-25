@@ -35,11 +35,11 @@
 1. **Captura.** Angel comparte el enlace a un bot de Telegram o guarda el video en su lista «Cerebro» de YouTube.
 2. **Extracción.** El motor obtiene el texto del post, la transcripción, el texto que aparece en pantalla y los repositorios enlazados.
 3. **Interpretación.** Claude lee ese contenido junto con `MAPA.md` y propone un tipo (criterio, prompt, sub-skill, skill nueva, herramienta o referencia) y un destino.
-4. **Preguntas.** En el hilo «Revisar guardados nuevos» del proyecto de Claude, Claude le muestra a Angel lo que entendió y de una a tres preguntas en tarjetas de un toque.
+4. **Preguntas.** Cada guardado abre su propio hilo en el proyecto de Claude. Ahí Claude le muestra a Angel lo que entendió, capturas del contenido, los posibles conflictos con el cerebro y de una a tres preguntas en tarjetas de un toque.
 5. **Propuesta.** Claude redacta el cambio y abre un pull request en este repositorio.
 6. **Aprobación.** Angel toca «Aprobar e instalar» en la tarjeta; Claude fusiona el pull request y el cambio queda instalado.
 
-Una tarea programada despierta el hilo de revisión y revisa la cola en Supabase. El procedimiento completo está en [`.claude/skills/revisar-guardados/SKILL.md`](.claude/skills/revisar-guardados/SKILL.md).
+Una tarea programada despierta cada hora el hilo despachador «Revisar guardados nuevos», que abre un hilo por cada guardado listo en la cola de Supabase. El procedimiento completo está en [`.claude/skills/revisar-guardados/SKILL.md`](.claude/skills/revisar-guardados/SKILL.md).
 
 El motor corre en la nube (Supabase, Telegram, Apify, la API de Gemini y la API de Claude). Sus datos y credenciales viven en servicios privados; este repositorio guarda solo el conocimiento aprobado y el esquema de la base de datos.
 

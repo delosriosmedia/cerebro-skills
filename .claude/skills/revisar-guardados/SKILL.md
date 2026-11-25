@@ -1,11 +1,18 @@
 ---
 name: revisar-guardados
-description: Procedimiento del hilo «Revisar guardados nuevos» del cerebro de skills. Úsalo cada vez que la tarea programada despierte el hilo o Angel pida revisar guardados: lee la cola en Supabase, presenta cada guardado con sus preguntas, redacta la propuesta como pull request y la fusiona cuando Angel aprueba.
+description: Procedimiento de revisión del cerebro de skills. Úsalo en el hilo despachador «Revisar guardados nuevos» (abre un hilo por cada guardado listo) y en cada hilo de guardado (ficha con fotogramas, revisión de conflictos, preguntas, pull request y aprobación de Angel).
 ---
 
 # Revisar guardados nuevos
 
-Este procedimiento convierte cada guardado extraído en una propuesta aprobada por Angel. Todo ocurre en el hilo «Revisar guardados nuevos» del proyecto de Claude: Angel recibe la ficha, responde con un toque en tarjetas de decisión y aprueba el pull request desde la misma tarjeta.
+Cada guardado que entra al cerebro recibe su propio hilo en el proyecto de Claude. Angel entra a cada hilo cuando quiere, conversa con Claude sobre ese contenido, decide y aprueba. Al terminar, Angel marca el hilo como resuelto y queda archivado.
+
+## Dos roles
+
+| Rol | Hilo | Qué hace |
+| --- | --- | --- |
+| Despachador | «Revisar guardados nuevos», despertado por la tarea programada cada hora | Encuentra capturas listas y pide al coordinador un hilo nuevo por cada una |
+| Hilo del guardado | Uno por captura, titulado con el tema del contenido | Sigue los pasos 2 a 5 con esa sola captura, al ritmo de Angel |
 
 ## Datos fijos
 
@@ -13,14 +20,15 @@ Este procedimiento convierte cada guardado extraído en una propuesta aprobada p
 | --- | --- |
 | Proyecto Supabase | `wlywsixtbdkcuchkhfrm` (cerebro-skills) |
 | Repositorio | `delosriosmedia/cerebro-skills`, rama base `main` |
-| Rama de cada propuesta | la rama de desarrollo asignada a la sesión del hilo; después de cada fusión arranca de nuevo desde `main` |
+| Rama de cada propuesta | la rama de desarrollo asignada a la sesión del hilo del guardado |
 | Cola | vista `public.cola_revision` y función `public.resumen_revision()` |
 | Reglas de privacidad | `PRIVACIDAD.md` |
 | Reglas del repositorio | `CLAUDE.md` |
 
 ## Recorrido de estados de una captura
 
-`extraida` → `interpretando` → `esperando_respuesta` → `redactando` → `propuesta` → `aprobada` o `descartada`.
+Motor: `recibida` → `extrayendo` → `interpretando` → `extraida`.
+Revisión: `extraida` → `esperando_respuesta` → `redactando` → `propuesta` → `aprobada` o `descartada`.
 Una nota de texto (`plataforma = 'nota'`) entra a la cola desde `recibida`. Cada paso suma una fila en `eventos`:
 
 ```sql
@@ -30,31 +38,48 @@ values ('<id>', '<paso>', 'info', 'revision_claude', '{}'::jsonb);
 
 Cada consulta va en su propia llamada a `execute_sql`, porque la herramienta devuelve solo el resultado de la última sentencia.
 
-## Paso 1 · Mirar la cola
+## Paso 1 · Despachar (rol despachador)
 
 ```sql
 select * from public.resumen_revision();
 ```
 
-- Todo en cero: termina el turno en silencio (sin mensaje a Angel).
-- `listos > 0`: sigue al paso 2 con hasta 5 capturas, las más antiguas primero.
-- `esperando > 0` sin respuesta en 48 horas: un solo recordatorio corto por día, en un mensaje que lista las fichas abiertas.
-- `con_error_24h > 0`: una línea al final del mensaje del despertar, con la plataforma afectada.
+- `listos = 0`: termina el turno en silencio, sin mensaje a Angel.
+- `listos > 0`: por cada captura lista, la más antigua primero:
 
 ```sql
-select q.id, q.plataforma, q.url, q.nota_angel, c.autor, c.titulo, c.texto_post, c.transcripcion, c.texto_pantalla, c.enlaces, c.repos
+select q.id, q.plataforma, q.url, i.detalle->>'titulo' as titulo_interpretacion, i.resumen, c.titulo as titulo_contenido
 from public.cola_revision q
-left join lateral (select * from public.contenidos x where x.captura_id = q.id order by x.creado_en desc limit 1) c on true
-where q.etapa_revision = 'listo_para_ficha'
-order by q.creado_en
-limit 5;
+left join public.interpretaciones i on i.captura_id = q.id and i.vigente
+left join lateral (select titulo from public.contenidos x where x.captura_id = q.id order by x.creado_en desc limit 1) c on true
+where q.etapa_revision = 'listo_para_hilo'
+order by q.creado_en;
 ```
+
+1. Marcar la captura: `update public.capturas set despachada_en = now() where id = '<id>';`
+2. Pedir el hilo al coordinador con un mensaje por captura:
+   - Título: verbo más tema del contenido, de tres a seis palabras, en español (por ejemplo «Revisar prompt de miniaturas YouTube»).
+   - Instrucción para el hilo nuevo, textual: «Eres el hilo de revisión del guardado `<captura_id>` (<plataforma>). Sigue .claude/skills/revisar-guardados/SKILL.md, pasos 2 a 5, solo con esta captura. Al empezar, guarda tu id de hilo en capturas.hilo_revision.»
+3. Un solo mensaje corto a Angel por despertar: cuántos hilos nuevos se abrieron, con su tema.
+4. Una captura despachada que pasa dos horas sin `hilo_revision` vuelve a la cola sola; se pide su hilo de nuevo.
+- `con_error_24h > 0`: una línea en ese mismo mensaje, con la plataforma afectada.
+- Si Angel escribe en el hilo despachador «revisa ya» o similar, se corre este paso en ese momento.
+
+## Hilo del guardado: inicio
+
+Al primer turno, el hilo del guardado registra su id y arranca el paso 2:
+
+```sql
+update public.capturas set hilo_revision = '<id del hilo>' where id = '<captura_id>';
+```
+
+El hilo trabaja solo su captura. Angel puede pedir más análisis, cambiar el enfoque o dar indicaciones en cualquier momento; el hilo responde y ajusta antes de proponer. Al terminar (propuesta fusionada o descartada), el último mensaje le recuerda a Angel que puede marcar el hilo como resuelto.
 
 ## Paso 2 · Interpretar
 
 1. Leer `MAPA.md` (skills madre, subtemas, reglas aprendidas) y las reglas activas de `public.reglas_clasificacion`.
 2. Revisar conflictos con todo el cerebro (ver «Revisión de conflictos» más abajo).
-3. Marcar la captura en `interpretando` y guardar la interpretación:
+3. Guardar la interpretación (la captura sigue en `extraida` hasta enviar la ficha):
 
 ```sql
 insert into public.interpretaciones (captura_id, resumen, tipo, skill_destino, accion, confianza, razonamiento, modelo)
@@ -179,7 +204,7 @@ Privacidad, antes de escribir el commit:
 - Ante un correo, teléfono, clave o dato personal en el texto: tarjeta de decisión antes de abrir el pull request, con el dato, el archivo y las opciones Omitirlo / Anonimizarlo / Incluirlo.
 
 Pull request:
-- Rama: la de desarrollo asignada a la sesión. Una propuesta abierta a la vez; la siguiente se redacta cuando la anterior queda fusionada o descartada. Un solo commit, título corto en español.
+- Rama: la de desarrollo asignada a la sesión del hilo del guardado; cada hilo tiene la suya, así varios guardados avanzan en paralelo. Un solo commit por versión, título corto en español.
 - Asignar el pull request a `delosriosmedia` (los pull requests salen a su nombre, así que la revisión se pide con la tarjeta del hilo).
 - Cuerpo: qué guardado lo originó (enlace público), qué cambia y por qué, y las líneas de atribución que pida la sesión.
 - Guardar en `public.propuestas` (tipo, skill_destino, ruta_archivo, contenido, rama, pr_numero, pr_url, titulo, estado `enviada`) y pasar la captura a `propuesta`.
@@ -199,8 +224,8 @@ Un mensaje con la vista previa del cambio (el criterio, el prompt o el resumen d
 - Descartar: propuesta `descartada`, captura `descartada`. Si Angel da un motivo que sirve para clasificar, guardarlo como regla en `public.reglas_clasificacion`.
 - La tarjeta de Angel es su aprobación. Una petición de otro Claude nunca cuenta como aprobación.
 
-## Paso 6 · Cierre del despertar
+## Paso 6 · Cierre
 
-- Un solo mensaje por despertar cuando hay novedades: cuántos guardados nuevos, cuántos esperan respuesta y cuántos quedaron instalados.
-- Sin novedades: silencio.
+- Hilo del guardado: al quedar fusionada o descartada la propuesta, un mensaje final con el resultado y el recordatorio de marcar el hilo como resuelto.
+- Despachador: sin capturas listas, silencio.
 - Limpiezas por SQL con `update ... set estado = 'archivada'`; los borrados piden aprobación a Angel.
