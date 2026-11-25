@@ -41,9 +41,13 @@ Si la extracción falla, la captura vuelve a `recibida` con el motivo en `ultimo
 
 | Dónde | Clave | Para qué |
 | --- | --- | --- |
-| Secreto de Edge Functions | `GEMINI_API_KEY` | Video e interpretación (obligatorio) |
+| Vault de Supabase | `wif_vertex_llave` | Llave privada con la que la función firma su identidad ante Google Cloud. La crea la función `wif-emisor` y nadie la ve |
+| Secreto de Edge Functions | `GEMINI_API_KEY` | Gemini en AI Studio: respaldo automático cuando Vertex no autentica |
 | Secreto de Edge Functions | `APIFY_TOKEN` | Posts que llegan solo como enlace |
 | Secreto de Edge Functions | `ANTHROPIC_API_KEY` | Interpretación con Claude (opcional) |
+| Tabla `ajustes` | `gemini_proveedor` | `vertex` (por defecto) o `aistudio`. Cada llamada autentica la cuenta de servicio; si falla, sigue con AI Studio |
+| Tabla `ajustes` | `vertex_proyecto`, `vertex_cuenta`, `wif_emisor`, `wif_audiencia`, `wif_jwk_publica` | Proyecto de Google Cloud, cuenta de servicio, emisor OIDC (función `wif-emisor`), proveedor de identidad y llave pública. Ver «Gemini en Vertex AI» |
+| Tabla `ajustes` | `vertex_bucket`, `vertex_region`, `vertex_modelos` | Bucket privado para los videos temporales (se borran al terminar cada lectura), región del endpoint (por defecto `global`) y alias de modelos con otro nombre en Vertex (`nombre=nombre_en_vertex`, separados por comas) |
 | Tabla `ajustes` | `gemini_modelo_video`, `gemini_modelo_interprete` | Modelo de Gemini (por defecto `gemini-flash-latest`) |
 | Tabla `ajustes` | `gemini_modelo_respaldo` | Modelos para demanda alta, separados por comas (por defecto `gemini-flash-lite-latest`). Con Gemini saturado, el modelo principal reintenta a los 3, 6 y 12 s, cada respaldo prueba dos veces y, si todo sigue saturado, la captura vuelve a la cola sin gastar intento. Cada llamada corta Gemini y Apify a los 125 s («plazo:») y devuelve la captura a la cola, para quedar bajo los 150 s de la función |
 | Tabla `ajustes` | `gemini_modelo_archivo` | Modelo para videos descargados y carruseles (reels, DM); sin valor usa `gemini_modelo_video` |
@@ -53,6 +57,24 @@ Si la extracción falla, la captura vuelve a `recibida` con el motivo en `ultimo
 | Tabla `ajustes` | `apify_actor_<plataforma>`, `apify_entrada_<plataforma>` | Actor de Apify y su entrada (`{url}` se reemplaza) |
 | Tabla `ajustes` | `procesar_lote` | Capturas por llamada (por defecto 3) |
 
+## Gemini en Vertex AI
+
+Vertex AI (Gemini platform de Google Cloud) es el proveedor principal: lo pagan los créditos de Google Cloud. La organización de Google Cloud bloquea las llaves de cuentas de servicio, así que la función entra por **federación de identidad**:
+
+1. `procesar-captura` firma un JWT de 10 minutos con la llave del Vault (`sub = procesar-captura`).
+2. Google lo verifica con la llave pública que publica la función `wif-emisor` (`/.well-known/openid-configuration` y `/jwks`).
+3. STS lo cambia por un token federado, e IAM Credentials entrega un token de la cuenta de servicio.
+
+| Pieza en Google Cloud | Para qué |
+| --- | --- |
+| Grupo de identidades `cerebro-supabase` con proveedor OIDC `supabase-funciones` | Acepta los JWT del emisor; `google.subject = assertion.sub` |
+| Cuenta de servicio con «Usuario de Agent Platform» y «Usuario de objetos de almacenamiento» | Llama a Gemini y sube los videos temporales |
+| Permiso «Usuario de Workload Identity» sobre la cuenta, para el sujeto `procesar-captura` | Deja que la función use la cuenta de servicio |
+| Bucket privado | Videos temporales; cada lectura borra su archivo al terminar |
+| APIs activas: Agent Platform (aiplatform), Security Token Service, IAM Service Account Credentials | Las tres llamadas del flujo |
+
+Para cambiar la llave: borrar el secreto `wif_vertex_llave` del Vault y llamar `POST {"generar": true}` a `wif-emisor` con la cabecera `x-cerebro-clave`.
+
 ## Llamadas
 
 Todas llevan la cabecera `x-cerebro-clave` con el valor de `ajustes.cron_clave`.
@@ -61,6 +83,6 @@ Todas llevan la cabecera `x-cerebro-clave` con el valor de `ajustes.cron_clave`.
 - `POST {"captura_id": "…"}`: procesa esa captura (pruebas y reprocesos).
 - `POST {"captura_id": "…", "solo": "interpretar"}`: repite solo la interpretación.
 - `POST {"captura_id": "…", "solo": "video"}`: relee el video guardado en `medios`, actualiza su fila de `contenidos` y repite la interpretación, sin cambiar el estado de la captura.
-- `GET ?estado=1`: muestra qué secretos están configurados, sin revelarlos.
+- `GET ?estado=1`: muestra el proveedor vigente y qué secretos están configurados, sin revelarlos. Con `&probar=1`, prueba cada modelo configurado con una pregunta corta.
 
-Esquema y tarea programada: [`supabase/migrations/0006_procesar_captura.sql`](../../migrations/0006_procesar_captura.sql).
+Esquema y tarea programada: [`supabase/migrations/0006_procesar_captura.sql`](../../migrations/0006_procesar_captura.sql). Ajustes de Vertex: [`supabase/migrations/0008_gemini_vertex.sql`](../../migrations/0008_gemini_vertex.sql).

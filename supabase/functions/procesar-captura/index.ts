@@ -15,14 +15,17 @@
 //   POST {"captura_id": "…", "solo": "interpretar"} → repite solo la interpretación.
 //   POST {"captura_id": "…", "solo": "video"} → relee el video guardado en `medios`, actualiza su fila
 //        de `contenidos` y repite la interpretación, sin cambiar el estado de la captura.
-//   GET  ?estado=1             → diagnóstico sin secretos.
+//   GET  ?estado=1             → diagnóstico sin secretos (con &probar=1 prueba cada modelo configurado).
 // Autenticación: cabecera x-cerebro-clave = ajustes.cron_clave.
-// Secretos: GEMINI_API_KEY (obligatorio), APIFY_TOKEN (posts por enlace), ANTHROPIC_API_KEY (si interprete = claude).
+// Proveedor de Gemini: ajuste gemini_proveedor ('vertex' por defecto; si Vertex no autentica, sigue AI Studio).
+//   Vertex AI se paga con los créditos de Google Cloud y entra por federación de identidad: llave privada en el
+//   Vault de Supabase (wif_vertex_llave), emisor OIDC en la función wif-emisor, ajustes vertex_* y wif_*.
+// Secretos: GEMINI_API_KEY (AI Studio, respaldo); APIFY_TOKEN (posts por enlace); ANTHROPIC_API_KEY (si interprete = claude).
 
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
 import { type Captura, type Contenido, extraer, releerVideoGuardado } from "./extraer.ts";
 import { armarEntrada, interpretar } from "./interpretar.ts";
-import { fijarPlazo } from "./gemini.ts";
+import { fijarPlazo, fijarProveedor, hayCredencial, probarModelos } from "./gemini.ts";
 
 const db = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -195,14 +198,35 @@ Deno.serve(async (req) => {
   const url = new URL(req.url);
   const claveEsperada = await ajuste("cron_clave");
   if (!claveEsperada || req.headers.get("x-cerebro-clave") !== claveEsperada) return json({ error: "no autorizado" }, 401);
+  const preferido = await ajuste("gemini_proveedor", "vertex");
+  const proveedor = await fijarProveedor({
+    preferido,
+    proyecto: await ajuste("vertex_proyecto"),
+    bucket: await ajuste("vertex_bucket"),
+    region: await ajuste("vertex_region", "global"),
+    alias: await ajuste("vertex_modelos"),
+    cuenta: await ajuste("vertex_cuenta"),
+    emisor: await ajuste("wif_emisor"),
+    audiencia: await ajuste("wif_audiencia"),
+    kid: JSON.parse((await ajuste("wif_jwk_publica")) || "{}").kid ?? "",
+    privada: preferido === "vertex" ? (await db.rpc("wif_llave")).data ?? null : null,
+  });
 
   if (req.method === "GET" && url.searchParams.get("estado")) {
+    const modelos = [...new Set([
+      await ajuste("gemini_modelo_video", "gemini-flash-latest"),
+      await ajuste("gemini_modelo_interprete", "gemini-flash-latest"),
+      ...(await ajuste("gemini_modelo_respaldo")).split(",").map((m) => m.trim()),
+    ].filter(Boolean))];
     return json({
+      proveedor,
+      vertex_listo: Boolean(await ajuste("wif_audiencia")) && Boolean(await ajuste("vertex_cuenta")),
       gemini: Boolean(Deno.env.get("GEMINI_API_KEY")),
       apify: Boolean(Deno.env.get("APIFY_TOKEN")),
       claude: Boolean(Deno.env.get("ANTHROPIC_API_KEY")),
       interprete: await ajuste("interprete", "gemini"),
       modelo_video: await ajuste("gemini_modelo_video", "gemini-flash-latest"),
+      ...(url.searchParams.get("probar") ? { prueba_modelos: await probarModelos(modelos) } : {}),
     });
   }
 
@@ -218,12 +242,13 @@ Deno.serve(async (req) => {
     return json(await procesar(captura as Captura, cuerpo.solo));
   }
 
-  if (!Deno.env.get("GEMINI_API_KEY")) return json({ procesadas: 0, aviso: "falta el secreto GEMINI_API_KEY" });
+  if (!hayCredencial()) return json({ procesadas: 0, aviso: "faltan la federación de Vertex y el secreto GEMINI_API_KEY" });
   const lote = Number(await ajuste("procesar_lote", "3")) || 3;
   const { data: capturas, error } = await db.rpc("tomar_capturas", { lote });
   if (error) return json({ error: error.message }, 500);
   const resultados = await Promise.allSettled((capturas ?? []).map((c: Captura) => procesar(c)));
   return json({
+    proveedor,
     procesadas: resultados.length,
     resultados: resultados.map((r) => (r.status === "fulfilled" ? r.value : { error: cortar(r.reason) })),
   });
