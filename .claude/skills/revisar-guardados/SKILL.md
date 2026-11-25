@@ -71,8 +71,9 @@ Si otra pieza del motor ya dejó una interpretación vigente (con `detalle.pregu
 Antes de proponer un criterio, un prompt o una sub-skill, Claude compara el aporte con todo lo que ya existe, en la skill destino y en las demás skills:
 
 ```bash
-git fetch origin main && git checkout origin/main -- plugins MAPA.md repos buzon
-grep -rn -i "<palabras clave del aporte>" plugins/cerebro/skills/*/criterios plugins/cerebro/skills/*/sub-skills plugins/cerebro/skills/prompts/biblioteca 2>/dev/null
+git fetch -q origin main
+git grep -n -i -e "<palabra 1>" -e "<sinónimo>" -e "<palabra 2>" origin/main -- plugins repos buzon
+git show origin/main:<ruta del archivo con coincidencias>
 ```
 
 Busca con dos o tres sinónimos por idea (por ejemplo «color», «paleta», «acento») y lee completo cada archivo con coincidencias. Clasifica cada hallazgo:
