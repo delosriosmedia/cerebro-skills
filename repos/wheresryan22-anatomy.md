@@ -24,6 +24,6 @@ npx skills add wheresryan22/anatomy -g -a antigravity
 
 Uso: `/anatomy explica cómo funciona <idea>, interactivo`.
 
-**Decisión:** pendiente · 2026-11-25.
+**Decisión:** instalado · 2026-11-25. Vive en el plugin `skills-angel` (`skills/anatomy`) y en Antigravity por enlace a `~/Documents/skills-angel/skills/anatomy`.
 
 **Fuente:** [5 Claude skills that save you hours](https://www.instagram.com/p/Dfr2yaUCMDl/), carrusel de Instagram · guardado el 2026-11-25.
