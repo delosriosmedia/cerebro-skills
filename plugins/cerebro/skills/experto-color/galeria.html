@@ -19,10 +19,11 @@ main{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:
 .barra{display:flex;height:10px}.barra i{display:block}
 .info{padding:12px 14px 14px}h3{margin:0;font-size:16px}h3 small{font-weight:400;color:var(--suave);font-size:12px}
 .sec,.cr{margin:2px 0 8px;color:var(--suave);font-size:12px}ul{list-style:none;margin:0;padding:0;font-size:13px}li{display:flex;align-items:center;gap:8px;margin:3px 0}
+.par{height:200px;padding:18px;display:flex;flex-direction:column;justify-content:flex-end;gap:6px}.par b{font-size:28px;line-height:1.05}.par span{font-size:14px}
 .sw{width:16px;height:16px;border-radius:4px;border:1px solid var(--borde)}code{font-size:12px;color:var(--suave)}.emo{font-size:13px;margin:8px 0 4px}
 </style></head><body>
-<header><h1>Paletas 60-30-10</h1><p>Biblioteca de la skill experto-color. Cada maqueta usa el 60 de fondo, el 30 en texto y tarjetas, y el 10 solo en el llamado a la acción. Filtra por sector.</p></header>
-<nav><button class="on" data-f="*">Todas</button><button data-f="claro">Modo claro</button><button data-f="oscuro">Modo oscuro</button><button data-f="Tecnología y software">Tecnología y software</button><button data-f="Finanzas">Finanzas</button><button data-f="Salud">Salud</button><button data-f="Bienestar">Bienestar</button><button data-f="Alimentos">Alimentos</button><button data-f="Lujo y moda">Lujo y moda</button><button data-f="Ecología">Ecología</button><button data-f="Educación">Educación</button><button data-f="Infantil">Infantil</button><button data-f="Entretenimiento y gaming">Entretenimiento y gaming</button><button data-f="Belleza">Belleza</button><button data-f="Inmobiliaria y construcción">Inmobiliaria y construcción</button><button data-f="Periodismo y denuncia">Periodismo y denuncia</button><button data-f="Deportes">Deportes</button><button data-f="Café y artesanal">Café y artesanal</button><button data-f="Música y eventos">Música y eventos</button><button data-f="Producto premium">Producto premium</button></nav>
+<header><h1>Paletas 60-30-10</h1><p>Biblioteca de la skill experto-color. Cada maqueta usa el 60 de fondo, el 30 en texto y tarjetas, y el 10 solo en el llamado a la acción. Filtra por sector, por modo o por pares de texto y fondo.</p></header>
+<nav><button class="on" data-f="*">Todas</button><button data-f="claro">Modo claro</button><button data-f="oscuro">Modo oscuro</button><button data-f="Tecnología y software">Tecnología y software</button><button data-f="Finanzas">Finanzas</button><button data-f="Salud">Salud</button><button data-f="Bienestar">Bienestar</button><button data-f="Alimentos">Alimentos</button><button data-f="Lujo y moda">Lujo y moda</button><button data-f="Ecología">Ecología</button><button data-f="Educación">Educación</button><button data-f="Infantil">Infantil</button><button data-f="Entretenimiento y gaming">Entretenimiento y gaming</button><button data-f="Belleza">Belleza</button><button data-f="Inmobiliaria y construcción">Inmobiliaria y construcción</button><button data-f="Periodismo y denuncia">Periodismo y denuncia</button><button data-f="Deportes">Deportes</button><button data-f="Café y artesanal">Café y artesanal</button><button data-f="Música y eventos">Música y eventos</button><button data-f="Producto premium">Producto premium</button><button data-f="Texto y fondo">Texto y fondo</button></nav>
 <main><article class="pal" data-sector="Tecnología y software" data-modo="claro">
   <div class="maq" style="background:#F5F5FA">
     <div class="maq-barra" style="color:#1E1B4B"><span class="logo" style="background:#5B5BF0"></span><b>Índigo eléctrico</b></div>
@@ -668,6 +669,358 @@ main{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:
     </ul>
     <p class="emo">Impacto, confianza, energía. Hero de una landing, primer impacto.</p>
     <p class="cr">Contraste 30/60 8.5 · 10/60 3.9</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#201515;color:#D8FF4D"><b>Naturaleza neón</b><span>Energía</span></div>
+  <div class="info">
+    <h3>Naturaleza neón <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#D8FF4D"></span>Texto <code>#D8FF4D</code></li>
+      <li><span class="sw" style="background:#201515"></span>Fondo <code>#201515</code></li>
+    </ul>
+    <p class="emo">Energía, noche, rebeldía. Tecnología, gaming, cultura juvenil.</p>
+    <p class="cr">Contraste 15.5 · AAA: cualquier texto</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#001F3F;color:#FFFF00"><b>Señal eterna</b><span>Urgencia</span></div>
+  <div class="info">
+    <h3>Señal eterna <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#FFFF00"></span>Texto <code>#FFFF00</code></li>
+      <li><span class="sw" style="background:#001F3F"></span>Fondo <code>#001F3F</code></li>
+    </ul>
+    <p class="emo">Urgencia, alerta, esperanza. Señalización, avisos, llamados urgentes.</p>
+    <p class="cr">Contraste 15.4 · AAA: cualquier texto</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#2D1E05;color:#FFEAAD"><b>Brillo empolvado</b><span>Calidez</span></div>
+  <div class="info">
+    <h3>Brillo empolvado <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#FFEAAD"></span>Texto <code>#FFEAAD</code></li>
+      <li><span class="sw" style="background:#2D1E05"></span>Fondo <code>#2D1E05</code></li>
+    </ul>
+    <p class="emo">Calidez, nostalgia, intimidad. Editoriales, proyectos literarios, blogs de estilo de vida.</p>
+    <p class="cr">Contraste 13.6 · AAA: cualquier texto</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#5D0F0F;color:#FEEDD0"><b>Romance antiguo</b><span>Drama elegante</span></div>
+  <div class="info">
+    <h3>Romance antiguo <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#FEEDD0"></span>Texto <code>#FEEDD0</code></li>
+      <li><span class="sw" style="background:#5D0F0F"></span>Fondo <code>#5D0F0F</code></li>
+    </ul>
+    <p class="emo">Drama elegante, historia, intimidad. Papelería de bodas, marcas con tradición, chocolatería de lujo.</p>
+    <p class="cr">Contraste 11.8 · AAA: cualquier texto</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#E6E6FA;color:#333333"><b>Minimalismo moderno</b><span>Profesional y cercano</span></div>
+  <div class="info">
+    <h3>Minimalismo moderno <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#333333"></span>Texto <code>#333333</code></li>
+      <li><span class="sw" style="background:#E6E6FA"></span>Fondo <code>#E6E6FA</code></li>
+    </ul>
+    <p class="emo">Profesional y cercano, claro. Marcas modernas que equilibran confianza y calidez.</p>
+    <p class="cr">Contraste 10.3 · AAA: cualquier texto</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#E8E018;color:#342C24"><b>Energía atemporal</b><span>Confianza</span></div>
+  <div class="info">
+    <h3>Energía atemporal <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#342C24"></span>Texto <code>#342C24</code></li>
+      <li><span class="sw" style="background:#E8E018"></span>Fondo <code>#E8E018</code></li>
+    </ul>
+    <p class="emo">Confianza, dinamismo, calle. Arte urbano, tipografía fuerte, deportes.</p>
+    <p class="cr">Contraste 9.9 · AAA: cualquier texto</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#C5D805;color:#042F1C"><b>Bosque profundo</b><span>Renovación</span></div>
+  <div class="info">
+    <h3>Bosque profundo <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#042F1C"></span>Texto <code>#042F1C</code></li>
+      <li><span class="sw" style="background:#C5D805"></span>Fondo <code>#C5D805</code></li>
+    </ul>
+    <p class="emo">Renovación, frescura, naturaleza con energía. Campañas de sostenibilidad, comida orgánica.</p>
+    <p class="cr">Contraste 9.2 · AAA: cualquier texto</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#E9C81B;color:#441F16"><b>Tierra y oro</b><span>Estabilidad con optimismo</span></div>
+  <div class="info">
+    <h3>Tierra y oro <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#441F16"></span>Texto <code>#441F16</code></li>
+      <li><span class="sw" style="background:#E9C81B"></span>Fondo <code>#E9C81B</code></li>
+    </ul>
+    <p class="emo">Estabilidad con optimismo. Café de especialidad, cerveza artesanal, bienestar.</p>
+    <p class="cr">Contraste 8.8 · AAA: cualquier texto</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#24387D;color:#D3F350"><b>Vibra y profundidad</b><span>Tradición contra innovación</span></div>
+  <div class="info">
+    <h3>Vibra y profundidad <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#D3F350"></span>Texto <code>#D3F350</code></li>
+      <li><span class="sw" style="background:#24387D"></span>Fondo <code>#24387D</code></li>
+    </ul>
+    <p class="emo">Tradición contra innovación, progreso. Tecnología, proyectos de futuro.</p>
+    <p class="cr">Contraste 8.6 · AAA: cualquier texto</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#FF9FAC;color:#42150F"><b>Rubor noir</b><span>Feminidad moderna</span></div>
+  <div class="info">
+    <h3>Rubor noir <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#42150F"></span>Texto <code>#42150F</code></li>
+      <li><span class="sw" style="background:#FF9FAC"></span>Fondo <code>#FF9FAC</code></li>
+    </ul>
+    <p class="emo">Feminidad moderna, segura y cálida. Belleza, moda, creadoras de contenido.</p>
+    <p class="cr">Contraste 8.0 · AAA: cualquier texto</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#5D2446;color:#E7D681"><b>Lujo en contraste</b><span>Riqueza</span></div>
+  <div class="info">
+    <h3>Lujo en contraste <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#E7D681"></span>Texto <code>#E7D681</code></li>
+      <li><span class="sw" style="background:#5D2446"></span>Fondo <code>#5D2446</code></li>
+    </ul>
+    <p class="emo">Riqueza, misterio, elegancia. Editorial, invitaciones, marcas glamorosas.</p>
+    <p class="cr">Contraste 7.9 · AAA: cualquier texto</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#FDF1E1;color:#035930"><b>Susurro verde</b><span>Calma</span></div>
+  <div class="info">
+    <h3>Susurro verde <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#035930"></span>Texto <code>#035930</code></li>
+      <li><span class="sw" style="background:#FDF1E1"></span>Fondo <code>#FDF1E1</code></li>
+    </ul>
+    <p class="emo">Calma, equilibrio, autenticidad. Bienestar, apps de meditación, comida saludable.</p>
+    <p class="cr">Contraste 7.6 · AAA: cualquier texto</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#263033;color:#FF90E0"><b>Dulce sobre acero</b><span>Rebeldía en pastel</span></div>
+  <div class="info">
+    <h3>Dulce sobre acero <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#FF90E0"></span>Texto <code>#FF90E0</code></li>
+      <li><span class="sw" style="background:#263033"></span>Fondo <code>#263033</code></li>
+    </ul>
+    <p class="emo">Rebeldía en pastel, juego con carácter. Moda, campañas sociales.</p>
+    <p class="cr">Contraste 6.6 · AA: cualquier texto</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#E4CFE7;color:#551CB1"><b>Poder y suavidad</b><span>Autoridad con compasión</span></div>
+  <div class="info">
+    <h3>Poder y suavidad <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#551CB1"></span>Texto <code>#551CB1</code></li>
+      <li><span class="sw" style="background:#E4CFE7"></span>Fondo <code>#E4CFE7</code></li>
+    </ul>
+    <p class="emo">Autoridad con compasión. Editorial, bienestar, marcas de empoderamiento.</p>
+    <p class="cr">Contraste 6.6 · AA: cualquier texto</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#0C0C0C;color:#F9680B"><b>Brasa</b><span>Intensidad</span></div>
+  <div class="info">
+    <h3>Brasa <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#F9680B"></span>Texto <code>#F9680B</code></li>
+      <li><span class="sw" style="background:#0C0C0C"></span>Fondo <code>#0C0C0C</code></li>
+    </ul>
+    <p class="emo">Intensidad, adrenalina, riesgo. Deportes, marcas extremas, entretenimiento.</p>
+    <p class="cr">Contraste 6.5 · AA: cualquier texto</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#FF9FAC;color:#223B1E"><b>Jardín en bruma</b><span>Refinamiento botánico</span></div>
+  <div class="info">
+    <h3>Jardín en bruma <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#223B1E"></span>Texto <code>#223B1E</code></li>
+      <li><span class="sw" style="background:#FF9FAC"></span>Fondo <code>#FF9FAC</code></li>
+    </ul>
+    <p class="emo">Refinamiento botánico, cuidado. Cosmética, florerías, lujo ecológico.</p>
+    <p class="cr">Contraste 6.3 · AA: cualquier texto</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#556B2F;color:#FFFDD0"><b>Elegancia susurrada</b><span>Reflexión</span></div>
+  <div class="info">
+    <h3>Elegancia susurrada <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#FFFDD0"></span>Texto <code>#FFFDD0</code></li>
+      <li><span class="sw" style="background:#556B2F"></span>Fondo <code>#556B2F</code></li>
+    </ul>
+    <p class="emo">Reflexión, sabiduría, sostenibilidad. Mensajes de reflexión, marcas sostenibles.</p>
+    <p class="cr">Contraste 5.7 · AA: cualquier texto</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#282362;color:#EB70FF"><b>Brillo eléctrico</b><span>Energía creativa</span></div>
+  <div class="info">
+    <h3>Brillo eléctrico <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#EB70FF"></span>Texto <code>#EB70FF</code></li>
+      <li><span class="sw" style="background:#282362"></span>Fondo <code>#282362</code></li>
+    </ul>
+    <p class="emo">Energía creativa, noche, futuro. Fiestas, tecnología creativa, proyectos audaces.</p>
+    <p class="cr">Contraste 5.5 · AA: cualquier texto</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#EAEADE;color:#5A7326"><b>Minimal chic</b><span>Minimalismo natural</span></div>
+  <div class="info">
+    <h3>Minimal chic <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#5A7326"></span>Texto <code>#5A7326</code></li>
+      <li><span class="sw" style="background:#EAEADE"></span>Fondo <code>#EAEADE</code></li>
+    </ul>
+    <p class="emo">Minimalismo natural, profesional y sereno. Editorial, marca personal, plataformas digitales.</p>
+    <p class="cr">Contraste 4.4 · Solo títulos y texto grande</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#6A0DAD;color:#32CD32"><b>Crecimiento y misterio</b><span>Transformación</span></div>
+  <div class="info">
+    <h3>Crecimiento y misterio <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#32CD32"></span>Texto <code>#32CD32</code></li>
+      <li><span class="sw" style="background:#6A0DAD"></span>Fondo <code>#6A0DAD</code></li>
+    </ul>
+    <p class="emo">Transformación, fantasía, sanación. Temas místicos o creativos.</p>
+    <p class="cr">Contraste 4.4 · Solo títulos y texto grande</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#4A76BD;color:#E7FF75"><b>Cielo limón</b><span>Juego</span></div>
+  <div class="info">
+    <h3>Cielo limón <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#E7FF75"></span>Texto <code>#E7FF75</code></li>
+      <li><span class="sw" style="background:#4A76BD"></span>Fondo <code>#4A76BD</code></li>
+    </ul>
+    <p class="emo">Juego, verano, optimismo. Campañas juveniles, educación, startups.</p>
+    <p class="cr">Contraste 4.1 · Solo títulos y texto grande</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#D5D6E6;color:#BC3011"><b>Fuego en la niebla</b><span>Drama sereno</span></div>
+  <div class="info">
+    <h3>Fuego en la niebla <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#BC3011"></span>Texto <code>#BC3011</code></li>
+      <li><span class="sw" style="background:#D5D6E6"></span>Fondo <code>#D5D6E6</code></li>
+    </ul>
+    <p class="emo">Drama sereno, calidez con elegancia. Comida, estilo de vida, relatos.</p>
+    <p class="cr">Contraste 4.1 · Solo títulos y texto grande</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#277975;color:#E5E2D7"><b>Bruma y agua profunda</b><span>Claridad</span></div>
+  <div class="info">
+    <h3>Bruma y agua profunda <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#E5E2D7"></span>Texto <code>#E5E2D7</code></li>
+      <li><span class="sw" style="background:#277975"></span>Fondo <code>#277975</code></li>
+    </ul>
+    <p class="emo">Claridad, profundidad, calma. Bienestar, viajes, educación, webs minimalistas.</p>
+    <p class="cr">Contraste 4.0 · Solo títulos y texto grande</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#D89300;color:#7B1E2A"><b>Pasión y oro</b><span>Pasión</span></div>
+  <div class="info">
+    <h3>Pasión y oro <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#7B1E2A"></span>Texto <code>#7B1E2A</code></li>
+      <li><span class="sw" style="background:#D89300"></span>Fondo <code>#D89300</code></li>
+    </ul>
+    <p class="emo">Pasión, abundancia, celebración. Carteles de eventos, moda, marcas emotivas de gama alta.</p>
+    <p class="cr">Contraste 3.9 · Solo títulos y texto grande</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#DED4D4;color:#7D681E"><b>Tierra y neutro suave</b><span>Calma orgánica</span></div>
+  <div class="info">
+    <h3>Tierra y neutro suave <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#7D681E"></span>Texto <code>#7D681E</code></li>
+      <li><span class="sw" style="background:#DED4D4"></span>Fondo <code>#DED4D4</code></li>
+    </ul>
+    <p class="emo">Calma orgánica, autenticidad. Marcas ecológicas, vida lenta.</p>
+    <p class="cr">Contraste 3.7 · Solo títulos y texto grande</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#863E17;color:#98B7B4"><b>Vidrio de mar y tierra</b><span>Fragilidad sobre fuerza</span></div>
+  <div class="info">
+    <h3>Vidrio de mar y tierra <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#98B7B4"></span>Texto <code>#98B7B4</code></li>
+      <li><span class="sw" style="background:#863E17"></span>Fondo <code>#863E17</code></li>
+    </ul>
+    <p class="emo">Fragilidad sobre fuerza, resiliencia. Portadas de libros, marcas artesanales.</p>
+    <p class="cr">Contraste 3.6 · Solo títulos y texto grande</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#E0DBD5;color:#227F85"><b>Calma y claridad</b><span>Equilibrio</span></div>
+  <div class="info">
+    <h3>Calma y claridad <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#227F85"></span>Texto <code>#227F85</code></li>
+      <li><span class="sw" style="background:#E0DBD5"></span>Fondo <code>#E0DBD5</code></li>
+    </ul>
+    <p class="emo">Equilibrio, renovación, frescura. Bienestar, diseño digital.</p>
+    <p class="cr">Contraste 3.4 · Solo títulos y texto grande</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#5D2F6E;color:#E97451"><b>Atardecer dramático</b><span>Cine</span></div>
+  <div class="info">
+    <h3>Atardecer dramático <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#E97451"></span>Texto <code>#E97451</code></li>
+      <li><span class="sw" style="background:#5D2F6E"></span>Fondo <code>#5D2F6E</code></li>
+    </ul>
+    <p class="emo">Cine, misterio, energía. Conciertos, moda, experiencias digitales audaces.</p>
+    <p class="cr">Contraste 3.4 · Solo títulos y texto grande</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#C5D1C0;color:#43774E"><b>Serenidad con raíz</b><span>Calma</span></div>
+  <div class="info">
+    <h3>Serenidad con raíz <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#43774E"></span>Texto <code>#43774E</code></li>
+      <li><span class="sw" style="background:#C5D1C0"></span>Fondo <code>#C5D1C0</code></li>
+    </ul>
+    <p class="emo">Calma, sanación, crecimiento. Bienestar, productos ecológicos, meditación.</p>
+    <p class="cr">Contraste 3.3 · Solo títulos y texto grande</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#1A3A25;color:#F33636"><b>Audaz y con raíz</b><span>Pasión contra naturaleza</span></div>
+  <div class="info">
+    <h3>Audaz y con raíz <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#F33636"></span>Texto <code>#F33636</code></li>
+      <li><span class="sw" style="background:#1A3A25"></span>Fondo <code>#1A3A25</code></li>
+    </ul>
+    <p class="emo">Pasión contra naturaleza, impacto. Campañas, carteles, piezas que deben romper el ruido.</p>
+    <p class="cr">Contraste 3.2 · Solo títulos y texto grande</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#F8F4E9;color:#F94A13"><b>Energía en equilibrio</b><span>Entusiasmo con calma</span></div>
+  <div class="info">
+    <h3>Energía en equilibrio <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#F94A13"></span>Texto <code>#F94A13</code></li>
+      <li><span class="sw" style="background:#F8F4E9"></span>Fondo <code>#F8F4E9</code></li>
+    </ul>
+    <p class="emo">Entusiasmo con calma, innovación cercana. Publicidad, relatos de cambio.</p>
+    <p class="cr">Contraste 3.2 · Solo títulos y texto grande</p>
+  </div>
+</article><article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:#D35C3A;color:#DBD0D0"><b>Memoria y fuego</b><span>Nostalgia con urgencia</span></div>
+  <div class="info">
+    <h3>Memoria y fuego <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:#DBD0D0"></span>Texto <code>#DBD0D0</code></li>
+      <li><span class="sw" style="background:#D35C3A"></span>Fondo <code>#D35C3A</code></li>
+    </ul>
+    <p class="emo">Nostalgia con urgencia. Editorial, ensayos, revistas.</p>
+    <p class="cr">Contraste 2.6 · Solo decorativo o logo</p>
   </div>
 </article></main>
 <script>

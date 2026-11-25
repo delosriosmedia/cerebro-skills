@@ -101,7 +101,48 @@ def main():
     <p class="cr">Contraste 30/60 {c['30/60']:.1f} · 10/60 {c['10/60']:.1f}</p>
   </div>
 </article>''')
-    botones = ''.join(f'<button data-f="{html.escape(s)}">{html.escape(s)}</button>' for s in sectores)
+    # ---------- pares de texto y fondo ----------
+    ARTICULOS = {
+        1: 'https://medium.com/@idesigncourse4/the-psychology-of-color-palettes-that-truly-stand-out-9ee32c428c24',
+        2: 'https://medium.com/@idesigncourse4/which-color-combo-speaks-to-you-exploring-the-art-of-contrast-and-harmony-d169cdbd152b',
+        3: 'https://medium.com/@idesigncourse4/the-poetry-of-color-exploring-palettes-that-shape-emotions-and-spaces-2a85044a237b',
+        4: 'https://medium.com/@idesigncourse4/the-silent-power-of-colors-how-text-and-background-combinations-shape-emotion-6befa651d241'}
+
+    def nivel(cr):
+        if cr >= 7:
+            return 'AAA: cualquier texto'
+        if cr >= 4.5:
+            return 'AA: cualquier texto'
+        if cr >= 3:
+            return 'Solo títulos y texto grande'
+        return 'Solo decorativo o logo'
+
+    pares = json.load(open(os.path.join(AQUI, 'pares.json'), encoding='utf-8'))
+    for q in pares:
+        q['_cr'] = contraste(hex_a_rgb(q['texto']), hex_a_rgb(q['fondo']))
+    pares.sort(key=lambda q: -q['_cr'])
+    mdp = ['# Pares de texto y fondo', '',
+           'Archivo generado por `scripts/generar.py` desde `scripts/pares.json`. Combinaciones de dos colores con su emoción y su uso, ordenadas por contraste medido (WCAG). Sirven para titulares, portadas, carteles y bloques de marca; dentro de la regla 60-30-10 el fondo es el 60 o el 30 y el texto es el 30 o el 10.', '',
+           '**Lectura del contraste:** 7 o más sirve para cualquier texto con nivel AAA; 4,5 o más, texto normal (AA); entre 3 y 4,5, solo títulos y texto grande (24 px o 19 px en negrita); menos de 3, solo decoración o logo. Varias combinaciones muy expresivas quedan por debajo de 4,5: úsalas en títulos grandes.', '',
+           '| Par | Texto | Fondo | Contraste | Uso del texto | Emoción | Dónde funciona |', '| --- | --- | --- | --- | --- | --- | --- |']
+    for q in pares:
+        mdp.append(f"| **{q['nombre']}** | `{q['texto']}` | `{q['fondo']}` | {q['_cr']:.1f} | {nivel(q['_cr'])} | {q['emocion']} | {q['uso']} |")
+    mdp += ['', 'Fuentes: serie de iDesignCourse en Medium, agosto y septiembre de 2025 (' + ', '.join(f'[{k}]({v})' for k, v in ARTICULOS.items()) + ').', '']
+    open(os.path.join(RAIZ, 'references', 'pares-texto-fondo.md'), 'w', encoding='utf-8').write('\n'.join(mdp))
+    for q in pares:
+        tarjetas.append(f'''<article class="pal" data-sector="Texto y fondo" data-modo="par">
+  <div class="par" style="background:{q['fondo']};color:{q['texto']}"><b>{html.escape(q['nombre'])}</b><span>{html.escape(q['emocion'].split(',')[0])}</span></div>
+  <div class="info">
+    <h3>{html.escape(q['nombre'])} <small>texto y fondo</small></h3>
+    <ul>
+      <li><span class="sw" style="background:{q['texto']}"></span>Texto <code>{q['texto']}</code></li>
+      <li><span class="sw" style="background:{q['fondo']}"></span>Fondo <code>{q['fondo']}</code></li>
+    </ul>
+    <p class="emo">{html.escape(q['emocion'])}. {html.escape(q['uso'])}.</p>
+    <p class="cr">Contraste {q['_cr']:.1f} · {nivel(q['_cr'])}</p>
+  </div>
+</article>''')
+    botones = ''.join(f'<button data-f="{html.escape(s)}">{html.escape(s)}</button>' for s in sectores) + '<button data-f="Texto y fondo">Texto y fondo</button>'
     pagina = f'''<!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Paletas 60-30-10</title>
@@ -123,9 +164,10 @@ main{{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap
 .barra{{display:flex;height:10px}}.barra i{{display:block}}
 .info{{padding:12px 14px 14px}}h3{{margin:0;font-size:16px}}h3 small{{font-weight:400;color:var(--suave);font-size:12px}}
 .sec,.cr{{margin:2px 0 8px;color:var(--suave);font-size:12px}}ul{{list-style:none;margin:0;padding:0;font-size:13px}}li{{display:flex;align-items:center;gap:8px;margin:3px 0}}
+.par{{height:200px;padding:18px;display:flex;flex-direction:column;justify-content:flex-end;gap:6px}}.par b{{font-size:28px;line-height:1.05}}.par span{{font-size:14px}}
 .sw{{width:16px;height:16px;border-radius:4px;border:1px solid var(--borde)}}code{{font-size:12px;color:var(--suave)}}.emo{{font-size:13px;margin:8px 0 4px}}
 </style></head><body>
-<header><h1>Paletas 60-30-10</h1><p>Biblioteca de la skill experto-color. Cada maqueta usa el 60 de fondo, el 30 en texto y tarjetas, y el 10 solo en el llamado a la acción. Filtra por sector.</p></header>
+<header><h1>Paletas 60-30-10</h1><p>Biblioteca de la skill experto-color. Cada maqueta usa el 60 de fondo, el 30 en texto y tarjetas, y el 10 solo en el llamado a la acción. Filtra por sector, por modo o por pares de texto y fondo.</p></header>
 <nav><button class="on" data-f="*">Todas</button><button data-f="claro">Modo claro</button><button data-f="oscuro">Modo oscuro</button>{botones}</nav>
 <main>{''.join(tarjetas)}</main>
 <script>
@@ -136,7 +178,7 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{{
 }});
 </script></body></html>'''
     open(os.path.join(RAIZ, 'galeria.html'), 'w', encoding='utf-8').write(pagina)
-    print(f'{len(filas)} paletas → references/paletas.md y galeria.html')
+    print(f'{len(filas)} paletas y {len(pares)} pares → references/paletas.md, references/pares-texto-fondo.md y galeria.html')
 
 
 if __name__ == '__main__':

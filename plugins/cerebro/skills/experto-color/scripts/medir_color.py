@@ -7,6 +7,8 @@ Uso:
   python3 medir_color.py --hex "#0E1116:55,#E6EDF3:25,#A3E635:8,#FF5A1F:7,#3B82F6:5"
   python3 medir_color.py --hex "#0E1116,#E6EDF3,#A3E635"   # sin áreas: solo roles y contraste
   python3 medir_color.py pieza.png --json          # salida para otros programas
+  python3 medir_color.py captura.png --interfaz     # app o tablero: margen de interfaz (60 hasta 85 %)
+  python3 medir_color.py pieza.png --especificar    # suma HEX, RGB y CMYK de los tres roles
   python3 medir_color.py pieza.png --desenfoque d.png   # además guarda la pieza desenfocada (test de tres zonas)
 
 Entrega: los colores agrupados con su área, el rol propuesto para cada uno
@@ -204,7 +206,8 @@ def proponer(colores):
         de = delta_e(cerca[1]['rgb'], s['rgb'])
         Ls, Cs, hs = lch(s['rgb'])
         if Cs < 10:
-            cerca = min((r for r in roles.items() if r[1]), key=lambda r: abs(lch(r[1]['rgb'])[0] - Ls))
+            neutros = [r for r in roles.items() if r[1] and lch(r[1]['rgb'])[1] < 10] or [r for r in roles.items() if r[1]]
+            cerca = min(neutros, key=lambda r: abs(lch(r[1]['rgb'])[0] - Ls))
             s['rol_cercano'] = cerca[0]
             s['accion'] = f"Neutro de texto o detalle: iguálalo al {cerca[0]} ({rgb_a_hex(cerca[1]['rgb'])}) o a una variante clara u oscura de ese color"
             continue
@@ -226,11 +229,14 @@ def repartir_areas(roles, sobrantes):
 
 
 OBJETIVO = {'60': (0.60, 0.50, 0.70), '30': (0.30, 0.20, 0.40), '10': (0.10, 0.05, 0.15)}
+# Interfaces (apps, tableros, formularios): el fondo neutro suele ocupar más área y el
+# 30 vive en texto, barras y superficies. Se juzga por roles con este margen.
+OBJETIVO_INTERFAZ = {'60': (0.60, 0.50, 0.85), '30': (0.30, 0.08, 0.40), '10': (0.10, 0.03, 0.15)}
 
 
-def veredicto(reparto):
+def veredicto(reparto, objetivo=OBJETIVO):
     out = []
-    for k, (meta, lo, hi) in OBJETIVO.items():
+    for k, (meta, lo, hi) in objetivo.items():
         v = reparto.get(k, 0)
         if v < lo:
             out.append(f"El {k} ocupa {v:.0%}: súbelo hacia {meta:.0%}")
@@ -262,7 +268,16 @@ def paletas_cercanas(roles, n=3):
     return [p for _, p in sorted(puntuadas, key=lambda x: x[0])[:n]]
 
 
-def informe(colores, salida_json=False):
+def rgb_a_cmyk(rgb):
+    r, g, b = (c / 255 for c in rgb)
+    k = 1 - max(r, g, b)
+    if k >= 1:
+        return (0, 0, 0, 100)
+    c, m, y = ((1 - x - k) / (1 - k) for x in (r, g, b))
+    return tuple(round(v * 100) for v in (c, m, y, k))
+
+
+def informe(colores, salida_json=False, interfaz=False, especificar=False):
     colores = familias(colores)
     roles, sobrantes, con_area = proponer(colores)
     datos = {
@@ -279,7 +294,8 @@ def informe(colores, salida_json=False):
     if con_area:
         rep = repartir_areas(roles, sobrantes)
         datos['reparto'] = rep
-        datos['ajustes'] = veredicto(rep)
+        datos['ajustes'] = veredicto(rep, OBJETIVO_INTERFAZ if interfaz else OBJETIVO)
+        datos['modo'] = 'interfaz' if interfaz else 'pieza'
     d, s, a = roles['60'], roles['30'], roles['10']
     if s:
         datos['contrastes']['30 sobre 60'] = round(contraste(d['rgb'], s['rgb']), 2)
@@ -312,12 +328,24 @@ def informe(colores, salida_json=False):
         if datos['ajustes']:
             for t in datos['ajustes']:
                 pr(f'- {t}.')
+        elif interfaz:
+            pr('- Cumple la regla leída por roles de interfaz (60 entre 50 y 85 %, 30 entre 8 y 40 %, 10 entre 3 y 15 %).')
         else:
             pr('- Cumple la regla (60 entre 50 y 70 %, 30 entre 20 y 40 %, 10 entre 5 y 15 %).')
     pr('\n## Contrastes\n')
     for k, v in datos['contrastes'].items():
         pr(f'- {k}: {v}')
     pr('- Mínimos: texto normal 4,5; texto grande y botones 3. El 10 debe leerse sobre el 60 (3 o más).')
+    if especificar:
+        pr('\n## Especificación de los tres colores\n')
+        pr('| Rol | HEX | RGB | CMYK aproximado |')
+        pr('| --- | --- | --- | --- |')
+        for k, h in datos['roles'].items():
+            if h:
+                rgb = hex_a_rgb(h)
+                c = rgb_a_cmyk(rgb)
+                pr(f"| {k} | `{h}` | {rgb[0]}, {rgb[1]}, {rgb[2]} | {c[0]}, {c[1]}, {c[2]}, {c[3]} |")
+        pr('- El CMYK sale de una conversión directa: para imprimir, confirmarlo con el perfil de la imprenta y buscar el Pantone más cercano en la guía física o en Pantone Connect.')
     pr('\n## Paletas de la biblioteca más cercanas\n')
     for p in datos['paletas_cercanas']:
         pr(f"- **{p['nombre']}** (`{p['id']}`): {' · '.join(p['colores'])}")
@@ -330,6 +358,8 @@ def main():
     ap.add_argument('--recorte', help='x,y,ancho,alto')
     ap.add_argument('--k', type=int, default=10, help='colores a buscar en la imagen (por defecto 10)')
     ap.add_argument('--json', action='store_true')
+    ap.add_argument('--interfaz', action='store_true', help='juzga el reparto con el margen de interfaces (apps, tableros, formularios)')
+    ap.add_argument('--especificar', action='store_true', help='agrega HEX, RGB y CMYK de los tres roles')
     ap.add_argument('--desenfoque', help='guarda la imagen desenfocada (equivale a gblur=sigma=12) en esta ruta')
     a = ap.parse_args()
     if a.hex:
@@ -361,7 +391,7 @@ def main():
         ap.error('Pasa una imagen o --hex')
     if len(colores) < 2:
         sys.exit('Hace falta al menos dos colores.')
-    informe(colores, a.json)
+    informe(colores, a.json, a.interfaz, a.especificar)
 
 
 if __name__ == '__main__':
