@@ -302,11 +302,28 @@ Deno.serve(async (req) => {
 
   try {
     const datos = JSON.parse(cuerpo);
-    for (const entrada of datos.entry ?? []) {
-      if (entrada.id && !(await ajuste("instagram_cuenta_id")) && (entrada.messaging ?? []).length) {
+    // Meta entrega los mensajes en dos formatos: entry.messaging[] (clásico) y
+    // entry.changes[] con field "messages" (el valor trae la misma forma).
+    const mensajesDe = (e: any) => [
+      ...(e.messaging ?? []),
+      ...(e.changes ?? []).filter((c: any) => c.field === "messages" && c.value).map((c: any) => c.value),
+    ];
+    // Bitácora sin contenido: cuántos eventos llegaron y de qué tipo (sirve para diagnosticar entregas).
+    const entradas = datos.entry ?? [];
+    const mensajes = entradas.flatMap(mensajesDe);
+    await evento("webhook_recibido", "info", {
+      objeto: datos.object ?? null,
+      entradas: entradas.length,
+      mensajes: mensajes.length,
+      ecos: mensajes.filter((m: any) => m.message?.is_echo).length,
+      campos: entradas.flatMap((e: any) => (e.changes ?? []).map((c: any) => c.field)),
+    });
+    for (const entrada of entradas) {
+      const propios = mensajesDe(entrada);
+      if (entrada.id && !(await ajuste("instagram_cuenta_id")) && propios.length) {
         await guardarAjuste("instagram_cuenta_id", String(entrada.id));
       }
-      for (const m of entrada.messaging ?? []) await procesarMensaje(m);
+      for (const m of propios) await procesarMensaje(m);
     }
   } catch (e) {
     await evento("procesar_webhook", "error", { mensaje: String(e) });
