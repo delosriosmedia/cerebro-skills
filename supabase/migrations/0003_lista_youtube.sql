@@ -1,5 +1,5 @@
 -- Cerebro de skills: entrada desde la lista «Cerebro» de YouTube
--- Programa la función youtube-lista cada 30 minutos con pg_cron + pg_net.
+-- Programa la función youtube-lista cada 10 minutos con pg_cron + pg_net.
 --
 -- Valores que viven solo en la base (tabla public.ajustes), fuera del repositorio:
 --   funciones_url     URL base de las funciones del proyecto (https://<proyecto>.supabase.co/functions/v1)
@@ -15,7 +15,7 @@ on conflict (clave) do nothing;
 
 select cron.schedule(
   'youtube-lista',
-  '*/30 * * * *',
+  '*/10 * * * *',
   $$
   select net.http_post(
     url := (select valor from public.ajustes where clave = 'funciones_url') || '/youtube-lista',

@@ -2,7 +2,7 @@
 // y registra cada video nuevo como captura del cerebro.
 //
 // Cómo funciona:
-// - pg_cron la llama cada 30 minutos (migración 0003) con la cabecera x-cerebro-clave.
+// - pg_cron la llama cada 10 minutos (migración 0003) con la cabecera x-cerebro-clave.
 // - Lee la lista con la YouTube Data API v3 (playlistItems + videos) usando una clave de API.
 //   La lista es «no listada», así que basta la clave; OAuth queda fuera.
 // - Cada video nuevo entra a public.capturas (canal youtube_lista, estado recibida) y sus datos
