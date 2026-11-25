@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estilos de animación</title>
+<style>
+  :root {
+    --fondo: #f6f5f2; --tarjeta: #ffffff; --texto: #1c1b19; --suave: #5f5d58;
+    --borde: #e3e0d9; --acento: #b45309; --etiqueta: #fdf3e7; --media: #111;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fondo: #141414; --tarjeta: #1e1e1e; --texto: #f1f0ec; --suave: #a9a7a1;
+      --borde: #2e2e2e; --acento: #f0a35e; --etiqueta: #2f2416; --media: #000;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--texto);
+    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  header { max-width: 1240px; margin: 0 auto; padding: 32px 16px 8px; }
+  h1 { margin: 0 0 6px; font-size: 28px; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--suave); max-width: 70ch; }
+  main { max-width: 1240px; margin: 0 auto; padding: 16px; display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; }
+  article { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 14px;
+    overflow: hidden; display: flex; flex-direction: column; }
+  .media { aspect-ratio: 240 / 432; background: var(--media); }
+  .media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cuerpo { padding: 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .num { font-size: 12px; font-weight: 600; color: var(--acento); letter-spacing: .06em; }
+  h2 { margin: 0; font-size: 18px; }
+  .produce, .ideal, .recurso { margin: 0; font-size: 14px; }
+  .ideal, .recurso { color: var(--suave); }
+  .pedido { margin: 4px 0 0; padding: 8px 10px; background: var(--etiqueta); border-radius: 8px; font-size: 13px; margin-top: auto; }
+  footer { max-width: 1240px; margin: 0 auto; padding: 8px 16px 40px; color: var(--suave); font-size: 14px; }
+  a { color: var(--acento); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Estilos de animación</h1>
+  <p>Cada tarjeta muestra en movimiento el resultado del estilo. Elige uno y díselo a Claude por su nombre o su número; también puedes describir otro estilo en palabras.</p>
+</header>
+<main>
+
+<article>
+  <div class="media"><img loading="lazy" src="muestras/01.gif" alt="Muestra animada del estilo Globe arcs"></div>
+  <div class="cuerpo">
+    <span class="num">01</span>
+    <h2>Globe arcs</h2>
+    <p class="produce">Globo de puntos que gira; arcos de luz salen de una ciudad mientras un contador sube.</p>
+    <p class="ideal">Ideal para alcance geográfico, envíos, clientes por país.</p>
+    <p class="recurso">Cómo se hace: Prompt base 01</p>
+    <p class="pedido">Pídelo así: «Animación globe arcs: envíos desde Bogotá a 12 países»</p>
+  </div>
+</article>
+
+<article>
+  <div class="media"><img loading="lazy" src="muestras/02.gif" alt="Muestra animada del estilo Turntable"></div>
+  <div class="cuerpo">
+    <span class="num">02</span>
+    <h2>Turntable</h2>
+    <p class="produce">Producto girando 360° sobre una base, con especificaciones que aparecen una a una.</p>
+    <p class="ideal">Ideal para ficha de producto, lanzamiento.</p>
+    <p class="recurso">Cómo se hace: Lemo-Opuscar «Glass Product Render» o prompt base 02</p>
+    <p class="pedido">Pídelo así: «Animación turntable de mi producto con 4 especificaciones»</p>
+  </div>
+</article>
+
+<article>
+  <div class="media"><img loading="lazy" src="muestras/03.gif" alt="Muestra animada del estilo Hologram"></div>
+  <div class="cuerpo">
+    <span class="num">03</span>
+    <h2>Hologram</h2>
+    <p class="produce">Instalación isométrica en azul translúcido; un módulo se enciende en rojo.</p>
+    <p class="ideal">Ideal para infraestructura, procesos, alertas.</p>
+    <p class="recurso">Cómo se hace: Lemo-Opuscar «Sci-fi Hologram HUD»</p>
+    <p class="pedido">Pídelo así: «Animación hologram de cómo funciona mi sistema»</p>
+  </div>
+</article>
+
+<article>
+  <div class="media"><img loading="lazy" src="muestras/04.gif" alt="Muestra animada del estilo Flat cartoon"></div>
+  <div class="cuerpo">
+    <span class="num">04</span>
+    <h2>Flat cartoon</h2>
+    <p class="produce">Personaje 2D plano en una oficina; la gráfica cae y vuelan notas.</p>
+    <p class="ideal">Ideal para historias de negocio con humor.</p>
+    <p class="recurso">Cómo se hace: Lemo-Opuscar «Mid-century Cartoon» o animation-styles «Flat vector»</p>
+    <p class="pedido">Pídelo así: «Animación flat cartoon de un vendedor que pierde clientes»</p>
+  </div>
+</article>
+
+<article>
+  <div class="media"><img loading="lazy" src="muestras/05.gif" alt="Muestra animada del estilo 3D map route"></div>
+  <div class="cuerpo">
+    <span class="num">05</span>
+    <h2>3D map route</h2>
+    <p class="produce">Ciudad blanca isométrica; la cámara sigue una ruta azul que se dibuja sola.</p>
+    <p class="ideal">Ideal para recorridos, logística, entregas.</p>
+    <p class="recurso">Cómo se hace: claude-animation-skills /map-route</p>
+    <p class="pedido">Pídelo así: «/map-route de la oficina al cliente, 4 km»</p>
+  </div>
+</article>
+
+<article>
+  <div class="media"><img loading="lazy" src="muestras/06.gif" alt="Muestra animada del estilo Billboard"></div>
+  <div class="cuerpo">
+    <span class="num">06</span>
+    <h2>Billboard</h2>
+    <p class="produce">Valla en autopista nocturna con estelas de luz; el anuncio cambia.</p>
+    <p class="ideal">Ideal para maquetas de publicidad exterior.</p>
+    <p class="recurso">Cómo se hace: Prompt base 06</p>
+    <p class="pedido">Pídelo así: «Animación billboard con mi anuncio de temporada»</p>
+  </div>
+</article>
+
+<article>
+  <div class="media"><img loading="lazy" src="muestras/07.gif" alt="Muestra animada del estilo Ink doodle"></div>
+  <div class="cuerpo">
+    <span class="num">07</span>
+    <h2>Ink doodle</h2>
+    <p class="produce">Muñeco dibujado a mano en un parque; viento, papeles y gestos de tinta.</p>
+    <p class="ideal">Ideal para historias cotidianas, antes y después.</p>
+    <p class="recurso">Cómo se hace: claude-animation-skills /stick-figure</p>
+    <p class="pedido">Pídelo así: «/stick-figure cómo era la vida antes del celular»</p>
+  </div>
+</article>
+
+<article>
+  <div class="media"><img loading="lazy" src="muestras/08.gif" alt="Muestra animada del estilo Glow world"></div>
+  <div class="cuerpo">
+    <span class="num">08</span>
+    <h2>Glow world</h2>
+    <p class="produce">Cristal facetado que brilla en un mundo low poly espacial; aparece una cara y una etiqueta.</p>
+    <p class="ideal">Ideal para mascota o concepto de IA.</p>
+    <p class="recurso">Cómo se hace: Prompt base 08</p>
+    <p class="pedido">Pídelo así: «Animación glow world para presentar mi asistente de IA»</p>
+  </div>
+</article>
+
+<article>
+  <div class="media"><img loading="lazy" src="muestras/09.gif" alt="Muestra animada del estilo 3D teardown"></div>
+  <div class="cuerpo">
+    <span class="num">09</span>
+    <h2>3D teardown</h2>
+    <p class="produce">Teclado que se despieza capa por capa con etiquetas técnicas.</p>
+    <p class="ideal">Ideal para anatomía de producto.</p>
+    <p class="recurso">Cómo se hace: claude-animation-skills /breakdown o Lemo-Opuscar «Exploded Teardown»</p>
+    <p class="pedido">Pídelo así: «/breakdown de mi producto, cada parte con su etiqueta»</p>
+  </div>
+</article>
+
+<article>
+  <div class="media"><img loading="lazy" src="muestras/10.gif" alt="Muestra animada del estilo Iceberg dive"></div>
+  <div class="cuerpo">
+    <span class="num">10</span>
+    <h2>Iceberg dive</h2>
+    <p class="produce">La cámara baja bajo el agua y revela capas etiquetadas de un iceberg.</p>
+    <p class="ideal">Ideal para lo visible y lo oculto de un proceso.</p>
+    <p class="recurso">Cómo se hace: Prompt base 10</p>
+    <p class="pedido">Pídelo así: «Animación iceberg dive: lo que no se ve de mi negocio»</p>
+  </div>
+</article>
+
+</main>
+<footer>Muestras de 1,25 s tomadas del reel <a href="https://www.instagram.com/p/DgGaMp_DCp4/">«10 Claude Animation styles» de viashaan</a>, guardado el 2026-11-25. Recursos y prompts de cada estilo en <code>SKILL.md</code>.</footer>
+</body>
+</html>

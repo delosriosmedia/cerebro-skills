@@ -31,6 +31,7 @@ Esta skill reúne los criterios de producción de video para redes sociales guar
 Aquí se listan los procedimientos completos de este dominio a medida que se aprueben.
 
 - Videos con HyperFrames: seguir la skill `selector-hyperframes`, que muestra las extensiones instaladas y pregunta cuáles usar.
+- Animaciones hechas con código (reels, explicativos, promos): seguir la skill `selector-animacion`, que muestra el resultado de cada estilo y pregunta cuál usar.
 
 ## Reglas de mantenimiento
 
