@@ -11,9 +11,9 @@
 | Skill | Dónde vive | Cuándo usarla |
 | --- | --- | --- |
 | `edit-copy` | skills portables de Angel | Textos de producto, interfaz, landing y documentación: precisión, datos que respaldan cada frase y voz de marca |
-| `humanizer` | este repo (propuesta) | Cualquier texto en prosa: quitar las señales de escritura con IA y dejar el ritmo de una persona |
+| `humanizer` | skills portables de Angel | Cualquier texto en prosa: quitar las señales de escritura con IA y dejar el ritmo de una persona |
 
-Se complementan: primero `edit-copy` ajusta qué dice el texto de producto; después `humanizer` limpia cómo suena.
+Se complementan: primero `edit-copy` ajusta qué dice el texto de producto; después `humanizer` limpia cómo suena. Las dos se activan solo cuando Angel las elige: el hook `plugins/cerebro/hooks/sugerir-redaccion.sh` detecta cada pedido de texto y la skill `selector-redaccion` le muestra la galería y le pregunta cuál usar.
 
 **Riesgos:**
 
@@ -22,13 +22,13 @@ Se complementan: primero `edit-copy` ajusta qué dice el texto de producto; desp
 - Sin claves de API ni servicios externos. El script `scripts/validate-package.py` solo valida el paquete.
 - Requiere Claude Code 2.1.142 o superior para instalarla como plugin.
 
-**Instalación propuesta** (tras la aprobación de Angel): copiar la skill a la carpeta `skills/humanizer/` del plugin de skills portables de Angel, así llega a todos sus equipos con el plugin de siempre. Instalación directa como plugin, si se prefiere aparte:
+**Instalación:** copiar la skill a la carpeta `skills/humanizer/` del plugin de skills portables de Angel, así llega a todos sus equipos con el plugin de siempre. Instalación directa como plugin, si se prefiere aparte:
 
 ```text
 /plugin marketplace add blader/humanizer
 /plugin install humanizer@humanizer
 ```
 
-**Decisión:** pendiente · 2026-11-25.
+**Decisión:** instalada · 2026-11-25, como copia de la versión 4.0.0 con `disable-model-invocation: true`, junto al selector de redacción.
 
 **Fuente:** [lámina «You don't need a better model. You need these 10 repos.»](https://www.instagram.com/p/DfrsUrYiPFW/), Instagram, codewithaltin · guardado el 2026-11-25. Ponytail, Hallmark, Impeccable y Graphify, de la misma lámina, ya estaban entre las skills portables de Angel.
