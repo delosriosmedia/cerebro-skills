@@ -8,6 +8,7 @@
 // - GET ?accion=diagnostico : prueba el token contra Meta y busca la cuenta y el chat destino.
 // - GET ?accion=recuperar&horas=6 : lee el chat de captura por API y registra lo que falte.
 //   Estas rutas de administración exigen la cabecera x-cerebro-clave = ajuste cron_clave.
+// - GET /oauth : regreso del diálogo de Facebook Login for Business (protegido con el ajuste oauth_estado).
 // - POST : eventos de Meta. Se valida la firma X-Hub-Signature-256 con META_APP_SECRET
 //   (o con el ajuste "firma_prueba" para pruebas internas).
 //   Solo se guardan los mensajes ENVIADOS por la cuenta conectada (is_echo) al chat destino.
@@ -73,11 +74,17 @@ async function guardarAjuste(clave: string, valor: string) {
   await db.from("ajustes").upsert({ clave, valor });
 }
 
+// Token vigente: el que deja la reconexión con página (ajuste ig_token_pagina, solo legible con
+// service role) o, si no existe, el secreto IG_ACCESS_TOKEN.
+async function token(): Promise<string> {
+  return (await ajuste("ig_token_pagina")) || IG_TOKEN;
+}
+
 // Llamada GET a la API de Meta. Devuelve estado y cuerpo; el token nunca sale en la respuesta.
-async function graph(ruta: string, params: Record<string, string> = {}) {
+async function graph(ruta: string, params: Record<string, string> = {}, tk?: string) {
   const u = new URL(`${GRAPH}/${ruta}`);
   for (const [k, v] of Object.entries(params)) u.searchParams.set(k, v);
-  u.searchParams.set("access_token", IG_TOKEN);
+  u.searchParams.set("access_token", tk ?? await token());
   const r = await fetch(u);
   return { ok: r.ok, status: r.status, cuerpo: await r.json().catch(() => ({})) as Record<string, any> };
 }
@@ -248,7 +255,7 @@ async function suscribir(cuentaParam: string | null) {
   if (cuentaParam) await guardarAjuste("instagram_cuenta_id", cuentaParam);
   const u = new URL(`${GRAPH}/${cuenta}/subscribed_apps`);
   u.searchParams.set("subscribed_fields", "messages");
-  u.searchParams.set("access_token", IG_TOKEN);
+  u.searchParams.set("access_token", await token());
   const r = await fetch(u, { method: "POST" });
   const cuerpo = await r.json().catch(() => ({}));
   await evento("suscribir_webhook", r.ok ? "info" : "error", { cuenta, status: r.status, respuesta: cuerpo });
@@ -305,6 +312,66 @@ async function recuperar(horas: number) {
   return { ok: true, revisados: resumen.length, resumen };
 }
 
+// Reconexión con Facebook Login for Business (configuración que pide la cuenta de Instagram y su
+// página vinculada). Meta documenta que, con Unified login, una cuenta de Instagram vinculada a
+// una página recibe webhooks de mensajes solo si la conexión incluye también esa página.
+// Flujo: Claude guarda un valor aleatorio en el ajuste oauth_estado y abre el diálogo de Meta con
+// redirect_uri = <funciones_url>/instagram-webhook/oauth; Meta vuelve aquí con code y state.
+async function oauth(url: URL): Promise<Response> {
+  const html = (titulo: string, detalle: unknown, status = 200) =>
+    new Response(
+      `<!doctype html><meta charset="utf-8"><title>${titulo}</title><body style="font-family:system-ui;padding:24px">` +
+        `<h1>${titulo}</h1><pre>${JSON.stringify(detalle, null, 2).replace(/</g, "&lt;")}</pre></body>`,
+      { status, headers: { "Content-Type": "text/html; charset=utf-8" } },
+    );
+  const esperado = await ajuste("oauth_estado");
+  if (!esperado || url.searchParams.get("state") !== esperado) return html("Estado inválido", {}, 401);
+  await guardarAjuste("oauth_estado", "");
+  if (url.searchParams.get("error")) {
+    await evento("oauth", "aviso", { error: url.searchParams.get("error"), motivo: url.searchParams.get("error_reason") });
+    return html("Conexión cancelada", { error: url.searchParams.get("error_description") });
+  }
+  const appId = await ajuste("meta_app_id");
+  const redirect = `${await ajuste("funciones_url")}/instagram-webhook/oauth`;
+  const canje = new URL(`${GRAPH}/v27.0/oauth/access_token`);
+  canje.searchParams.set("client_id", appId ?? "");
+  canje.searchParams.set("client_secret", APP_SECRET);
+  canje.searchParams.set("redirect_uri", redirect);
+  canje.searchParams.set("code", url.searchParams.get("code") ?? "");
+  const rc = await fetch(canje);
+  const cuerpo = await rc.json().catch(() => ({})) as Record<string, any>;
+  if (!rc.ok || !cuerpo.access_token) {
+    await evento("oauth", "error", { paso: "canje", status: rc.status, error: cuerpo?.error?.message });
+    return html("No se pudo completar la conexión", { paso: "canje", error: cuerpo?.error?.message }, 502);
+  }
+  const nuevo = String(cuerpo.access_token);
+  await guardarAjuste("ig_token_pagina", nuevo);
+  const cuenta = (await ajuste("instagram_cuenta_id")) ?? "";
+  const yo = await graph("me", { fields: "id,name" }, nuevo);
+  const paginas = await graph("me/accounts", { fields: "id,name,access_token,instagram_business_account" }, nuevo);
+  const subIg = await fetch(
+    `${GRAPH}/${cuenta}/subscribed_apps?subscribed_fields=messages&access_token=${encodeURIComponent(nuevo)}`,
+    { method: "POST" },
+  ).then(async (r) => ({ status: r.status, cuerpo: await r.json().catch(() => ({})) }));
+  const subPaginas: unknown[] = [];
+  for (const p of paginas.cuerpo.data ?? []) {
+    if (!p.access_token) { subPaginas.push({ pagina: p.id, motivo: "sin token de página" }); continue; }
+    const r = await fetch(
+      `${GRAPH}/${p.id}/subscribed_apps?subscribed_fields=messages&access_token=${encodeURIComponent(p.access_token)}`,
+      { method: "POST" },
+    );
+    subPaginas.push({ pagina: p.id, nombre: p.name, ig: p.instagram_business_account?.id ?? null, status: r.status, cuerpo: await r.json().catch(() => ({})) });
+  }
+  const resumen = {
+    sistema: yo.cuerpo?.name ?? yo.cuerpo?.error?.message,
+    paginas: (paginas.cuerpo.data ?? []).map((p: any) => ({ id: p.id, nombre: p.name, ig: p.instagram_business_account?.id ?? null })),
+    suscripcion_instagram: subIg,
+    suscripcion_paginas: subPaginas,
+  };
+  await evento("oauth", "info", resumen);
+  return html("Conexión completada", resumen);
+}
+
 // Diagnóstico: qué ve el token. Solo devuelve ids, nombres de usuario y errores de Meta.
 async function diagnostico() {
   if (!IG_TOKEN) return { ok: false, motivo: "falta IG_ACCESS_TOKEN" };
@@ -322,6 +389,7 @@ Deno.serve(async (req) => {
   const url = new URL(req.url);
 
   if (req.method === "GET") {
+    if (url.pathname.endsWith("/oauth")) return await oauth(url);
     if (url.searchParams.get("hub.mode") === "subscribe") {
       if (url.searchParams.get("hub.verify_token") !== VERIFY_TOKEN) return new Response("token incorrecto", { status: 403 });
       await evento("verificacion_meta", "info", {});
