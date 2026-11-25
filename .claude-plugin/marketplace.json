@@ -11,7 +11,7 @@
     {
       "name": "cerebro",
       "source": "./plugins/cerebro",
-      "description": "Skills madre de diseño gráfico, UX/UI, prompts, automatización con IA, Claude y producción de video, alimentadas con los guardados aprobados por Angel.",
+      "description": "Skills madre de diseño gráfico, UX/UI, prompts, automatización con IA, Claude, producción de video y desarrollo backend, alimentadas con los guardados aprobados por Angel.",
       "author": {
         "name": "Angel · delosriosmedia",
         "url": "https://github.com/delosriosmedia"
