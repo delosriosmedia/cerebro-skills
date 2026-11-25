@@ -348,25 +348,17 @@ async function oauth(url: URL): Promise<Response> {
   await guardarAjuste("ig_token_pagina", nuevo);
   const cuenta = (await ajuste("instagram_cuenta_id")) ?? "";
   const yo = await graph("me", { fields: "id,name" }, nuevo);
-  const paginas = await graph("me/accounts", { fields: "id,name,access_token,instagram_business_account" }, nuevo);
+  // La página solo necesita quedar compartida en la conexión; su suscripción al campo messages
+  // corresponde a Messenger de Facebook (pide pages_messaging) y queda fuera de este flujo.
+  const paginas = await graph("me/accounts", { fields: "id,name,instagram_business_account" }, nuevo);
   const subIg = await fetch(
     `${GRAPH}/${cuenta}/subscribed_apps?subscribed_fields=messages&access_token=${encodeURIComponent(nuevo)}`,
     { method: "POST" },
   ).then(async (r) => ({ status: r.status, cuerpo: await r.json().catch(() => ({})) }));
-  const subPaginas: unknown[] = [];
-  for (const p of paginas.cuerpo.data ?? []) {
-    if (!p.access_token) { subPaginas.push({ pagina: p.id, motivo: "sin token de página" }); continue; }
-    const r = await fetch(
-      `${GRAPH}/${p.id}/subscribed_apps?subscribed_fields=messages&access_token=${encodeURIComponent(p.access_token)}`,
-      { method: "POST" },
-    );
-    subPaginas.push({ pagina: p.id, nombre: p.name, ig: p.instagram_business_account?.id ?? null, status: r.status, cuerpo: await r.json().catch(() => ({})) });
-  }
   const resumen = {
     sistema: yo.cuerpo?.name ?? yo.cuerpo?.error?.message,
     paginas: (paginas.cuerpo.data ?? []).map((p: any) => ({ id: p.id, nombre: p.name, ig: p.instagram_business_account?.id ?? null })),
     suscripcion_instagram: subIg,
-    suscripcion_paginas: subPaginas,
   };
   await evento("oauth", "info", resumen);
   return html("Conexión completada", resumen);
