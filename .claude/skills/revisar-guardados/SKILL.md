@@ -78,6 +78,7 @@ El hilo trabaja solo su captura. Angel puede pedir más análisis, cambiar el en
 ## Paso 2 · Interpretar
 
 1. Leer `MAPA.md` (skills madre, subtemas, reglas aprendidas) y las reglas activas de `public.reglas_clasificacion`.
+   - **Tema principal primero** (regla de Angel): cada guardado se trabaja sobre su tema principal. Lo gráfico (color, animaciones, estilo visual) se extrae y se propone solo cuando el contenido trata de diseño, UI o video.
 2. Revisar conflictos con todo el cerebro (ver «Revisión de conflictos» más abajo).
 3. Guardar la interpretación (la captura sigue en `extraida` hasta enviar la ficha):
 
@@ -93,7 +94,7 @@ Si otra pieza del motor ya dejó una interpretación vigente (con `detalle.pregu
 
 ### Revisión de conflictos
 
-Antes de proponer un criterio, un prompt o una sub-skill, Claude compara el aporte con todo lo que ya existe, en la skill destino y en las demás skills:
+Antes de proponer un criterio, un prompt o una sub-skill, Claude compara el aporte con todo lo que ya existe, en la skill destino y en las demás skills. La búsqueda cubre el tema principal del guardado; los detalles gráficos secundarios quedan fuera, salvo en contenido de diseño, UI o video:
 
 ```bash
 git fetch -q origin main
