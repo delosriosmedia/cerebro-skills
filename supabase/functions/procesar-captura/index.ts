@@ -15,6 +15,7 @@
 //   POST {"captura_id": "…", "solo": "interpretar"} → repite solo la interpretación.
 //   POST {"captura_id": "…", "solo": "video"} → relee el video guardado en `medios`, actualiza su fila
 //        de `contenidos` y repite la interpretación, sin cambiar el estado de la captura.
+//   POST {"captura_id": "…", "solo": "extraer"} → repite la extracción completa y la interpretación, sin cambiar el estado.
 //   GET  ?estado=1             → diagnóstico sin secretos (con &probar=1 prueba cada modelo configurado).
 // Autenticación: cabecera x-cerebro-clave = ajustes.cron_clave.
 // Proveedor de Gemini: ajuste gemini_proveedor ('vertex' por defecto; si Vertex no autentica, sigue AI Studio).
@@ -130,7 +131,7 @@ async function procesar(captura: Captura, solo?: string): Promise<Record<string,
   if (solo === "video") {
     const { data: filas } = await db.from("contenidos").select("id, medio_ruta")
       .eq("captura_id", captura.id).eq("fuente_extraccion", "gemini").not("medio_ruta", "is", null).order("creado_en");
-    const fila = (filas ?? []).find((f) => !/\.(jpe?g|png|webp)$/.test(f.medio_ruta as string));
+    const fila = (filas ?? []).find((f) => /\.(mp4|mov|webm|m4v|quicktime)$/i.test(f.medio_ruta as string));
     if (!fila) return { ...resultado, error: "sin video guardado en medios" };
     const textoPost = (await contenidosDe(captura.id)).find((c) => c.texto_post)?.texto_post ?? null;
     try {
@@ -139,6 +140,26 @@ async function procesar(captura: Captura, solo?: string): Promise<Record<string,
       if (error) throw new Error(`guardar contenido: ${error.message}`);
       await evento(captura.id, "extraccion", "info", { relectura: fila.medio_ruta, ms: Date.now() - t0 });
       resultado.extraccion = { relectura: fila.medio_ruta };
+    } catch (e) {
+      return { ...resultado, error: cortar(e) };
+    }
+    await paso_interpretar_y_cerrar(captura, resultado, false);
+    resultado.ms = Date.now() - t0;
+    return resultado;
+  }
+
+  if (solo === "extraer") {
+    // Repite la extracción completa sin cambiar el estado: borra los contenidos derivados (conserva el del DM),
+    // guarda los nuevos y repite la interpretación.
+    try {
+      const previos = await contenidosDe(captura.id);
+      const { contenidos, ruta } = await extraer(db, captura, previos, ajuste);
+      await db.from("contenidos").delete().eq("captura_id", captura.id).neq("fuente_extraccion", "dm_instagram");
+      const { error } = await db.from("contenidos").insert(contenidos.map((c) => ({ captura_id: captura.id, ...c })));
+      if (error) throw new Error(`guardar contenidos: ${error.message}`);
+      await db.from("capturas").update({ ruta_extraccion: ruta }).eq("id", captura.id);
+      await evento(captura.id, "extraccion", "info", { reextraccion: true, ruta, fuentes: contenidos.map((c) => c.fuente_extraccion), ms: Date.now() - t0 }, ruta);
+      resultado.extraccion = { ruta, fuentes: contenidos.map((c) => c.fuente_extraccion) };
     } catch (e) {
       return { ...resultado, error: cortar(e) };
     }

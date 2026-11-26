@@ -230,13 +230,36 @@ async function videoYoutube(
   return contenidoDesdeVideo(unido, {}, { tramos: cortes.length, por_tramo: partes.map((p) => p.uso) }, modelo);
 }
 
+const esMedio = (mime: string) => mime.startsWith("video/") || mime.startsWith("image/") || mime === "application/octet-stream";
+const esPermalink = (u: string) => /^https?:\/\/(www\.)?instagram\.com\//i.test(u);
+
+// Video del embed público de Instagram (/embed/captioned/): respaldo cuando Apify falla.
+async function videoDeEmbed(permalink: string): Promise<string | null> {
+  const m = permalink.match(/instagram\.com\/(?:[\w.]+\/)?(reels?|p|tv)\/([\w-]+)/i);
+  if (!m) return null;
+  const r = await fetch(`https://www.instagram.com/${m[1] === "reels" ? "reel" : m[1]}/${m[2]}/embed/captioned/`, {
+    headers: { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36" },
+  }).catch(() => null);
+  if (!r?.ok) { await r?.body?.cancel(); return null; }
+  const html = await r.text();
+  const v = html.match(/\\?"video_url\\?"\s*:\s*\\?"([^"]+?)\\?"/)?.[1] ?? html.match(/<video[^>]+src="([^"]+)"/)?.[1];
+  if (!v) return null;
+  return v.replace(/\\u0026/g, "&").replace(/\\\//g, "/").replace(/&amp;/g, "&").replace(/\\/g, "");
+}
+
 // Descarga un video, lo guarda en `medios` y lo analiza con Gemini.
 async function videoDesdeArchivo(
   db: SupabaseClient, captura: Captura, urlVideo: string, textoPost: string | null, ajuste: Ajustes,
 ): Promise<Contenido> {
   const r = await fetch(urlVideo);
   if (!r.ok) throw new Error(`descarga de video ${r.status}`);
-  const mime = (r.headers.get("content-type") ?? "video/mp4").split(";")[0];
+  const mime = (r.headers.get("content-type") ?? "video/mp4").split(";")[0].trim().toLowerCase();
+  // Solo entran videos e imágenes. Un permalink de Instagram devuelve la página HTML: se rechaza y
+  // la extracción sigue por Apify (o por el embed público si Apify falla).
+  if (!esMedio(mime)) {
+    await r.body?.cancel();
+    throw new Error(`el enlace devolvió ${mime || "un tipo desconocido"} en vez de video o imagen`);
+  }
   const bytes = new Uint8Array(await r.arrayBuffer());
   if (mime.startsWith("image/")) {
     // El DM trajo una imagen: se guarda como capturas/<id>-1.<ext> y se lee con Gemini.
@@ -418,12 +441,16 @@ const ACTORES: Record<string, { actor: string; entrada: string }> = {
 };
 
 async function apify(plataforma: string, url: string, ajuste: Ajustes): Promise<ItemApify> {
+  const plantilla = await ajuste(`apify_entrada_${plataforma}`, ACTORES[plataforma].entrada);
+  const items = await apifyLista(plataforma, plantilla.replaceAll("{url}", url.replaceAll('"', "%22")), ajuste);
+  if (!items.length) throw new Error("apify no devolvió resultados");
+  return items[0];
+}
+
+async function apifyLista(plataforma: string, entrada: string, ajuste: Ajustes): Promise<ItemApify[]> {
   const token = Deno.env.get("APIFY_TOKEN");
   if (!token) throw new Error("falta el secreto APIFY_TOKEN");
-  const def = ACTORES[plataforma];
-  const actor = await ajuste(`apify_actor_${plataforma}`, def.actor);
-  const plantilla = await ajuste(`apify_entrada_${plataforma}`, def.entrada);
-  const entrada = plantilla.replaceAll("{url}", url.replaceAll('"', "%22"));
+  const actor = await ajuste(`apify_actor_${plataforma}`, ACTORES[plataforma].actor);
   const r = await fetch(
     `https://api.apify.com/v2/acts/${actor}/run-sync-get-dataset-items?timeout=90&clean=true`,
     {
@@ -436,8 +463,39 @@ async function apify(plataforma: string, url: string, ajuste: Ajustes): Promise<
   });
   const items = await r.json().catch(() => null);
   if (!r.ok) throw new Error(`apify ${r.status}: ${JSON.stringify(items).slice(0, 300)}`);
-  if (!Array.isArray(items) || !items.length) throw new Error("apify no devolvió resultados");
-  return items[0];
+  return Array.isArray(items) ? items.filter((x) => x && typeof x === "object" && !("error" in x)) : [];
+}
+
+// Post compartido por DM: Meta entrega la portada, el texto y un id interno, sin el enlace del post.
+// Se lee el perfil del autor con Apify (una vez cada 12 horas por autor; resultado en `eventos`,
+// etapa 'perfil_autor') y se elige el post cuyo texto coincide. Devuelve su permalink o null.
+const normalizar = (t: string) => t.toLowerCase().normalize("NFKC").replace(/\s+/g, " ").trim().slice(0, 120);
+
+async function permalinkDelAutor(db: SupabaseClient, autor: string, texto: string, ajuste: Ajustes): Promise<string | null> {
+  const usuario = autor.trim().replace(/^@/, "").toLowerCase();
+  if (!/^[a-z0-9._]{2,30}$/.test(usuario)) return null;
+  const buscado = normalizar(texto);
+  if (buscado.length < 20) return null;
+  type Post = { url: string; texto: string };
+  const elegir = (posts: Post[]) => posts.find((p) => p.texto && (p.texto.startsWith(buscado.slice(0, 80)) || buscado.startsWith(p.texto.slice(0, 80))))?.url ?? null;
+
+  const { data: cache } = await db.from("eventos").select("detalle, creado_en").eq("etapa", "perfil_autor")
+    .eq("detalle->>usuario", usuario).order("creado_en", { ascending: false }).limit(1).maybeSingle();
+  const vigente = cache && Date.now() - Date.parse(cache.creado_en as string) < 12 * 3_600_000;
+  if (vigente) {
+    const hallado = elegir((cache!.detalle as { posts: Post[] }).posts ?? []);
+    if (hallado) return hallado;
+    if (Date.now() - Date.parse(cache!.creado_en as string) < 3_600_000) return null; // perfil leído hace menos de 1 hora
+  }
+
+  const limite = Number(await ajuste("apify_perfil_limite", "50")) || 50;
+  const items = await apifyLista("instagram", `{"directUrls":["https://www.instagram.com/${usuario}/"],"resultsType":"posts","resultsLimit":${limite}}`, ajuste);
+  const posts: Post[] = items.map((it) => ({
+    url: typeof it.url === "string" ? it.url : typeof it.shortCode === "string" ? `https://www.instagram.com/p/${it.shortCode}/` : "",
+    texto: normalizar(typeof it.caption === "string" ? it.caption : ""),
+  })).filter((p) => p.url);
+  await db.from("eventos").insert({ captura_id: null, etapa: "perfil_autor", nivel: "info", detalle: { usuario, posts } });
+  return elegir(posts);
 }
 
 // Busca el primer valor de texto entre varias rutas posibles (cada actor nombra distinto sus campos).
@@ -528,19 +586,52 @@ export async function extraer(
     // 1) Video recibido por DM: la URL del CDN de Meta llega en el payload del webhook.
     const dm = previos.find((c) => c.fuente_extraccion === "dm_instagram");
     const payload = (dm?.bruto?.payload ?? {}) as Record<string, unknown>;
-    const urlDm = typeof payload.url === "string" ? payload.url : null;
-    if (urlDm) {
+    // Algunos DM traen el permalink del reel (instagram.com/reel/…) en vez de la URL del CDN: ese va directo a Apify.
+    // Un post encontrado antes en el perfil del autor (bruto.permalink) también va directo a Apify.
+    const permalinkGuardado = typeof dm?.bruto?.permalink === "string" ? dm.bruto.permalink as string : null;
+    const urlDm = !permalinkGuardado && typeof payload.url === "string" && !esPermalink(payload.url) ? payload.url : null;
+    let permalinkHallado: string | null = null;
+    // Al repetir la extracción, el autor ya leído en la portada permite buscar el post sin descargarla de nuevo.
+    const autorPrevio = previos.find((c) => c.fuente_extraccion === "gemini" && c.autor)?.autor;
+    if (urlDm && autorPrevio && dm?.bruto?.tipo === "ig_post" && dm.texto_post) {
+      permalinkHallado = await permalinkDelAutor(db, autorPrevio, dm.texto_post, ajuste).catch(() => null);
+    }
+    if (urlDm && !permalinkHallado) {
       try {
-        return { contenidos: [await videoDesdeArchivo(db, captura, urlDm, dm?.texto_post ?? null, ajuste)], ruta: "dm_cdn+gemini" };
+        const deDm = await videoDesdeArchivo(db, captura, urlDm, dm?.texto_post ?? null, ajuste);
+        // Un post compartido por DM llega con una sola imagen (la portada del carrusel). Se busca el post en el
+        // perfil del autor para leer todas sus diapositivas; si queda sin encontrar, sigue la portada sola.
+        const esImagen = /\.(jpe?g|png|webp)$/.test(deDm.medio_ruta ?? "");
+        permalinkHallado = esImagen && dm?.bruto?.tipo === "ig_post" && dm.texto_post
+          ? await permalinkDelAutor(db, deDm.autor ?? "", dm.texto_post, ajuste).catch((e) => {
+            console.warn("búsqueda en el perfil del autor falló:", String(e));
+            return null;
+          })
+          : null;
+        if (!permalinkHallado) return { contenidos: [deDm], ruta: "dm_cdn+gemini" };
       } catch (e) {
         console.warn("medio del DM falló, sigo con Apify:", String(e));
       }
     }
+    if (permalinkHallado) {
+      await db.from("contenidos").update({ bruto: { ...dm!.bruto, permalink: permalinkHallado } })
+        .eq("captura_id", captura.id).eq("fuente_extraccion", "dm_instagram");
+    }
 
     // 2) Apify trae texto, autor y URL del video.
-    const urlPublica = url.startsWith("http") ? url : null;
+    const urlPublica = permalinkHallado ?? permalinkGuardado ?? (url.startsWith("http") ? url : null);
     if (!urlPublica) throw new Error("sin URL pública para Apify");
-    const item = await apify(p, urlPublica, ajuste);
+    let item: ItemApify;
+    try {
+      item = await apify(p, urlPublica, ajuste);
+    } catch (e) {
+      // Apify caído o sin resultados: el embed público de Instagram suele traer el video.
+      const mensaje = String(e instanceof Error ? e.message : e);
+      const deEmbed = p === "instagram" && !mensaje.startsWith("plazo:") ? await videoDeEmbed(urlPublica) : null;
+      if (!deEmbed) throw e;
+      console.warn("Apify falló, sigo con el embed público:", mensaje);
+      return { contenidos: [await videoDesdeArchivo(db, captura, deEmbed, dm?.texto_post ?? null, ajuste)], ruta: "embed+gemini" };
+    }
     const texto = primero(item, ["caption", "text", "postText", "content", "message", "description", "title"]);
     const autor = primero(item, ["ownerUsername", "username", "author.username", "user.username", "user.name", "pageName", "authorName"]);
     const video = primero(item, ["videoUrl", "video_url", "videoUrls", "video.url", "media.video_url", "playable_url", "videos"]);
