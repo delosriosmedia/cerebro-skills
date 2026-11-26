@@ -30,7 +30,7 @@
   - El color cálido queda por debajo de 3:1 sobre el fondo claro (naranja 2,4; dorado 1,9; coral 2,8). Para líneas finas y puntos, usa una variante más oscura del cálido o un borde; las barras y áreas grandes se leen bien.
   - Acompaña el color con una segunda señal: etiqueta directa al final de la serie, trazo punteado o forma del marcador.
 - **Cuándo aplica:** gráficas con dos series que se comparan de igual a igual (este año y el anterior, web y app, hecho y pendiente). Cuando la gráfica destaca un solo dato, manda C-002 (gris más un acento).
-- **Fuente:** carrusel «color palettes vol 18» de @uxbrainy en Instagram, sin enlace público · 2026-11-26. Lectura con daltonismo medida con la simulación de Machado (2009).
+- **Fuente:** https://www.instagram.com/p/DgHJ-TqFpvS/ (@uxbrainy, «color palettes vol 18») · 2026-11-26. Lectura con daltonismo medida con la simulación de Machado (2009).
 
 ## Formato de cada criterio
 
