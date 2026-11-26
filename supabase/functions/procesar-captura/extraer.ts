@@ -441,12 +441,16 @@ const ACTORES: Record<string, { actor: string; entrada: string }> = {
 };
 
 async function apify(plataforma: string, url: string, ajuste: Ajustes): Promise<ItemApify> {
+  const plantilla = await ajuste(`apify_entrada_${plataforma}`, ACTORES[plataforma].entrada);
+  const items = await apifyLista(plataforma, plantilla.replaceAll("{url}", url.replaceAll('"', "%22")), ajuste);
+  if (!items.length) throw new Error("apify no devolvió resultados");
+  return items[0];
+}
+
+async function apifyLista(plataforma: string, entrada: string, ajuste: Ajustes): Promise<ItemApify[]> {
   const token = Deno.env.get("APIFY_TOKEN");
   if (!token) throw new Error("falta el secreto APIFY_TOKEN");
-  const def = ACTORES[plataforma];
-  const actor = await ajuste(`apify_actor_${plataforma}`, def.actor);
-  const plantilla = await ajuste(`apify_entrada_${plataforma}`, def.entrada);
-  const entrada = plantilla.replaceAll("{url}", url.replaceAll('"', "%22"));
+  const actor = await ajuste(`apify_actor_${plataforma}`, ACTORES[plataforma].actor);
   const r = await fetch(
     `https://api.apify.com/v2/acts/${actor}/run-sync-get-dataset-items?timeout=90&clean=true`,
     {
@@ -459,8 +463,39 @@ async function apify(plataforma: string, url: string, ajuste: Ajustes): Promise<
   });
   const items = await r.json().catch(() => null);
   if (!r.ok) throw new Error(`apify ${r.status}: ${JSON.stringify(items).slice(0, 300)}`);
-  if (!Array.isArray(items) || !items.length) throw new Error("apify no devolvió resultados");
-  return items[0];
+  return Array.isArray(items) ? items.filter((x) => x && typeof x === "object" && !("error" in x)) : [];
+}
+
+// Post compartido por DM: Meta entrega la portada, el texto y un id interno, sin el enlace del post.
+// Se lee el perfil del autor con Apify (una vez cada 12 horas por autor; resultado en `eventos`,
+// etapa 'perfil_autor') y se elige el post cuyo texto coincide. Devuelve su permalink o null.
+const normalizar = (t: string) => t.toLowerCase().normalize("NFKC").replace(/\s+/g, " ").trim().slice(0, 120);
+
+async function permalinkDelAutor(db: SupabaseClient, autor: string, texto: string, ajuste: Ajustes): Promise<string | null> {
+  const usuario = autor.trim().replace(/^@/, "").toLowerCase();
+  if (!/^[a-z0-9._]{2,30}$/.test(usuario)) return null;
+  const buscado = normalizar(texto);
+  if (buscado.length < 20) return null;
+  type Post = { url: string; texto: string };
+  const elegir = (posts: Post[]) => posts.find((p) => p.texto && (p.texto.startsWith(buscado.slice(0, 80)) || buscado.startsWith(p.texto.slice(0, 80))))?.url ?? null;
+
+  const { data: cache } = await db.from("eventos").select("detalle, creado_en").eq("etapa", "perfil_autor")
+    .eq("detalle->>usuario", usuario).order("creado_en", { ascending: false }).limit(1).maybeSingle();
+  const vigente = cache && Date.now() - Date.parse(cache.creado_en as string) < 12 * 3_600_000;
+  if (vigente) {
+    const hallado = elegir((cache!.detalle as { posts: Post[] }).posts ?? []);
+    if (hallado) return hallado;
+    if (Date.now() - Date.parse(cache!.creado_en as string) < 3_600_000) return null; // perfil leído hace menos de 1 hora
+  }
+
+  const limite = Number(await ajuste("apify_perfil_limite", "50")) || 50;
+  const items = await apifyLista("instagram", `{"directUrls":["https://www.instagram.com/${usuario}/"],"resultsType":"posts","resultsLimit":${limite}}`, ajuste);
+  const posts: Post[] = items.map((it) => ({
+    url: typeof it.url === "string" ? it.url : typeof it.shortCode === "string" ? `https://www.instagram.com/p/${it.shortCode}/` : "",
+    texto: normalizar(typeof it.caption === "string" ? it.caption : ""),
+  })).filter((p) => p.url);
+  await db.from("eventos").insert({ captura_id: null, etapa: "perfil_autor", nivel: "info", detalle: { usuario, posts } });
+  return elegir(posts);
 }
 
 // Busca el primer valor de texto entre varias rutas posibles (cada actor nombra distinto sus campos).
@@ -552,17 +587,39 @@ export async function extraer(
     const dm = previos.find((c) => c.fuente_extraccion === "dm_instagram");
     const payload = (dm?.bruto?.payload ?? {}) as Record<string, unknown>;
     // Algunos DM traen el permalink del reel (instagram.com/reel/…) en vez de la URL del CDN: ese va directo a Apify.
-    const urlDm = typeof payload.url === "string" && !esPermalink(payload.url) ? payload.url : null;
-    if (urlDm) {
+    // Un post encontrado antes en el perfil del autor (bruto.permalink) también va directo a Apify.
+    const permalinkGuardado = typeof dm?.bruto?.permalink === "string" ? dm.bruto.permalink as string : null;
+    const urlDm = !permalinkGuardado && typeof payload.url === "string" && !esPermalink(payload.url) ? payload.url : null;
+    let permalinkHallado: string | null = null;
+    // Al repetir la extracción, el autor ya leído en la portada permite buscar el post sin descargarla de nuevo.
+    const autorPrevio = previos.find((c) => c.fuente_extraccion === "gemini" && c.autor)?.autor;
+    if (urlDm && autorPrevio && dm?.bruto?.tipo === "ig_post" && dm.texto_post) {
+      permalinkHallado = await permalinkDelAutor(db, autorPrevio, dm.texto_post, ajuste).catch(() => null);
+    }
+    if (urlDm && !permalinkHallado) {
       try {
-        return { contenidos: [await videoDesdeArchivo(db, captura, urlDm, dm?.texto_post ?? null, ajuste)], ruta: "dm_cdn+gemini" };
+        const deDm = await videoDesdeArchivo(db, captura, urlDm, dm?.texto_post ?? null, ajuste);
+        // Un post compartido por DM llega con una sola imagen (la portada del carrusel). Se busca el post en el
+        // perfil del autor para leer todas sus diapositivas; si queda sin encontrar, sigue la portada sola.
+        const esImagen = /\.(jpe?g|png|webp)$/.test(deDm.medio_ruta ?? "");
+        permalinkHallado = esImagen && dm?.bruto?.tipo === "ig_post" && dm.texto_post
+          ? await permalinkDelAutor(db, deDm.autor ?? "", dm.texto_post, ajuste).catch((e) => {
+            console.warn("búsqueda en el perfil del autor falló:", String(e));
+            return null;
+          })
+          : null;
+        if (!permalinkHallado) return { contenidos: [deDm], ruta: "dm_cdn+gemini" };
       } catch (e) {
         console.warn("medio del DM falló, sigo con Apify:", String(e));
       }
     }
+    if (permalinkHallado) {
+      await db.from("contenidos").update({ bruto: { ...dm!.bruto, permalink: permalinkHallado } })
+        .eq("captura_id", captura.id).eq("fuente_extraccion", "dm_instagram");
+    }
 
     // 2) Apify trae texto, autor y URL del video.
-    const urlPublica = url.startsWith("http") ? url : null;
+    const urlPublica = permalinkHallado ?? permalinkGuardado ?? (url.startsWith("http") ? url : null);
     if (!urlPublica) throw new Error("sin URL pública para Apify");
     let item: ItemApify;
     try {

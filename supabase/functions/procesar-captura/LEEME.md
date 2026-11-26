@@ -19,7 +19,7 @@ Si la extracción falla, la captura vuelve a `recibida` con el motivo en `ultimo
 | Plataforma | Ruta | Resultado en `contenidos` |
 | --- | --- | --- |
 | YouTube | Gemini recibe el enlace y ve el video (resolución baja). Un video de más de 3,6 minutos se lee en tramos de 3 minutos en paralelo; cada tramo listo queda en `eventos` (etapa `tramo`) y la llamada siguiente lee solo los que faltan. El resultado se une con marcas `[mm:ss–mm:ss]` | `gemini`: transcripción, texto en pantalla, prompts visibles, pasos, herramientas, repos, momentos |
-| Instagram por DM | Medio del CDN de Meta → bucket privado `medios` (`capturas/<id>.mp4` o `capturas/<id>-1.jpg`) → Gemini. Solo entran respuestas de video o imagen: si el DM trae el permalink del reel (`instagram.com/reel/…`) o el enlace devuelve HTML, sigue la ruta por enlace. Si Apify falla, el video sale del embed público (`/embed/captioned/`, ruta `embed+gemini`) | `gemini`, con `medio_ruta` |
+| Instagram por DM | Medio del CDN de Meta → bucket privado `medios` (`capturas/<id>.mp4` o `capturas/<id>-1.jpg`) → Gemini. Solo entran respuestas de video o imagen: si el DM trae el permalink del reel (`instagram.com/reel/…`) o el enlace devuelve HTML, sigue la ruta por enlace. Si Apify falla, el video sale del embed público (`/embed/captioned/`, ruta `embed+gemini`). Un post compartido por DM llega solo con la portada: Gemini lee el autor en ella, Apify lee el perfil del autor (una vez cada 12 horas, en `eventos` etapa `perfil_autor`, hasta `apify_perfil_limite` posts, 50 por defecto), se elige el post cuyo texto coincide y sigue la ruta por enlace con todas las diapositivas. El enlace hallado queda en `bruto.permalink` del contenido del DM | `gemini`, con `medio_ruta` |
 | Instagram, Threads, Facebook por enlace | Apify trae texto, autor, video e imágenes. Las imágenes se guardan en `medios/capturas/<id>-<n>.<ext>` (hasta 10). Gemini lee el video o, si no hay video, las imágenes. En un carrusel con diapositivas en video, cada video queda en `medios/capturas/<id>-<n>.mp4` (n = posición) y Gemini recibe todas las diapositivas en orden | `apify` (con `bruto.imagenes`) y `gemini` |
 | GitHub | API pública: descripción, README, estrellas, licencia | `github_api` |
 | Web | HTML reducido a texto | `otra` |
@@ -83,6 +83,7 @@ Todas llevan la cabecera `x-cerebro-clave` con el valor de `ajustes.cron_clave`.
 - `POST {"captura_id": "…"}`: procesa esa captura (pruebas y reprocesos).
 - `POST {"captura_id": "…", "solo": "interpretar"}`: repite solo la interpretación.
 - `POST {"captura_id": "…", "solo": "video"}`: relee el video guardado en `medios`, actualiza su fila de `contenidos` y repite la interpretación, sin cambiar el estado de la captura.
+- `POST {"captura_id": "…", "solo": "extraer"}`: repite la extracción completa (conserva el contenido del DM, reemplaza los demás) y la interpretación, sin cambiar el estado de la captura.
 - `GET ?estado=1`: muestra el proveedor vigente y qué secretos están configurados, sin revelarlos. Con `&probar=1`, prueba cada modelo configurado con una pregunta corta.
 
 Esquema y tarea programada: [`supabase/migrations/0006_procesar_captura.sql`](../../migrations/0006_procesar_captura.sql). Ajustes de Vertex: [`supabase/migrations/0008_gemini_vertex.sql`](../../migrations/0008_gemini_vertex.sql).
