@@ -17,6 +17,21 @@
 - **Cuándo aplica:** gráficas para presentaciones, informes, paneles y piezas de redes que deben llevar la atención a un dato puntual. Para explorar datos sin un mensaje definido, basta la gráfica base.
 - **Fuente:** https://www.instagram.com/p/Df2QtFYIHCr/ · 2026-11-25
 
+### C-003 · Series legibles con daltonismo: un color frío y uno cálido
+- **Regla:** cuando dos series de igual peso se distinguen solo por color, usa un color frío y uno cálido, a lados opuestos del eje azul-amarillo. Rojo y verde juntos se funden en un oliva para quien tiene daltonismo rojo-verde (cerca de 1 de cada 12 hombres), y la leyenda deja de servir. Parejas probadas sobre fondo claro:
+
+  | Pareja | Frío | Cálido | Fondo | Lectura con daltonismo (medida) |
+  | --- | --- | --- | --- | --- |
+  | Azul y naranja | `#2F6FDE` | `#F08A24` | `#FBF9F5` | La más firme en los tres tipos; el naranja se ve mostaza |
+  | Púrpura y dorado | `#6B3FA0` | `#E0B02A` | `#FAF8FC` | Firme en rojo-verde; más justa en tritanopia (azul-amarillo) |
+  | Verde azulado y coral | `#138A8A` | `#F26B5B` | `#F7FAFA` | Se distingue en deuteranopia; en protanopia queda cerca del rojo y verde: sumar etiqueta directa |
+
+  Dos ajustes al usarlas:
+  - El color cálido queda por debajo de 3:1 sobre el fondo claro (naranja 2,4; dorado 1,9; coral 2,8). Para líneas finas y puntos, usa una variante más oscura del cálido o un borde; las barras y áreas grandes se leen bien.
+  - Acompaña el color con una segunda señal: etiqueta directa al final de la serie, trazo punteado o forma del marcador.
+- **Cuándo aplica:** gráficas con dos series que se comparan de igual a igual (este año y el anterior, web y app, hecho y pendiente). Cuando la gráfica destaca un solo dato, manda C-002 (gris más un acento).
+- **Fuente:** carrusel «color palettes vol 18» de @uxbrainy en Instagram, sin enlace público · 2026-11-26. Lectura con daltonismo medida con la simulación de Machado (2009).
+
 ## Formato de cada criterio
 
 ```markdown
