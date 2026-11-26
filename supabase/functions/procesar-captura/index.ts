@@ -130,7 +130,7 @@ async function procesar(captura: Captura, solo?: string): Promise<Record<string,
   if (solo === "video") {
     const { data: filas } = await db.from("contenidos").select("id, medio_ruta")
       .eq("captura_id", captura.id).eq("fuente_extraccion", "gemini").not("medio_ruta", "is", null).order("creado_en");
-    const fila = (filas ?? []).find((f) => !/\.(jpe?g|png|webp)$/.test(f.medio_ruta as string));
+    const fila = (filas ?? []).find((f) => /\.(mp4|mov|webm|m4v|quicktime)$/i.test(f.medio_ruta as string));
     if (!fila) return { ...resultado, error: "sin video guardado en medios" };
     const textoPost = (await contenidosDe(captura.id)).find((c) => c.texto_post)?.texto_post ?? null;
     try {

@@ -230,13 +230,36 @@ async function videoYoutube(
   return contenidoDesdeVideo(unido, {}, { tramos: cortes.length, por_tramo: partes.map((p) => p.uso) }, modelo);
 }
 
+const esMedio = (mime: string) => mime.startsWith("video/") || mime.startsWith("image/") || mime === "application/octet-stream";
+const esPermalink = (u: string) => /^https?:\/\/(www\.)?instagram\.com\//i.test(u);
+
+// Video del embed público de Instagram (/embed/captioned/): respaldo cuando Apify falla.
+async function videoDeEmbed(permalink: string): Promise<string | null> {
+  const m = permalink.match(/instagram\.com\/(?:[\w.]+\/)?(reels?|p|tv)\/([\w-]+)/i);
+  if (!m) return null;
+  const r = await fetch(`https://www.instagram.com/${m[1] === "reels" ? "reel" : m[1]}/${m[2]}/embed/captioned/`, {
+    headers: { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36" },
+  }).catch(() => null);
+  if (!r?.ok) { await r?.body?.cancel(); return null; }
+  const html = await r.text();
+  const v = html.match(/\\?"video_url\\?"\s*:\s*\\?"([^"]+?)\\?"/)?.[1] ?? html.match(/<video[^>]+src="([^"]+)"/)?.[1];
+  if (!v) return null;
+  return v.replace(/\\u0026/g, "&").replace(/\\\//g, "/").replace(/&amp;/g, "&").replace(/\\/g, "");
+}
+
 // Descarga un video, lo guarda en `medios` y lo analiza con Gemini.
 async function videoDesdeArchivo(
   db: SupabaseClient, captura: Captura, urlVideo: string, textoPost: string | null, ajuste: Ajustes,
 ): Promise<Contenido> {
   const r = await fetch(urlVideo);
   if (!r.ok) throw new Error(`descarga de video ${r.status}`);
-  const mime = (r.headers.get("content-type") ?? "video/mp4").split(";")[0];
+  const mime = (r.headers.get("content-type") ?? "video/mp4").split(";")[0].trim().toLowerCase();
+  // Solo entran videos e imágenes. Un permalink de Instagram devuelve la página HTML: se rechaza y
+  // la extracción sigue por Apify (o por el embed público si Apify falla).
+  if (!esMedio(mime)) {
+    await r.body?.cancel();
+    throw new Error(`el enlace devolvió ${mime || "un tipo desconocido"} en vez de video o imagen`);
+  }
   const bytes = new Uint8Array(await r.arrayBuffer());
   if (mime.startsWith("image/")) {
     // El DM trajo una imagen: se guarda como capturas/<id>-1.<ext> y se lee con Gemini.
@@ -528,7 +551,8 @@ export async function extraer(
     // 1) Video recibido por DM: la URL del CDN de Meta llega en el payload del webhook.
     const dm = previos.find((c) => c.fuente_extraccion === "dm_instagram");
     const payload = (dm?.bruto?.payload ?? {}) as Record<string, unknown>;
-    const urlDm = typeof payload.url === "string" ? payload.url : null;
+    // Algunos DM traen el permalink del reel (instagram.com/reel/…) en vez de la URL del CDN: ese va directo a Apify.
+    const urlDm = typeof payload.url === "string" && !esPermalink(payload.url) ? payload.url : null;
     if (urlDm) {
       try {
         return { contenidos: [await videoDesdeArchivo(db, captura, urlDm, dm?.texto_post ?? null, ajuste)], ruta: "dm_cdn+gemini" };
@@ -540,7 +564,17 @@ export async function extraer(
     // 2) Apify trae texto, autor y URL del video.
     const urlPublica = url.startsWith("http") ? url : null;
     if (!urlPublica) throw new Error("sin URL pública para Apify");
-    const item = await apify(p, urlPublica, ajuste);
+    let item: ItemApify;
+    try {
+      item = await apify(p, urlPublica, ajuste);
+    } catch (e) {
+      // Apify caído o sin resultados: el embed público de Instagram suele traer el video.
+      const mensaje = String(e instanceof Error ? e.message : e);
+      const deEmbed = p === "instagram" && !mensaje.startsWith("plazo:") ? await videoDeEmbed(urlPublica) : null;
+      if (!deEmbed) throw e;
+      console.warn("Apify falló, sigo con el embed público:", mensaje);
+      return { contenidos: [await videoDesdeArchivo(db, captura, deEmbed, dm?.texto_post ?? null, ajuste)], ruta: "embed+gemini" };
+    }
     const texto = primero(item, ["caption", "text", "postText", "content", "message", "description", "title"]);
     const autor = primero(item, ["ownerUsername", "username", "author.username", "user.username", "user.name", "pageName", "authorName"]);
     const video = primero(item, ["videoUrl", "video_url", "videoUrls", "video.url", "media.video_url", "playable_url", "videos"]);
